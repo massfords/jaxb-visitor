@@ -4,11 +4,12 @@
     <artifactId>jaxb-visitor</artifactId>
     <name>JAXB Visitor Plugin</name>
     <version>2.1-SNAPSHOT</version>
-    <description>XJC plugin that adds the Visitor pattern to JAXB generated classes. Generates a simple Visitor
-        interface as well as separate Traverser and sample implementations to perform depth first traversals of JAXB
-        graphs.
+    <description>XJC plugin that adds the Visitor pattern to JAXB generated
+        classes. Generates a simple Visitor interface as well as separate
+        Traverser and sample implementations to perform depth first traversals
+        of JAXB graphs.
     </description>
-    <url>http://code.google.com/p/jaxb-visitor</url>
+    <url>https://github.com/massfords/jaxb-visitor</url>
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
@@ -18,9 +19,9 @@
         </license>
     </licenses>
     <scm>
-        <connection>scm:svn:http://jaxb-visitor.googlecode.com/svn/jaxb-visitor/trunk</connection>
-        <developerConnection>scm:svn:https://jaxb-visitor.googlecode.com/svn/jaxb-visitor/trunk</developerConnection>
-        <url>http://jaxb-visitor.googlecode.com/svn/jaxb-visitor/trunk</url>
+        <url>https://github.com/massfords/jaxb-visitor</url>
+        <connection>scm:git:git://github.com/massfords/jaxb-visitor.git</connection>
+        <developerConnection>scm:git:git@github.com:massfords/jaxb-visitor.git</developerConnection>
     </scm>
     <distributionManagement>
         <snapshotRepository>
@@ -41,25 +42,7 @@
         </developer>
     </developers>
     <build>
-        <extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-webdav</artifactId>
-                <version>1.0-beta-2</version>
-            </extension>
-        </extensions>
         <plugins>
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.2</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                </configuration>
-            </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
