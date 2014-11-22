@@ -105,6 +105,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
 {
 
 
+    @Override
     public void traverse(AdditionalOperatorsType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -113,6 +114,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(ArgumentType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -121,6 +123,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(ArgumentsType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -129,6 +132,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(AvailableFunctionType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -140,6 +144,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(AvailableFunctionsType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -148,6 +153,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(BBOXType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -159,6 +165,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(BinaryComparisonOpType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -169,6 +176,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(BinaryLogicOpType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -179,6 +187,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(BinarySpatialOpType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -190,6 +199,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(BinaryTemporalOpType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -201,11 +211,13 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(ComparisonOperatorType aBean, Visitor<?, E> aVisitor)
         throws E
     {
     }
 
+    @Override
     public void traverse(ComparisonOperatorsType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -214,6 +226,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(ConformanceType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -222,6 +235,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(DistanceBufferType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -236,6 +250,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(ExtendedCapabilitiesType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -244,11 +259,13 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(ExtensionOperatorType aBean, Visitor<?, E> aVisitor)
         throws E
     {
     }
 
+    @Override
     public void traverse(FilterCapabilities aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -275,6 +292,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(FilterType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -303,6 +321,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(FunctionType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -313,6 +332,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(GeometryOperandsType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -321,11 +341,13 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(GeometryOperandsType.GeometryOperand aBean, Visitor<?, E> aVisitor)
         throws E
     {
     }
 
+    @Override
     public void traverse(IdCapabilitiesType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -334,6 +356,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(LiteralType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -344,11 +367,13 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(LogicalOperators aBean, Visitor<?, E> aVisitor)
         throws E
     {
     }
 
+    @Override
     public void traverse(LowerBoundaryType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -357,11 +382,13 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(MeasureType aBean, Visitor<?, E> aVisitor)
         throws E
     {
     }
 
+    @Override
     public void traverse(PropertyIsBetweenType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -376,6 +403,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(PropertyIsLikeType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -386,6 +414,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(PropertyIsNilType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -394,6 +423,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(PropertyIsNullType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -402,11 +432,13 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(ResourceIdType aBean, Visitor<?, E> aVisitor)
         throws E
     {
     }
 
+    @Override
     public void traverse(ResourceIdentifierType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -415,6 +447,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(ScalarCapabilitiesType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -426,6 +459,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(SortByType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -434,11 +468,13 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(SortPropertyType aBean, Visitor<?, E> aVisitor)
         throws E
     {
     }
 
+    @Override
     public void traverse(SpatialCapabilitiesType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -450,6 +486,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(SpatialOperatorType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -458,6 +495,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(SpatialOperatorsType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -466,6 +504,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(TemporalCapabilitiesType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -477,6 +516,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(TemporalOperandsType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -485,11 +525,13 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(TemporalOperandsType.TemporalOperand aBean, Visitor<?, E> aVisitor)
         throws E
     {
     }
 
+    @Override
     public void traverse(TemporalOperatorType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -498,6 +540,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(TemporalOperatorsType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -506,6 +549,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(UnaryLogicOpType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -534,6 +578,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(UpperBoundaryType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -542,26 +587,31 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(AbstractReferenceBaseType aBean, Visitor<?, E> aVisitor)
         throws E
     {
     }
 
+    @Override
     public void traverse(AcceptFormatsType aBean, Visitor<?, E> aVisitor)
         throws E
     {
     }
 
+    @Override
     public void traverse(AcceptVersionsType aBean, Visitor<?, E> aVisitor)
         throws E
     {
     }
 
+    @Override
     public void traverse(AddressType aBean, Visitor<?, E> aVisitor)
         throws E
     {
     }
 
+    @Override
     public void traverse(AllowedValues aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -572,11 +622,13 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(AnyValue aBean, Visitor<?, E> aVisitor)
         throws E
     {
     }
 
+    @Override
     public void traverse(BasicIdentificationType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -597,11 +649,13 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(BoundingBoxType aBean, Visitor<?, E> aVisitor)
         throws E
     {
     }
 
+    @Override
     public void traverse(CapabilitiesBaseType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -616,11 +670,13 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(CodeType aBean, Visitor<?, E> aVisitor)
         throws E
     {
     }
 
+    @Override
     public void traverse(ContactType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -635,6 +691,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(ContentsBaseType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -646,6 +703,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(DCP aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -654,6 +712,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(DatasetDescriptionSummaryBaseType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -685,6 +744,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(DescriptionType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -699,11 +759,13 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(DomainMetadataType aBean, Visitor<?, E> aVisitor)
         throws E
     {
     }
 
+    @Override
     public void traverse(DomainType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -739,6 +801,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(ExceptionReport aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -747,11 +810,13 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(ExceptionType aBean, Visitor<?, E> aVisitor)
         throws E
     {
     }
 
+    @Override
     public void traverse(GetCapabilitiesType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -766,11 +831,13 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(GetResourceByIdType aBean, Visitor<?, E> aVisitor)
         throws E
     {
     }
 
+    @Override
     public void traverse(HTTP aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -781,6 +848,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(IdentificationType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -806,6 +874,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(KeywordsType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -817,11 +886,13 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(LanguageStringType aBean, Visitor<?, E> aVisitor)
         throws E
     {
     }
 
+    @Override
     public void traverse(ManifestType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -845,6 +916,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(MetadataType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -853,16 +925,19 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(NoValues aBean, Visitor<?, E> aVisitor)
         throws E
     {
     }
 
+    @Override
     public void traverse(OnlineResourceType aBean, Visitor<?, E> aVisitor)
         throws E
     {
     }
 
+    @Override
     public void traverse(Operation aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -880,6 +955,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(OperationsMetadata aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -897,6 +973,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(RangeType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -911,6 +988,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(ReferenceGroupType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -936,6 +1014,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(ReferenceType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -950,6 +1029,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(RequestMethodType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -958,6 +1038,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(ResponsiblePartySubsetType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -969,6 +1050,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(ResponsiblePartyType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -980,11 +1062,13 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(SectionsType aBean, Visitor<?, E> aVisitor)
         throws E
     {
     }
 
+    @Override
     public void traverse(ServiceIdentification aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -1002,6 +1086,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(ServiceProvider aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -1013,6 +1098,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(ServiceReferenceType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -1030,11 +1116,13 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(TelephoneType aBean, Visitor<?, E> aVisitor)
         throws E
     {
     }
 
+    @Override
     public void traverse(UnNamedDomainType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -1070,16 +1158,19 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(ValueType aBean, Visitor<?, E> aVisitor)
         throws E
     {
     }
 
+    @Override
     public void traverse(ValuesReference aBean, Visitor<?, E> aVisitor)
         throws E
     {
     }
 
+    @Override
     public void traverse(WGS84BoundingBoxType aBean, Visitor<?, E> aVisitor)
         throws E
     {

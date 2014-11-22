@@ -57,6 +57,7 @@ public class CreateDepthFirstTraverserClass extends CodeCreator {
             traverseMethodImpl._throws(exceptionType);
             JVar beanParam = traverseMethodImpl.param(classOutline.implClass, "aBean");
             JVar vizParam = traverseMethodImpl.param(narrowedVisitor, "aVisitor");
+            traverseMethodImpl.annotate(Override.class);
             JBlock traverseBlock = traverseMethodImpl.body();
             // for each field, if it's a bean, then visit it
             List<FieldOutline> fields = findAllDeclaredAndInheritedFields(classOutline);

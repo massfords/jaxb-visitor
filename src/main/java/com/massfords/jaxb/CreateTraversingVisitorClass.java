@@ -57,6 +57,7 @@ public class CreateTraversingVisitorClass extends CodeCreator {
                 JMethod travViz = traversingVisitor.method(JMod.PUBLIC, returnType, "visit");
                 travViz._throws(exceptionType);
                 JVar beanVar = travViz.param(classOutline.implClass, "aBean");
+                travViz.annotate(Override.class);
                 JBlock travVizBloc = travViz.body();
 
                 addTraverseBlock(travViz, beanVar, true);
