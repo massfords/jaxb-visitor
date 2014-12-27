@@ -23,6 +23,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
 {
 
 
+    @Override
     public void traverse(ImportedData aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -31,6 +32,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(ImportedType aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -39,11 +41,13 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(ImportedType.Message aBean, Visitor<?, E> aVisitor)
         throws E
     {
     }
 
+    @Override
     public void traverse(ChoiceElement aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -54,6 +58,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(ComplexObject aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -71,6 +76,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(ComplexObject.LocalElement aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -82,6 +88,7 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(HasJAXBElement aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -90,11 +97,13 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(Problem aBean, Visitor<?, E> aVisitor)
         throws E
     {
     }
 
+    @Override
     public void traverse(Recursive aBean, Visitor<?, E> aVisitor)
         throws E
     {
@@ -103,11 +112,13 @@ public class DepthFirstTraverserImpl<E extends Throwable >
         }
     }
 
+    @Override
     public void traverse(TSimpleRequest aBean, Visitor<?, E> aVisitor)
         throws E
     {
     }
 
+    @Override
     public void traverse(TSimpleResponse aBean, Visitor<?, E> aVisitor)
         throws E
     {

@@ -23,66 +23,77 @@ public class BaseVisitor<R, E extends Throwable >
 {
 
 
+    @Override
     public R visit(ImportedData aBean)
         throws E
     {
         return null;
     }
 
+    @Override
     public R visit(ImportedType aBean)
         throws E
     {
         return null;
     }
 
+    @Override
     public R visit(ImportedType.Message aBean)
         throws E
     {
         return null;
     }
 
+    @Override
     public R visit(ChoiceElement aBean)
         throws E
     {
         return null;
     }
 
+    @Override
     public R visit(ComplexObject aBean)
         throws E
     {
         return null;
     }
 
+    @Override
     public R visit(ComplexObject.LocalElement aBean)
         throws E
     {
         return null;
     }
 
+    @Override
     public R visit(HasJAXBElement aBean)
         throws E
     {
         return null;
     }
 
+    @Override
     public R visit(Problem aBean)
         throws E
     {
         return null;
     }
 
+    @Override
     public R visit(Recursive aBean)
         throws E
     {
         return null;
     }
 
+    @Override
     public R visit(TSimpleRequest aBean)
         throws E
     {
         return null;
     }
 
+    @Override
     public R visit(TSimpleResponse aBean)
         throws E
     {

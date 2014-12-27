@@ -42,6 +42,7 @@ public class CreateBaseVisitorClass extends CodeCreator {
                 _method._throws(exceptionType);
 				_method.param(classOutline.implClass, "aBean");
 				_method.body()._return(JExpr._null());
+				_method.annotate(Override.class);
             }
         }
     }
