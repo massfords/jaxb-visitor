@@ -45,7 +45,7 @@ public class GeneratedCodeFixture extends Assert {
 
         String actualValue = noComments(new FileReader(actual));
 
-        assertEquals(expectedValue, actualValue);
+        assertEquals(className + " failed to match", expectedValue, actualValue);
     }
 
     protected String noComments(Reader r) throws IOException {
