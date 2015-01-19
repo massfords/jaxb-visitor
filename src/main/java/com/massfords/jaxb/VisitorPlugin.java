@@ -1,12 +1,13 @@
 package com.massfords.jaxb;
 
+import com.sun.codemodel.JClass;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JPackage;
 import com.sun.tools.xjc.BadCommandLineException;
 import com.sun.tools.xjc.Options;
 import com.sun.tools.xjc.Plugin;
-import com.sun.tools.xjc.model.CClassInfoParent;
 import com.sun.tools.xjc.model.Aspect;
+import com.sun.tools.xjc.model.CClassInfoParent;
 import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.Outline;
 import com.sun.tools.xjc.outline.PackageOutline;
@@ -79,21 +80,23 @@ public class VisitorPlugin extends Plugin {
 
             Set<ClassOutline> sorted = sortClasses(outline);
 
+            Set<JClass> directClasses = ClassDiscoverer.discoverDirectClasses(outline, sorted);
+
             // create JAXBElement name support for holding JAXBElement names
             CreateJAXBElementNameCallback cni =
                     new CreateJAXBElementNameCallback(outline, vizPackage);
-            cni.run(sorted);
+            cni.run(sorted, directClasses);
 
             // create visitor interface
             CreateVisitorInterface createVisitorInterface =
                     new CreateVisitorInterface(outline, vizPackage);
-            createVisitorInterface.run(sorted);
+            createVisitorInterface.run(sorted, directClasses);
             JDefinedClass visitor = createVisitorInterface.getOutput();
             
             // create visitable interface and have all the beans implement it
             CreateVisitableInterface createVisitableInterface =
                     new CreateVisitableInterface(visitor, outline, vizPackage);
-            createVisitableInterface.run(sorted);
+            createVisitableInterface.run(sorted, directClasses);
             JDefinedClass visitable = createVisitableInterface.getOutput();
             
             // add accept method to beans
@@ -103,33 +106,33 @@ public class VisitorPlugin extends Plugin {
             // create traverser interface
             CreateTraverserInterface createTraverserInterface =
                     new CreateTraverserInterface(visitor, outline, vizPackage);
-            createTraverserInterface.run(sorted);
+            createTraverserInterface.run(sorted, directClasses);
             JDefinedClass traverser = createTraverserInterface.getOutput();
             
             // create base visitor class
             CreateBaseVisitorClass createBaseVisitorClass =
                     new CreateBaseVisitorClass(visitor, outline, vizPackage);
-            createBaseVisitorClass.run(sorted);
+            createBaseVisitorClass.run(sorted, directClasses);
             createBaseVisitorClass.getOutput();
 
             // create default generic depth first traverser class
             CreateDepthFirstTraverserClass createDepthFirstTraverserClass =
                     new CreateDepthFirstTraverserClass(visitor, traverser,
                             visitable, outline, vizPackage);
-            createDepthFirstTraverserClass.run(sorted);
+            createDepthFirstTraverserClass.run(sorted, directClasses);
             
             // create progress monitor for traversing visitor
             CreateTraversingVisitorProgressMonitorInterface progMon =
                     new CreateTraversingVisitorProgressMonitorInterface(visitable,
                             outline, vizPackage);
-            progMon.run(sorted);
+            progMon.run(sorted, directClasses);
             JDefinedClass progressMonitor = progMon.getOutput();
             
             // create traversing visitor class
             CreateTraversingVisitorClass createTraversingVisitorClass =
                     new CreateTraversingVisitorClass(visitor, progressMonitor,
                             traverser, outline, vizPackage);
-            createTraversingVisitorClass.run(sorted);
+            createTraversingVisitorClass.run(sorted, directClasses);
             
         } catch (Throwable t) {
             t.printStackTrace();

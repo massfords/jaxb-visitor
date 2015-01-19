@@ -1,6 +1,15 @@
 package com.massfords.jaxb;
 
-import com.sun.codemodel.*;
+import com.sun.codemodel.JAnnotationUse;
+import com.sun.codemodel.JAnnotationValue;
+import com.sun.codemodel.JClass;
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JFormatter;
+import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JMod;
+import com.sun.codemodel.JPackage;
+import com.sun.codemodel.JType;
 import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.Outline;
 import com.sun.tools.xjc.outline.PackageOutline;
@@ -12,7 +21,11 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.namespace.QName;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class CreateJAXBElementNameCallback extends CodeCreator {
 
@@ -25,8 +38,8 @@ public class CreateJAXBElementNameCallback extends CodeCreator {
     }
 
     @Override
-    protected void run(Set<ClassOutline> classes) {
-        setOutput( outline.getClassFactory().createInterface(jpackage, "Named", null) );
+    protected void run(Set<ClassOutline> classes, Set<JClass> directClasses) {
+        setOutput(outline.getClassFactory().createInterface(jpackage, "Named", null));
         getOutput().method(JMod.PUBLIC, void.class, SETTER).param(QName.class, "name");
         getOutput().method(JMod.PUBLIC, QName.class, GETTER);
 

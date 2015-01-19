@@ -14,11 +14,12 @@ import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.FieldOutline;
 import com.sun.tools.xjc.outline.Outline;
 
-import javax.xml.bind.JAXBElement;
-import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import static com.massfords.jaxb.ClassDiscoverer.findAllDeclaredAndInheritedFields;
 
 
 /**
@@ -45,7 +46,7 @@ public class CreateDepthFirstTraverserClass extends CodeCreator {
     }
 
     @Override
-    protected void run(Set<ClassOutline> classes) {
+    protected void run(Set<ClassOutline> classes, Set<JClass> directClasses) {
     	
     	// create the class
         JDefinedClass defaultTraverser = getOutline().getClassFactory().createClass(getPackage(),
@@ -59,6 +60,11 @@ public class CreateDepthFirstTraverserClass extends CodeCreator {
         defaultTraverser._implements(narrowedTraverser);
 
         setOutput( defaultTraverser );
+
+        Map<String,JClass> dcMap = new HashMap<>();
+        for(JClass dc : directClasses) {
+            dcMap.put(dc.fullName(), dc);
+        }
         
         for(ClassOutline classOutline : classes) {
             if (classOutline.target.isAbstract()) {
@@ -75,21 +81,21 @@ public class CreateDepthFirstTraverserClass extends CodeCreator {
             List<FieldOutline> fields = findAllDeclaredAndInheritedFields(classOutline);
             for(FieldOutline fieldOutline : fields) {
                 JType rawType = fieldOutline.getRawType();
-                JMethod getter = getter(fieldOutline);
-                boolean isJAXBElement = isJAXBElement(getter.type());
+                JMethod getter = ClassDiscoverer.getter(fieldOutline);
+                boolean isJAXBElement = ClassDiscoverer.isJAXBElement(getter.type());
                 CPropertyInfo propertyInfo = fieldOutline.getPropertyInfo();
                 boolean isCollection = propertyInfo.isCollection();
                 if (isCollection) {
                     JClass collClazz = (JClass) rawType;
                     JClass collType = collClazz.getTypeParameters().get(0);
-                    TraversableCodeGenStrategy t = getTraversableStrategy(collType);
+                    TraversableCodeGenStrategy t = getTraversableStrategy(collType, dcMap);
                     if (collType.name().startsWith("JAXBElement")) {
                         t.jaxbElementCollection(traverseBlock, collType, beanParam, getter, vizParam, visitable);
                     } else {
-                        t.collection(traverseBlock, (JClass) rawType, beanParam, getter, vizParam, visitable);
+                        t.collection(traverseBlock, (JClass) rawType, beanParam, getter, vizParam, visitable, null);
                     }
                 } else {
-                    TraversableCodeGenStrategy t = getTraversableStrategy(rawType);
+                    TraversableCodeGenStrategy t = getTraversableStrategy(rawType, dcMap);
                     if (isJAXBElement) {
                         t.jaxbElement(traverseBlock, (JClass) rawType, beanParam, getter, vizParam, visitable);
                     } else {
@@ -98,40 +104,33 @@ public class CreateDepthFirstTraverserClass extends CodeCreator {
                 }
             }
         }
+
+        for(JClass dc : directClasses) {
+            JMethod traverseMethodImpl = defaultTraverser.method(JMod.PUBLIC, void.class, "traverse");
+            traverseMethodImpl._throws(exceptionType);
+            traverseMethodImpl.param(dc, "aBean");
+            traverseMethodImpl.param(narrowedVisitor, "aVisitor");
+            traverseMethodImpl.annotate(Override.class);
+            JBlock traverseBlock = traverseMethodImpl.body();
+            String[] source = {"// details about %s are not known at compile time.",
+                    "// For now, applications using external classes will have to",
+                    "// implement their own traversal logic."};
+            for(String s : source) {
+                traverseBlock.directStatement(String.format(s, dc.fullName()));
+            }
+
+        }
         getPackage().remove(scratch);
     }
-
-    protected List<FieldOutline> findAllDeclaredAndInheritedFields(ClassOutline classOutline) {
-        List<FieldOutline> fields = new LinkedList<>();
-        ClassOutline currentClassOutline = classOutline;
-        while(currentClassOutline != null) {
-            fields.addAll(Arrays.asList(currentClassOutline.getDeclaredFields()));
-            currentClassOutline = currentClassOutline.getSuperClass();
-        }
-        return fields;
-    }
-
-    /**
-     * Returns true if the type is a JAXBElement. In the case of JAXBElements, we want to traverse its
-     * underlying value as opposed to the JAXBElement.
-     * @param type
-     */
-    private boolean isJAXBElement(JType type) {
-        //noinspection RedundantIfStatement
-        if (type.fullName().startsWith(JAXBElement.class.getName())) {
-    		return true;
-    	}
-		return false;
-	}
 
     /**
 	 * Tests to see if the rawType is traversable
      *
-     * @return Traversable YES, NO, MAYBE, EXTERNAL
+     * @return TraversableCodeGenStrategy VISITABLE, NO, MAYBE, DIRECT
 	 * 
 	 * @param rawType
 	 */
-	private TraversableCodeGenStrategy getTraversableStrategy(JType rawType) {
+	private TraversableCodeGenStrategy getTraversableStrategy(JType rawType, Map<String,JClass> directClasses) {
 
         if (rawType.isPrimitive()) {
             // primitive types are never traversable
@@ -154,33 +153,15 @@ public class CreateDepthFirstTraverserClass extends CodeCreator {
             // if it is an interface (like Serializable) it could also be anything
             // handle it like java.lang.Object
             return  TraversableCodeGenStrategy.MAYBE;
-        } else {
+        } else if (visitable.isAssignableFrom(clazz)) {
             // it's a real type. if it's one of ours, then it'll be assignable from Visitable
-            return visitable.isAssignableFrom(clazz) ? TraversableCodeGenStrategy.YES : TraversableCodeGenStrategy.NO;
+            return TraversableCodeGenStrategy.VISITABLE;
+        } else if (directClasses.containsKey(name)) {
+            return TraversableCodeGenStrategy.DIRECT;
+        } else {
+            return TraversableCodeGenStrategy.NO;
         }
     }
 
-    private static final JType[] NONE = new JType[0];
-    /**
-     * Borrowed this code from jaxb-commons project
-     * 
-     * @param fieldOutline
-     */
-    private static JMethod getter(FieldOutline fieldOutline) {
-        final JDefinedClass theClass = fieldOutline.parent().implClass;
-        final String publicName = fieldOutline.getPropertyInfo().getName(true);
-        final JMethod getgetter = theClass.getMethod("get" + publicName, NONE);
-        if (getgetter != null) {
-            return getgetter;
-        } else {
-            final JMethod isgetter = theClass
-                    .getMethod("is" + publicName, NONE);
-            if (isgetter != null) {
-                return isgetter;
-            } else {
-                return null;
-            }
-        }
-    }
 }
 

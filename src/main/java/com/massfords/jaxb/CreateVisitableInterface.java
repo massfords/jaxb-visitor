@@ -11,6 +11,10 @@ import com.sun.tools.xjc.outline.Outline;
 
 import java.util.Set;
 
+/**
+ * Creates the interface to tag each one of the beans to add
+ * an accept method as part of the double dispatch Visitor pattern
+ */
 public class CreateVisitableInterface extends CodeCreator {
 
     private JDefinedClass visitor;
@@ -21,7 +25,7 @@ public class CreateVisitableInterface extends CodeCreator {
     }
 
     @Override
-    protected void run(Set<ClassOutline> classes) {
+    protected void run(Set<ClassOutline> classes, Set<JClass> directClasses) {
         final JDefinedClass _interface = outline.getClassFactory().createInterface(jpackage, "Visitable", null);
 		setOutput( _interface );
 		final JMethod _method = getOutput().method(JMod.PUBLIC, void.class, "accept");

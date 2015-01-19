@@ -8,19 +8,24 @@ import com.sun.codemodel.JForEach;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JVar;
 
+import java.util.Set;
+
 /**
  * enum that reports whether a bean property is traversable.
- * YES = it's definitely traversable and we just need to do a null check
+ * VISITABLE = it's definitely traversable and we just need to do a null check
  * NO = it's definitely NOT traversable and we should skip the bean property
  * MAYBE = it's a JAXBElement<?> or Object so we'll test the value with an
  *         instanceof and perform a cast
+ * DIRECT = It's one of the externally mapped classes which will
+ *          be on the Visitor interface but doesn't have an accept
+ *          method.
  */
 public enum TraversableCodeGenStrategy {
     /**
-     * YES means we just have to test for a null instance.
+     * VISITABLE means we just have to test for a null instance.
      * We don't need to do a cast because the type is definitely a Visitable
      */
-    YES{
+    VISITABLE {
         @Override
         public void jaxbElementCollection(JBlock traverseBlock, JClass collType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable) {
             JForEach forEach = traverseBlock.forEach(collType, "obj", JExpr.invoke(beanParam, getter));
@@ -28,7 +33,7 @@ public enum TraversableCodeGenStrategy {
         }
 
         @Override
-        public void collection(JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable) {
+        public void collection(JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable, Set<JClass> directClasses) {
             JForEach forEach = traverseBlock.forEach(rawType.getTypeParameters().get(0), "bean", JExpr.invoke(beanParam, getter));
             forEach.body().invoke(JExpr.ref("bean"), "accept").arg(vizParam);
         }
@@ -61,7 +66,7 @@ public enum TraversableCodeGenStrategy {
         }
 
         @Override
-        public void collection(JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable) {
+        public void collection(JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable, Set<JClass> directClasses) {
 
         }
 
@@ -93,7 +98,7 @@ public enum TraversableCodeGenStrategy {
         }
 
         @Override
-        public void collection(JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable) {
+        public void collection(JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable, Set<JClass> directClasses) {
             JForEach forEach = traverseBlock.forEach(rawType.getTypeParameters().get(0), "bean", JExpr.invoke(beanParam, getter));
             JBlock body = forEach.body();
             body._if(JExpr.ref("bean")._instanceof(visitable))._then()
@@ -105,10 +110,36 @@ public enum TraversableCodeGenStrategy {
             traverseBlock._if(JExpr.invoke(beanParam, getter)._instanceof(visitable))._then().invoke(JExpr.cast(visitable,JExpr.invoke(beanParam, getter)), "accept").arg(vizParam);
         }
 
+    },
+    DIRECT {
+        @Override
+        public void jaxbElementCollection(JBlock traverseBlock, JClass collType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable) {
+            // should prob throw an error here. I don't think we should ever have
+            // a jaxb element w/ an external class
+        }
+
+        @Override
+        public void jaxbElement(JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable) {
+            // should prob throw an error here. I don't think we should ever have
+            // a jaxb element w/ an external class
+        }
+
+        @Override
+        public void collection(JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable, Set<JClass> directClasses) {
+            JForEach forEach = traverseBlock.forEach(rawType.getTypeParameters().get(0), "bean", JExpr.invoke(beanParam, getter));
+            JBlock body = forEach.body();
+            body.invoke(vizParam, "visit").arg(forEach.var());
+        }
+
+        @Override
+        public void bean(JBlock traverseBlock, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable) {
+            traverseBlock._if(JExpr.invoke(beanParam, getter)._instanceof(visitable))._then().invoke(JExpr.cast(visitable,JExpr.invoke(beanParam, getter)), "accept").arg(vizParam);
+        }
+
     };
 
     public abstract void jaxbElementCollection(JBlock traverseBlock, JClass collType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable);
     public abstract void jaxbElement(JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable);
-    public abstract void collection(JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable);
+    public abstract void collection(JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable, Set<JClass> directClasses);
     public abstract void bean(JBlock traverseBlock, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable);
 }

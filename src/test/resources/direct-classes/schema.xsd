@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema 
+	xmlns="http://xxx.yyy.zzz/schema.xsd" 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xxx.yyy.zzz/schema.xsd"
+	elementFormDefault="qualified"
+	attributeFormDefault="unqualified">
+
+	<xs:element name="Base">
+		<xs:complexType>
+			<xs:sequence >
+				<xs:element ref="Parameter" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="Parameter"/>
+
+
+</xs:schema>

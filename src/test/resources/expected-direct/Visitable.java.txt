@@ -6,7 +6,7 @@
 //
 
 
-package org.example.visitor;
+package org.example.direct;
 
 import javax.annotation.Generated;
 

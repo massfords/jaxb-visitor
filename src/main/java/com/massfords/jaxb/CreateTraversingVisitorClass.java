@@ -4,7 +4,10 @@ import com.sun.codemodel.*;
 import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.Outline;
 
+import java.util.Collections;
 import java.util.Set;
+
+import static com.massfords.jaxb.ClassDiscoverer.allConcreteClasses;
 
 /**
  * Creates a traversing visitor. This visitor pairs a visitor and a traverser. The result is a visitor that 
@@ -27,7 +30,7 @@ public class CreateTraversingVisitorClass extends CodeCreator {
     }
 
     @Override
-    protected void run(Set<ClassOutline> classes) {
+    protected void run(Set<ClassOutline> classes, Set<JClass> directClasses) {
 
         JDefinedClass traversingVisitor = getOutline().getClassFactory().createClass(getPackage(), "TraversingVisitor", null);
         final JTypeVar returnType = traversingVisitor.generify("R");
@@ -50,29 +53,51 @@ public class CreateTraversingVisitorClass extends CodeCreator {
         ctor.body().assign(fieldVisitor, JExpr.ref("aVisitor"));
         
         setOutput(traversingVisitor);
-        
-        for(ClassOutline classOutline : classes) {
-            if (!classOutline.target.isAbstract()) {
-                // add method impl to traversing visitor
-                JMethod travViz = traversingVisitor.method(JMod.PUBLIC, returnType, "visit");
-                travViz._throws(exceptionType);
-                JVar beanVar = travViz.param(classOutline.implClass, "aBean");
-                travViz.annotate(Override.class);
-                JBlock travVizBloc = travViz.body();
 
-                addTraverseBlock(travViz, beanVar, true);
-
-                JVar retVal = travVizBloc.decl(returnType, "returnVal");
-                travVizBloc.assign(retVal,
-                        JExpr.invoke(beanVar,"accept").arg(JExpr.invoke("getVisitor")));
-                travVizBloc._if(JExpr.ref("progressMonitor").ne(JExpr._null()))._then().invoke(JExpr.ref("progressMonitor"), "visited").arg(beanVar);
-
-                // case to traverse after the visit
-                addTraverseBlock(travViz, beanVar, false);
-                travVizBloc._return(retVal);
-            }
-
+        for(JClass jc : allConcreteClasses(classes, Collections.<JClass>emptySet())) {
+            generate(traversingVisitor, returnType, exceptionType, jc);
         }
+        for(JClass jc : directClasses) {
+            generateForDirectClass(traversingVisitor, returnType, exceptionType, jc);
+        }
+    }
+
+    private void generateForDirectClass(JDefinedClass traversingVisitor, JTypeVar returnType, JTypeVar exceptionType, JClass implClass) {
+        // add method impl to traversing visitor
+        JMethod travViz = traversingVisitor.method(JMod.PUBLIC, returnType, "visit");
+        travViz._throws(exceptionType);
+        JVar beanVar = travViz.param(implClass, "aBean");
+        travViz.annotate(Override.class);
+        JBlock travVizBloc = travViz.body();
+
+        // case to traverse before the visit
+        travVizBloc.invoke(JExpr.invoke("getTraverser"), "traverse").arg(beanVar).arg(JExpr._this());
+
+        JVar retVal = travVizBloc.decl(returnType, "returnVal");
+
+        travVizBloc.assign(retVal, JExpr.invoke(JExpr.invoke("getVisitor"), "visit").arg(beanVar));
+
+        travVizBloc._return(retVal);
+    }
+
+    private void generate(JDefinedClass traversingVisitor, JTypeVar returnType, JTypeVar exceptionType, JClass implClass) {
+        // add method impl to traversing visitor
+        JMethod travViz = traversingVisitor.method(JMod.PUBLIC, returnType, "visit");
+        travViz._throws(exceptionType);
+        JVar beanVar = travViz.param(implClass, "aBean");
+        travViz.annotate(Override.class);
+        JBlock travVizBloc = travViz.body();
+
+        addTraverseBlock(travViz, beanVar, true);
+
+        JVar retVal = travVizBloc.decl(returnType, "returnVal");
+        travVizBloc.assign(retVal,
+                JExpr.invoke(beanVar, "accept").arg(JExpr.invoke("getVisitor")));
+        travVizBloc._if(JExpr.ref("progressMonitor").ne(JExpr._null()))._then().invoke(JExpr.ref("progressMonitor"), "visited").arg(beanVar);
+
+        // case to traverse after the visit
+        addTraverseBlock(travViz, beanVar, false);
+        travVizBloc._return(retVal);
     }
 
     private void addTraverseBlock(JMethod travViz, JVar beanVar, boolean flag) {
