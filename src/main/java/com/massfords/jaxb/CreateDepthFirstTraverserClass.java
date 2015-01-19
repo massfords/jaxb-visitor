@@ -1,14 +1,25 @@
 package com.massfords.jaxb;
 
-import com.sun.codemodel.*;
+import com.sun.codemodel.JBlock;
+import com.sun.codemodel.JClass;
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JMod;
+import com.sun.codemodel.JPackage;
+import com.sun.codemodel.JType;
+import com.sun.codemodel.JTypeVar;
+import com.sun.codemodel.JVar;
 import com.sun.tools.xjc.model.CPropertyInfo;
 import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.FieldOutline;
 import com.sun.tools.xjc.outline.Outline;
 
 import javax.xml.bind.JAXBElement;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
-import java.util.*;
 
 /**
  * Creates an implementation of the traverser that traverses the beans in depth first order 
@@ -25,7 +36,8 @@ public class CreateDepthFirstTraverserClass extends CodeCreator {
     private JDefinedClass visitable;
 
     public CreateDepthFirstTraverserClass(JDefinedClass visitor, JDefinedClass traverser, JDefinedClass visitable,
-                                          Outline outline, JPackage jPackageackage) {
+                                          Outline outline,
+                                          JPackage jPackageackage) {
         super(outline, jPackageackage);
         this.visitor = visitor;
         this.traverser = traverser;
@@ -70,69 +82,18 @@ public class CreateDepthFirstTraverserClass extends CodeCreator {
                 if (isCollection) {
                     JClass collClazz = (JClass) rawType;
                     JClass collType = collClazz.getTypeParameters().get(0);
-                    Traversable t = isTraversable(collType);
+                    TraversableCodeGenStrategy t = getTraversableStrategy(collType);
                     if (collType.name().startsWith("JAXBElement")) {
-                        if (t == Traversable.YES) {
-                            // YES means we just have to test for a null instance.
-                            // We don't need to do a cast because the type is definitely a Visitable
-                            JForEach forEach = traverseBlock.forEach(collType, "obj", JExpr.invoke(beanParam, getter));
-                            forEach.body()._if(JExpr.ref("obj").invoke("getValue").ne(JExpr._null()))._then().invoke(JExpr.ref("obj").invoke("getValue"), "accept").arg(vizParam);
-                        } else if (t == Traversable.MAYBE) {
-                            // MAYBE means we just have to test for an instanceof Visitable and cast where it's true
-                            // This is often the case when elements share a common type.
-                            // I don't like this approach but it's a necessary evil since you can't always change the
-                            // schema to better support codegen
-                            JForEach forEach = traverseBlock.forEach(collType, "obj", JExpr.invoke(beanParam, getter));
-                            forEach.body()._if(JExpr.ref("obj").invoke("getValue")._instanceof(visitable))._then().invoke(JExpr.cast(visitable, JExpr.ref("obj").invoke("getValue")), "accept").arg(vizParam);
-                        }
+                        t.jaxbElementCollection(traverseBlock, collType, beanParam, getter, vizParam, visitable);
                     } else {
-                        if (t == Traversable.YES) {
-                            // YES means we just have to test for a null instance.
-                            // We don't need to do a cast because the type is definitely a Visitable
-                            JForEach forEach = traverseBlock.forEach(((JClass)rawType).getTypeParameters().get(0), "bean", JExpr.invoke(beanParam, getter));
-                            forEach.body().invoke(JExpr.ref("bean"), "accept").arg(vizParam);
-                        } else if (t == Traversable.MAYBE) {
-                            // MAYBE means we just have to test for an instanceof Visitable and cast where it's true
-                            // This is often the case when elements share a common type.
-                            // I don't like this approach but it's a necessary evil since you can't always change the
-                            // schema to better support codegen
-                            JForEach forEach = traverseBlock.forEach(((JClass)rawType).getTypeParameters().get(0), "bean", JExpr.invoke(beanParam, getter));
-                            forEach.body()._if(JExpr.ref("bean")._instanceof(visitable))._then()
-                                    .invoke(JExpr.cast(visitable, JExpr.ref("bean")), "accept").arg(vizParam);
-                        }
-
-                    }
-                } else if (isJAXBElement) {
-                    Traversable t = isTraversable(rawType);
-                    if (t== Traversable.YES) {
-                        // YES means we just have to test for a null instance.
-                        // We don't need to do a cast because the type is definitely a Visitable
-                        traverseBlock._if(
-                        JExpr.invoke(beanParam, getter).ne(JExpr._null()))._then()
-                        .invoke(JExpr.invoke(beanParam, getter).invoke("getValue"), "accept").arg(vizParam);
-                    } else if (t == Traversable.MAYBE) {
-                        // MAYBE means we just have to test for an instanceof Visitable and cast where it's true
-                        // This is often the case when elements share a common type.
-                        // I don't like this approach but it's a necessary evil since you can't always change the
-                        // schema to better support codegen
-                        traverseBlock._if(
-                                JExpr.invoke(beanParam, getter).ne(JExpr._null())
-                                .cand(
-                                JExpr.invoke(beanParam, getter).invoke("getValue")._instanceof(visitable))  )._then()
-                                .invoke(JExpr.cast(visitable, JExpr.invoke(beanParam, getter).invoke("getValue")), "accept").arg(vizParam);
+                        t.collection(traverseBlock, (JClass) rawType, beanParam, getter, vizParam, visitable);
                     }
                 } else {
-                    Traversable t = isTraversable(rawType);
-                    if (t== Traversable.YES) {
-                        // YES means we just have to test for a null instance.
-                        // We don't need to do a cast because the type is definitely a Visitable
-                        traverseBlock._if(JExpr.invoke(beanParam, getter).ne(JExpr._null()))._then().invoke(JExpr.invoke(beanParam, getter), "accept").arg(vizParam);
-                    } else if (t == Traversable.MAYBE) {
-                        // MAYBE means we just have to test for an instanceof Visitable and cast where it's true
-                        // This is often the case when elements share a common type.
-                        // I don't like this approach but it's a necessary evil since you can't always change the
-                        // schema to better support codegen
-                        traverseBlock._if(JExpr.invoke(beanParam, getter)._instanceof(visitable))._then().invoke(JExpr.cast(visitable,JExpr.invoke(beanParam, getter)), "accept").arg(vizParam);
+                    TraversableCodeGenStrategy t = getTraversableStrategy(rawType);
+                    if (isJAXBElement) {
+                        t.jaxbElement(traverseBlock, (JClass) rawType, beanParam, getter, vizParam, visitable);
+                    } else {
+                        t.bean(traverseBlock, beanParam, getter, vizParam, visitable);
                     }
                 }
             }
@@ -164,25 +125,17 @@ public class CreateDepthFirstTraverserClass extends CodeCreator {
 	}
 
     /**
-     * enum that reports whether a bean property is traversable.
-     * YES = it's definitely traversable and we just need to do a null check
-     * NO = it's definitely NOT traversable and we should skip the bean property
-     * MAYBE = it's a JAXBElement<?> or Object so we'll test the value with an instanceof and perform a cast
-     */
-    public enum Traversable {YES, NO, MAYBE}
-
-	/**
 	 * Tests to see if the rawType is traversable
      *
-     * @return Traversable YES, NO, MAYBE
+     * @return Traversable YES, NO, MAYBE, EXTERNAL
 	 * 
 	 * @param rawType
 	 */
-	private Traversable isTraversable(JType rawType) {
+	private TraversableCodeGenStrategy getTraversableStrategy(JType rawType) {
 
         if (rawType.isPrimitive()) {
             // primitive types are never traversable
-            return Traversable.NO;
+            return TraversableCodeGenStrategy.NO;
         }
         JClass clazz = (JClass) rawType;
         if (clazz.isParameterized()) {
@@ -196,14 +149,14 @@ public class CreateDepthFirstTraverserClass extends CodeCreator {
         String name = clazz.fullName();
         if (name.equals("java.lang.Object")) {
             // it could be anything so we'll test with an instanceof in the generated code
-            return Traversable.MAYBE;
-        } if (clazz.isInterface()) { 
+            return TraversableCodeGenStrategy.MAYBE;
+        } else if (clazz.isInterface()) {
             // if it is an interface (like Serializable) it could also be anything
             // handle it like java.lang.Object
-            return  Traversable.MAYBE;
+            return  TraversableCodeGenStrategy.MAYBE;
         } else {
             // it's a real type. if it's one of ours, then it'll be assignable from Visitable
-            return visitable.isAssignableFrom(clazz) ? Traversable.YES : Traversable.NO;
+            return visitable.isAssignableFrom(clazz) ? TraversableCodeGenStrategy.YES : TraversableCodeGenStrategy.NO;
         }
     }
 

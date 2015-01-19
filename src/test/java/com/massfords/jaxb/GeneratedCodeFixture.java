@@ -2,8 +2,14 @@ package com.massfords.jaxb;
 
 import org.junit.Assert;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
 import java.text.MessageFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class GeneratedCodeFixture extends Assert {
     private String expectedPathPattern;
@@ -51,12 +57,17 @@ public class GeneratedCodeFixture extends Assert {
     protected String noComments(Reader r) throws IOException {
         BufferedReader reader = new BufferedReader(r);
         StringBuilder sb = new StringBuilder();
-        String line = null;
+        String line;
         while ((line = reader.readLine()) != null) {
             if (!line.startsWith("//") && !line.contains("{@link")) {
                 sb.append(line).append("\n");
             }
         }
-        return sb.toString();
+        String s = sb.toString();
+        // quick fix to strip all of the javadoc
+        Pattern p = Pattern.compile("\\s*/\\*.+\\s*\\*/", Pattern.MULTILINE | Pattern.DOTALL);
+        Matcher m = p.matcher(s);
+        String replaced = m.replaceAll("");
+        return replaced;
     }
 }

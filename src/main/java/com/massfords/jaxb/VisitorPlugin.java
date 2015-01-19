@@ -1,20 +1,22 @@
 package com.massfords.jaxb;
 
-import com.sun.codemodel.*;
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JPackage;
 import com.sun.tools.xjc.BadCommandLineException;
 import com.sun.tools.xjc.Options;
 import com.sun.tools.xjc.Plugin;
 import com.sun.tools.xjc.model.CClassInfoParent;
-import com.sun.tools.xjc.outline.Aspect;
+import com.sun.tools.xjc.model.Aspect;
 import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.Outline;
 import com.sun.tools.xjc.outline.PackageOutline;
-
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Comparator;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Plugin generates the following code:
@@ -78,16 +80,19 @@ public class VisitorPlugin extends Plugin {
             Set<ClassOutline> sorted = sortClasses(outline);
 
             // create JAXBElement name support for holding JAXBElement names
-            CreateJAXBElementNameCallback cni = new CreateJAXBElementNameCallback(outline, vizPackage);
+            CreateJAXBElementNameCallback cni =
+                    new CreateJAXBElementNameCallback(outline, vizPackage);
             cni.run(sorted);
 
             // create visitor interface
-            CreateVisitorInterface createVisitorInterface = new CreateVisitorInterface(outline, vizPackage);
+            CreateVisitorInterface createVisitorInterface =
+                    new CreateVisitorInterface(outline, vizPackage);
             createVisitorInterface.run(sorted);
             JDefinedClass visitor = createVisitorInterface.getOutput();
             
             // create visitable interface and have all the beans implement it
-            CreateVisitableInterface createVisitableInterface = new CreateVisitableInterface(visitor, outline, vizPackage);
+            CreateVisitableInterface createVisitableInterface =
+                    new CreateVisitableInterface(visitor, outline, vizPackage);
             createVisitableInterface.run(sorted);
             JDefinedClass visitable = createVisitableInterface.getOutput();
             
@@ -96,26 +101,34 @@ public class VisitorPlugin extends Plugin {
             addAcceptMethod.run(sorted, visitor);
             
             // create traverser interface
-            CreateTraverserInterface createTraverserInterface = new CreateTraverserInterface(visitor, outline, vizPackage);
+            CreateTraverserInterface createTraverserInterface =
+                    new CreateTraverserInterface(visitor, outline, vizPackage);
             createTraverserInterface.run(sorted);
             JDefinedClass traverser = createTraverserInterface.getOutput();
             
-            // create abstract base visitor class
-            CreateBaseVisitorClass createAbstractBaseVisitorClass = new CreateBaseVisitorClass(visitor, outline, vizPackage);
-            createAbstractBaseVisitorClass.run(sorted);
-            createAbstractBaseVisitorClass.getOutput();
+            // create base visitor class
+            CreateBaseVisitorClass createBaseVisitorClass =
+                    new CreateBaseVisitorClass(visitor, outline, vizPackage);
+            createBaseVisitorClass.run(sorted);
+            createBaseVisitorClass.getOutput();
 
-            // create default generic traverser class
-            CreateDepthFirstTraverserClass createDepthFirstTraverserClass = new CreateDepthFirstTraverserClass(visitor, traverser, visitable, outline, vizPackage);
+            // create default generic depth first traverser class
+            CreateDepthFirstTraverserClass createDepthFirstTraverserClass =
+                    new CreateDepthFirstTraverserClass(visitor, traverser,
+                            visitable, outline, vizPackage);
             createDepthFirstTraverserClass.run(sorted);
             
             // create progress monitor for traversing visitor
-            CreateTraversingVisitorProgressMonitorInterface createTraversingVisitorProgressMonitorInterface = new CreateTraversingVisitorProgressMonitorInterface(visitable, outline, vizPackage);
-            createTraversingVisitorProgressMonitorInterface.run(sorted);
-            JDefinedClass progressMonitor = createTraversingVisitorProgressMonitorInterface.getOutput();
+            CreateTraversingVisitorProgressMonitorInterface progMon =
+                    new CreateTraversingVisitorProgressMonitorInterface(visitable,
+                            outline, vizPackage);
+            progMon.run(sorted);
+            JDefinedClass progressMonitor = progMon.getOutput();
             
             // create traversing visitor class
-            CreateTraversingVisitorClass createTraversingVisitorClass = new CreateTraversingVisitorClass(visitor, progressMonitor, traverser, outline, vizPackage);
+            CreateTraversingVisitorClass createTraversingVisitorClass =
+                    new CreateTraversingVisitorClass(visitor, progressMonitor,
+                            traverser, outline, vizPackage);
             createTraversingVisitorClass.run(sorted);
             
         } catch (Throwable t) {
@@ -142,10 +155,7 @@ public class VisitorPlugin extends Plugin {
             }
         });
         for (ClassOutline classOutline : outline.getClasses()) {
-            // skip over abstract classes
-//            if (!classOutline.target.isAbstract()) {
                 sorted.add(classOutline);
-//            }
         }
         return sorted;
     }

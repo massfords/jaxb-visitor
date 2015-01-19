@@ -26,7 +26,7 @@ public class VisitorPluginTest extends RunXJC2Mojo {
 
     @Override
     public List<String> getArgs() {
-        final List<String> args = new ArrayList<String>(super.getArgs());
+        final List<String> args = new ArrayList<>(super.getArgs());
         args.add("-Xvisitor");
         args.add("-Xvisitor-package:org.example.visitor");
         return args;
