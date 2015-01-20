@@ -2,8 +2,10 @@ package com.massfords.jaxb;
 
 import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JClass;
+import com.sun.codemodel.JConditional;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JFieldRef;
 import com.sun.codemodel.JForEach;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JVar;
@@ -101,8 +103,17 @@ public enum TraversableCodeGenStrategy {
         public void collection(JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable, Set<JClass> directClasses) {
             JForEach forEach = traverseBlock.forEach(rawType.getTypeParameters().get(0), "bean", JExpr.invoke(beanParam, getter));
             JBlock body = forEach.body();
-            body._if(JExpr.ref("bean")._instanceof(visitable))._then()
-                    .invoke(JExpr.cast(visitable, JExpr.ref("bean")), "accept").arg(vizParam);
+            JFieldRef bean = JExpr.ref("bean");
+            JConditional conditional = body._if(bean._instanceof(visitable));
+            conditional._then().invoke(JExpr.cast(visitable, bean), "accept").arg(vizParam);
+            for(JClass jc : directClasses) {
+                // Despite the name below, _elseif doesn't actually produce
+                // an else if. Instead, it produces an else with an if
+                // in the body. This is syntax issue only, it's semantically
+                // equivalent.
+                conditional = conditional._elseif(bean._instanceof(jc));
+                conditional._then().invoke(vizParam, "visit").arg(JExpr.cast(jc, bean));
+            }
         }
 
         @Override
@@ -133,7 +144,9 @@ public enum TraversableCodeGenStrategy {
 
         @Override
         public void bean(JBlock traverseBlock, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable) {
-            traverseBlock._if(JExpr.invoke(beanParam, getter)._instanceof(visitable))._then().invoke(JExpr.cast(visitable,JExpr.invoke(beanParam, getter)), "accept").arg(vizParam);
+            traverseBlock._if(
+                    JExpr.invoke(beanParam, getter).ne(JExpr._null()))._then()
+                    .invoke(vizParam, "visit").arg(JExpr.invoke(beanParam, getter));
         }
 
     };

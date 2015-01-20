@@ -1,9 +1,9 @@
-<jxb:bindings 
-    version="2.0" 
-    xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
-	xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	xmlns:simplify="http://jaxb2-commons.dev.java.net/basic/simplify" 
-	extensionBindingPrefixes="simplify" >
+<jxb:bindings
+		version="2.0"
+		xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+		xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		xmlns:simplify="http://jaxb2-commons.dev.java.net/basic/simplify"
+		extensionBindingPrefixes="simplify" >
 
 	<jxb:bindings schemaLocation="schema.xsd" node="/xs:schema">
 
@@ -11,8 +11,20 @@
 			<jxb:package name="extendedJaxbModel" />
 		</jxb:schemaBindings>
 
-		<jxb:bindings node=".//xs:element[@name='Parameter']">
+		<jxb:bindings node=".//xs:complexType[@name='Parameter']">
 			<jxb:class ref="extended.Parameter" />
+		</jxb:bindings>
+
+		<jxb:bindings multiple="true" node=".//xs:element[@type='Parameter']">
+			<jxb:class ref="extended.Parameter" />
+		</jxb:bindings>
+
+		<jxb:bindings node=".//xs:complexType[@name='Parameter2']">
+			<jxb:class ref="extended.Parameter2" />
+		</jxb:bindings>
+
+		<jxb:bindings multiple="true" node=".//xs:element[@type='Parameter2']">
+			<jxb:class ref="extended.Parameter2" />
 		</jxb:bindings>
 
 	</jxb:bindings>
