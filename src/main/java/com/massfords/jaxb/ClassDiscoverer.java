@@ -32,6 +32,13 @@ import java.util.Set;
  */
 public class ClassDiscoverer {
 
+    /**
+     * Finds all external class references
+     * @param outline root of the generated code
+     * @param classes set of generated classes
+     * @return set of external classes
+     * @throws IllegalAccessException throw if there's an error introspecting the annotations
+     */
     public static Set<JClass> discoverDirectClasses(Outline outline, Set<ClassOutline> classes) throws IllegalAccessException {
 
         Set<String> directClassNames = new LinkedHashSet<>();
@@ -67,10 +74,10 @@ public class ClassDiscoverer {
      * annotation on it. If so, we'll check this annotation to see if it
      * refers to any classes that are external from our code schema compile.
      * If we find any, then we'll add them to our visitor.
-     * @param outline
-     * @param field
-     * @param directClasses
-     * @throws IllegalAccessException
+     * @param outline root of the generated code
+     * @param field parses the xml annotations looking for an external class
+     * @param directClasses set of direct classes to append to
+     * @throws IllegalAccessException throw if there's an error introspecting the annotations
      */
     private static void parseXmlAnnotations(Outline outline, FieldOutline field, Set<String> directClasses) throws IllegalAccessException {
         if (field instanceof UntypedListField) {
@@ -91,11 +98,11 @@ public class ClassDiscoverer {
      * Handles the extraction of the schema type from the XmlElement
      * annotation. This was surprisingly difficult. Apparently the
      * model doesn't provide access to the annotation we're referring to
-     * so I need to print it and read the string back. Event the formatter
+     * so I need to print it and read the string back. Even the formatter
      * itself is final!
-     * @param outline
-     * @param directClasses
-     * @param type
+     * @param outline root of the generated code
+     * @param directClasses set of classes to append to
+     * @param type annotation we're analysing
      */
     private static void handleXmlElement(Outline outline, Set<String> directClasses, JAnnotationValue type) {
         StringWriter sw = new StringWriter();
@@ -125,10 +132,12 @@ public class ClassDiscoverer {
     }
 
     private static final JType[] NONE = new JType[0];
+
     /**
      * Borrowed this code from jaxb-commons project
      *
-     * @param fieldOutline
+     * @param fieldOutline reference to a field
+     * @return Getter for the given field or null
      */
     protected static JMethod getter(FieldOutline fieldOutline) {
         final JDefinedClass theClass = fieldOutline.parent().implClass;
@@ -150,7 +159,8 @@ public class ClassDiscoverer {
     /**
      * Returns true if the type is a JAXBElement. In the case of JAXBElements, we want to traverse its
      * underlying value as opposed to the JAXBElement.
-     * @param type
+     * @param type element type to test to see if its a JAXBElement
+     * @return true if the type is a JAXBElement
      */
     protected static boolean isJAXBElement(JType type) {
         //noinspection RedundantIfStatement
@@ -160,10 +170,21 @@ public class ClassDiscoverer {
         return false;
     }
 
+    /**
+     * Returns all of the concrete classes in the system
+     * @param classes collection of classes to examine
+     * @return List of concrete classes
+     */
     public static List<JClass> allConcreteClasses(Set<ClassOutline> classes) {
         return allConcreteClasses(classes, Collections.<JClass>emptySet());
     }
 
+    /**
+     * Returns all of the concrete classes plus the direct classes passed in
+     * @param classes collection of clases to test to see if they're abstract or concrete
+     * @param directClasses set of classes to append to the list of concrete classes
+     * @return list of concrete classes
+     */
     public static List<JClass> allConcreteClasses(Set<ClassOutline> classes, Set<JClass> directClasses) {
         List<JClass> results = new ArrayList<>();
         for (ClassOutline classOutline : classes) {
@@ -176,6 +197,4 @@ public class ClassDiscoverer {
 
         return results;
     }
-
-
 }

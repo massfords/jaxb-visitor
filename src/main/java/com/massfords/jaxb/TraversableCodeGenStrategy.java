@@ -16,7 +16,7 @@ import java.util.Set;
  * enum that reports whether a bean property is traversable.
  * VISITABLE = it's definitely traversable and we just need to do a null check
  * NO = it's definitely NOT traversable and we should skip the bean property
- * MAYBE = it's a JAXBElement<?> or Object so we'll test the value with an
+ * MAYBE = it's a JAXBElement&lt;?&gt; or Object so we'll test the value with an
  *         instanceof and perform a cast
  * DIRECT = It's one of the externally mapped classes which will
  *          be on the Visitor interface but doesn't have an accept
