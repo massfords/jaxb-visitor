@@ -30,17 +30,19 @@ public class CreateTraverserInterface extends CodeCreator {
     @Override
     protected void run(Set<ClassOutline> classes, Set<JClass> directClasses) {
         JDefinedClass scratch = getOutline().getClassFactory().createInterface(getPackage(), "_scratch", null);
-        JDefinedClass _interface = getOutline().getClassFactory().createInterface(getPackage(), "Traverser", null);
-		setOutput(_interface);
-        final JTypeVar retType = scratch.generify("?");
-        final JTypeVar exceptionType = _interface.generify("E", Throwable.class);
-        final JClass narrowedVisitor = visitor.narrow(retType).narrow(exceptionType);
+        try {
+            JDefinedClass _interface = getOutline().getClassFactory().createInterface(getPackage(), "Traverser", null);
+            setOutput(_interface);
+            final JTypeVar retType = scratch.generify("?");
+            final JTypeVar exceptionType = _interface.generify("E", Throwable.class);
+            final JClass narrowedVisitor = visitor.narrow(retType).narrow(exceptionType);
 
-        for(JClass jc : allConcreteClasses(classes, directClasses)) {
-            implTraverse(exceptionType, narrowedVisitor, jc);
+            for (JClass jc : allConcreteClasses(classes, directClasses)) {
+                implTraverse(exceptionType, narrowedVisitor, jc);
+            }
+        } finally {
+            jpackage.remove(scratch);
         }
-
-        jpackage.remove(scratch);
     }
 
     private void implTraverse(JTypeVar exceptionType, JClass narrowedVisitor, JClass implClass) {

@@ -117,7 +117,7 @@ public class CreateJAXBElementNameCallback extends CodeCreator {
                                 }
 
                             }
-                            if (namespace != null && localPart != null) {
+                            if (namespace != null) {
                                 method.body().pos(0);
                                 method.body().invoke(method.params().get(0), SETTER)
                                         .arg(JExpr._new(qNameClass).arg(namespace).arg(localPart));

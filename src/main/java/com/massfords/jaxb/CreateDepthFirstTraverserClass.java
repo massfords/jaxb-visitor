@@ -52,75 +52,79 @@ public class CreateDepthFirstTraverserClass extends CodeCreator {
         JDefinedClass defaultTraverser = getOutline().getClassFactory().createClass(getPackage(),
                 "DepthFirstTraverserImpl", null);
         JDefinedClass scratch = getOutline().getClassFactory().createInterface(getPackage(), "scratch", null);
-        
-        final JTypeVar exceptionType = defaultTraverser.generify("E", Throwable.class);
-        
-        JClass narrowedVisitor = visitor.narrow(scratch.generify("?")).narrow(exceptionType);
-        JClass narrowedTraverser = traverser.narrow(exceptionType);
-        defaultTraverser._implements(narrowedTraverser);
+        try {
+            final JTypeVar exceptionType = defaultTraverser.generify("E", Throwable.class);
 
-        setOutput( defaultTraverser );
+            JClass narrowedVisitor = visitor.narrow(scratch.generify("?")).narrow(exceptionType);
+            JClass narrowedTraverser = traverser.narrow(exceptionType);
+            defaultTraverser._implements(narrowedTraverser);
 
-        Map<String,JClass> dcMap = new HashMap<>();
-        for(JClass dc : directClasses) {
-            dcMap.put(dc.fullName(), dc);
-        }
-        
-        for(ClassOutline classOutline : classes) {
-            if (classOutline.target.isAbstract()) {
-                continue;
+            setOutput(defaultTraverser);
+
+            Map<String, JClass> dcMap = new HashMap<>();
+            for (JClass dc : directClasses) {
+                dcMap.put(dc.fullName(), dc);
             }
-            // add the bean to the traverserImpl
-            JMethod traverseMethodImpl = defaultTraverser.method(JMod.PUBLIC, void.class, "traverse");
-            traverseMethodImpl._throws(exceptionType);
-            JVar beanParam = traverseMethodImpl.param(classOutline.implClass, "aBean");
-            JVar vizParam = traverseMethodImpl.param(narrowedVisitor, "aVisitor");
-            traverseMethodImpl.annotate(Override.class);
-            JBlock traverseBlock = traverseMethodImpl.body();
-            // for each field, if it's a bean, then visit it
-            List<FieldOutline> fields = findAllDeclaredAndInheritedFields(classOutline);
-            for(FieldOutline fieldOutline : fields) {
-                JType rawType = fieldOutline.getRawType();
-                JMethod getter = ClassDiscoverer.getter(fieldOutline);
-                boolean isJAXBElement = ClassDiscoverer.isJAXBElement(getter.type());
-                CPropertyInfo propertyInfo = fieldOutline.getPropertyInfo();
-                boolean isCollection = propertyInfo.isCollection();
-                if (isCollection) {
-                    JClass collClazz = (JClass) rawType;
-                    JClass collType = collClazz.getTypeParameters().get(0);
-                    TraversableCodeGenStrategy t = getTraversableStrategy(collType, dcMap);
-                    if (collType.name().startsWith("JAXBElement")) {
-                        t.jaxbElementCollection(traverseBlock, collType, beanParam, getter, vizParam, visitable);
-                    } else {
-                        t.collection(traverseBlock, (JClass) rawType, beanParam, getter, vizParam, visitable, directClasses);
-                    }
-                } else {
-                    TraversableCodeGenStrategy t = getTraversableStrategy(rawType, dcMap);
-                    if (isJAXBElement) {
-                        t.jaxbElement(traverseBlock, (JClass) rawType, beanParam, getter, vizParam, visitable);
-                    } else {
-                        t.bean(traverseBlock, beanParam, getter, vizParam, visitable);
+
+            for (ClassOutline classOutline : classes) {
+                if (classOutline.target.isAbstract()) {
+                    continue;
+                }
+                // add the bean to the traverserImpl
+                JMethod traverseMethodImpl = defaultTraverser.method(JMod.PUBLIC, void.class, "traverse");
+                traverseMethodImpl._throws(exceptionType);
+                JVar beanParam = traverseMethodImpl.param(classOutline.implClass, "aBean");
+                JVar vizParam = traverseMethodImpl.param(narrowedVisitor, "aVisitor");
+                traverseMethodImpl.annotate(Override.class);
+                JBlock traverseBlock = traverseMethodImpl.body();
+                // for each field, if it's a bean, then visit it
+                List<FieldOutline> fields = findAllDeclaredAndInheritedFields(classOutline);
+                for (FieldOutline fieldOutline : fields) {
+                    JType rawType = fieldOutline.getRawType();
+                    JMethod getter = ClassDiscoverer.getter(fieldOutline);
+                    if (getter != null) {
+                        boolean isJAXBElement = ClassDiscoverer.isJAXBElement(getter.type());
+                        CPropertyInfo propertyInfo = fieldOutline.getPropertyInfo();
+                        boolean isCollection = propertyInfo.isCollection();
+                        if (isCollection) {
+                            JClass collClazz = (JClass) rawType;
+                            JClass collType = collClazz.getTypeParameters().get(0);
+                            TraversableCodeGenStrategy t = getTraversableStrategy(collType, dcMap);
+                            if (collType.name().startsWith("JAXBElement")) {
+                                t.jaxbElementCollection(traverseBlock, collType, beanParam, getter, vizParam, visitable);
+                            } else {
+                                t.collection(traverseBlock, (JClass) rawType, beanParam, getter, vizParam, visitable, directClasses);
+                            }
+                        } else {
+                            TraversableCodeGenStrategy t = getTraversableStrategy(rawType, dcMap);
+                            if (isJAXBElement) {
+                                t.jaxbElement(traverseBlock, (JClass) rawType, beanParam, getter, vizParam, visitable);
+                            } else {
+                                t.bean(traverseBlock, beanParam, getter, vizParam, visitable);
+                            }
+                        }
                     }
                 }
             }
-        }
 
-        for(JClass dc : directClasses) {
-            JMethod traverseMethodImpl = defaultTraverser.method(JMod.PUBLIC, void.class, "traverse");
-            traverseMethodImpl._throws(exceptionType);
-            traverseMethodImpl.param(dc, "aBean");
-            traverseMethodImpl.param(narrowedVisitor, "aVisitor");
-            traverseMethodImpl.annotate(Override.class);
-            JBlock traverseBlock = traverseMethodImpl.body();
-            String[] source = {"// details about %s are not known at compile time.",
-                    "// For now, applications using external classes will have to",
-                    "// implement their own traversal logic."};
-            for(String s : source) {
-                traverseBlock.directStatement(String.format(s, dc.fullName()));
+            for (JClass dc : directClasses) {
+                JMethod traverseMethodImpl = defaultTraverser.method(JMod.PUBLIC, void.class, "traverse");
+                traverseMethodImpl._throws(exceptionType);
+                traverseMethodImpl.param(dc, "aBean");
+                traverseMethodImpl.param(narrowedVisitor, "aVisitor");
+                traverseMethodImpl.annotate(Override.class);
+                JBlock traverseBlock = traverseMethodImpl.body();
+                String[] source = {"// details about %s are not known at compile time.",
+                        "// For now, applications using external classes will have to",
+                        "// implement their own traversal logic."};
+                for (String s : source) {
+                    traverseBlock.directStatement(String.format(s, dc.fullName()));
+                }
+
             }
-
+        } finally {
+            getPackage().remove(scratch);
         }
-        getPackage().remove(scratch);
     }
 
     /**

@@ -35,6 +35,7 @@ public class CreateVisitorInterface extends CodeCreator {
         setOutput( _interface );
 
         for(JClass jc : allConcreteClasses(classes, directClasses)) {
+            System.out.println("seeing class:" + jc.name());
             declareVisitMethod(returnType, exceptionType, jc);
         }
     }
