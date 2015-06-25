@@ -10,9 +10,9 @@ import java.util.Set;
 import static com.massfords.jaxb.ClassDiscoverer.allConcreteClasses;
 
 /**
- * Creates a traversing visitor. This visitor pairs a visitor and a traverser. The result is a visitor that 
+ * Creates a traversing visitor. This visitor pairs a visitor and a traverser. The result is a visitor that
  * will traverse the entire graph and visit each of the nodes using the provided visitor.
- * 
+ *
  * @author markford
  */
 public class CreateTraversingVisitorClass extends CodeCreator {
@@ -51,7 +51,7 @@ public class CreateTraversingVisitorClass extends CodeCreator {
         addGetterAndSetter(traversingVisitor, fieldMonitor);
         ctor.body().assign(fieldTraverser, JExpr.ref("aTraverser"));
         ctor.body().assign(fieldVisitor, JExpr.ref("aVisitor"));
-        
+
         setOutput(traversingVisitor);
 
         for(JClass jc : allConcreteClasses(classes, Collections.<JClass>emptySet())) {
@@ -70,12 +70,15 @@ public class CreateTraversingVisitorClass extends CodeCreator {
         travViz.annotate(Override.class);
         JBlock travVizBloc = travViz.body();
 
-        // case to traverse before the visit
-        travVizBloc.invoke(JExpr.invoke("getTraverser"), "traverse").arg(beanVar).arg(JExpr._this());
+        addTraverseBlock(travViz, beanVar, true);
 
         JVar retVal = travVizBloc.decl(returnType, "returnVal");
 
         travVizBloc.assign(retVal, JExpr.invoke(JExpr.invoke("getVisitor"), "visit").arg(beanVar));
+
+        travVizBloc._if(JExpr.ref("progressMonitor").ne(JExpr._null()))._then().invoke(JExpr.ref("progressMonitor"), "visited").arg(beanVar);
+
+        addTraverseBlock(travViz, beanVar, false);
 
         travVizBloc._return(retVal);
     }
@@ -111,7 +114,7 @@ public class CreateTraversingVisitorClass extends CodeCreator {
 
     /**
      * Convenience method to add a getter and setter method for the given field.
-     * 
+     *
      * @param traversingVisitor
      * @param field
      */
