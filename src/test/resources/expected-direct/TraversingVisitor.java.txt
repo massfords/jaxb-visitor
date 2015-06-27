@@ -157,9 +157,23 @@ public class TraversingVisitor<R, E extends Throwable >
     public R visit(Parameter aBean)
         throws E
     {
-        getTraverser().traverse(aBean, this);
+        if (traverseFirst == true) {
+            getTraverser().traverse(aBean, this);
+            if (progressMonitor!= null) {
+                progressMonitor.traversed(aBean);
+            }
+        }
         R returnVal;
         returnVal = getVisitor().visit(aBean);
+        if (progressMonitor!= null) {
+            progressMonitor.visited(aBean);
+        }
+        if (traverseFirst == false) {
+            getTraverser().traverse(aBean, this);
+            if (progressMonitor!= null) {
+                progressMonitor.traversed(aBean);
+            }
+        }
         return returnVal;
     }
 
@@ -167,9 +181,23 @@ public class TraversingVisitor<R, E extends Throwable >
     public R visit(Parameter2 aBean)
         throws E
     {
-        getTraverser().traverse(aBean, this);
+        if (traverseFirst == true) {
+            getTraverser().traverse(aBean, this);
+            if (progressMonitor!= null) {
+                progressMonitor.traversed(aBean);
+            }
+        }
         R returnVal;
         returnVal = getVisitor().visit(aBean);
+        if (progressMonitor!= null) {
+            progressMonitor.visited(aBean);
+        }
+        if (traverseFirst == false) {
+            getTraverser().traverse(aBean, this);
+            if (progressMonitor!= null) {
+                progressMonitor.traversed(aBean);
+            }
+        }
         return returnVal;
     }
 
