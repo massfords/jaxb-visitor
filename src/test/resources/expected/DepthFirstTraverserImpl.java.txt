@@ -52,9 +52,9 @@ public class DepthFirstTraverserImpl<E extends Throwable >
             if (bean instanceof Visitable) {
                 ((Visitable) bean).accept(aVisitor);
             } else {
-                if (bean instanceof JAXBElement) {
-                    if (((JAXBElement) bean).getValue() instanceof Visitable) {
-                        ((Visitable)((JAXBElement) bean).getValue()).accept(aVisitor);
+                if (bean instanceof JAXBElement<?> ) {
+                    if (((JAXBElement<?> ) bean).getValue() instanceof Visitable) {
+                        ((Visitable)((JAXBElement<?> ) bean).getValue()).accept(aVisitor);
                     }
                 }
             }

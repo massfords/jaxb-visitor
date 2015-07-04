@@ -45,7 +45,7 @@ public class CreateJAXBElementNameCallback extends CodeCreator {
 
         Set<ClassOutline> named = onlyNamed(outline, classes);
 
-        JClass jaxbElementClass = outline.getCodeModel().ref(JAXBElement.class);
+        JClass jaxbElementClass = outline.getCodeModel().ref(JAXBElement.class).narrow(outline.getCodeModel().ref(Object.class).wildcard());
 
         for(ClassOutline classOutline : named) {
             JDefinedClass implClass = classOutline.implClass;
