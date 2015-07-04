@@ -9,7 +9,9 @@ import com.sun.codemodel.JFieldRef;
 import com.sun.codemodel.JForEach;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JVar;
+import com.sun.tools.xjc.outline.Outline;
 
+import javax.xml.bind.JAXBElement;
 import java.util.Set;
 
 /**
@@ -35,7 +37,7 @@ public enum TraversableCodeGenStrategy {
         }
 
         @Override
-        public void collection(JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable, Set<JClass> directClasses) {
+        public void collection(Outline outline, JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable, Set<JClass> directClasses) {
             JForEach forEach = traverseBlock.forEach(rawType.getTypeParameters().get(0), "bean", JExpr.invoke(beanParam, getter));
             forEach.body().invoke(JExpr.ref("bean"), "accept").arg(vizParam);
         }
@@ -68,7 +70,7 @@ public enum TraversableCodeGenStrategy {
         }
 
         @Override
-        public void collection(JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable, Set<JClass> directClasses) {
+        public void collection(Outline outline, JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable, Set<JClass> directClasses) {
 
         }
 
@@ -100,12 +102,22 @@ public enum TraversableCodeGenStrategy {
         }
 
         @Override
-        public void collection(JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable, Set<JClass> directClasses) {
+        public void collection(Outline outline, JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable, Set<JClass> directClasses) {
+
+            JClass jaxbElementClass = outline.getCodeModel().ref(JAXBElement.class);
+
             JForEach forEach = traverseBlock.forEach(rawType.getTypeParameters().get(0), "bean", JExpr.invoke(beanParam, getter));
             JBlock body = forEach.body();
             JFieldRef bean = JExpr.ref("bean");
             JConditional conditional = body._if(bean._instanceof(visitable));
             conditional._then().invoke(JExpr.cast(visitable, bean), "accept").arg(vizParam);
+
+            // if it's a mixed type schema, then it could be returning JAXBElement's here
+            // add some code to check to see if the element has a value that is visitable
+            // and if so, visit it.
+            conditional = conditional._elseif(bean._instanceof(jaxbElementClass));
+            conditional._then()._if(JExpr.invoke(JExpr.cast(jaxbElementClass, bean), "getValue")._instanceof(visitable))._then()
+                    .invoke(JExpr.cast(visitable, JExpr.invoke(JExpr.cast(jaxbElementClass, bean), "getValue")), "accept").arg(vizParam);
             for(JClass jc : directClasses) {
                 // Despite the name below, _elseif doesn't actually produce
                 // an else if. Instead, it produces an else with an if
@@ -136,7 +148,7 @@ public enum TraversableCodeGenStrategy {
         }
 
         @Override
-        public void collection(JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable, Set<JClass> directClasses) {
+        public void collection(Outline outline, JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable, Set<JClass> directClasses) {
             JForEach forEach = traverseBlock.forEach(rawType.getTypeParameters().get(0), "bean", JExpr.invoke(beanParam, getter));
             JBlock body = forEach.body();
             body.invoke(vizParam, "visit").arg(forEach.var());
@@ -153,6 +165,6 @@ public enum TraversableCodeGenStrategy {
 
     public abstract void jaxbElementCollection(JBlock traverseBlock, JClass collType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable);
     public abstract void jaxbElement(JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable);
-    public abstract void collection(JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable, Set<JClass> directClasses);
+    public abstract void collection(Outline outline, JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable, Set<JClass> directClasses);
     public abstract void bean(JBlock traverseBlock, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable);
 }

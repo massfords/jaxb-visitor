@@ -93,7 +93,7 @@ public class CreateDepthFirstTraverserClass extends CodeCreator {
                             if (collType.name().startsWith("JAXBElement")) {
                                 t.jaxbElementCollection(traverseBlock, collType, beanParam, getter, vizParam, visitable);
                             } else {
-                                t.collection(traverseBlock, (JClass) rawType, beanParam, getter, vizParam, visitable, directClasses);
+                                t.collection(getOutline(), traverseBlock, (JClass) rawType, beanParam, getter, vizParam, visitable, directClasses);
                             }
                         } else {
                             TraversableCodeGenStrategy t = getTraversableStrategy(rawType, dcMap);

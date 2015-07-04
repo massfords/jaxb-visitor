@@ -3,6 +3,7 @@
 package org.example.direct;
 
 import javax.annotation.Generated;
+import javax.xml.bind.JAXBElement;
 import extended.Parameter2 ;
 import extendedJaxbModel.Base;
 import extendedJaxbModel.Choice;
@@ -32,11 +33,17 @@ public class DepthFirstTraverserImpl<E extends Throwable >
             if (bean instanceof Visitable) {
                 ((Visitable) bean).accept(aVisitor);
             } else {
-                if (bean instanceof extended.Parameter) {
-                    aVisitor.visit(((extended.Parameter) bean));
+                if (bean instanceof JAXBElement) {
+                    if (((JAXBElement) bean).getValue() instanceof Visitable) {
+                        ((Visitable)((JAXBElement) bean).getValue()).accept(aVisitor);
+                    }
                 } else {
-                    if (bean instanceof Parameter2 ) {
-                        aVisitor.visit(((Parameter2 ) bean));
+                    if (bean instanceof extended.Parameter) {
+                        aVisitor.visit(((extended.Parameter) bean));
+                    } else {
+                        if (bean instanceof Parameter2 ) {
+                            aVisitor.visit(((Parameter2 ) bean));
+                        }
                     }
                 }
             }
