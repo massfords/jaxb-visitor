@@ -21,10 +21,12 @@ import static com.massfords.jaxb.ClassDiscoverer.allConcreteClasses;
 public class CreateTraverserInterface extends CodeCreator {
     
     private JDefinedClass visitor;
+    private boolean includeType;
 
-    public CreateTraverserInterface(JDefinedClass visitor, Outline outline, JPackage jpackage) {
+    public CreateTraverserInterface(JDefinedClass visitor, Outline outline, JPackage jpackage, boolean includeType) {
         super(outline, jpackage);
         this.visitor = visitor;
+        this.includeType = includeType;
     }
 
     @Override
@@ -46,7 +48,11 @@ public class CreateTraverserInterface extends CodeCreator {
     }
 
     private void implTraverse(JTypeVar exceptionType, JClass narrowedVisitor, JClass implClass) {
-        JMethod traverseMethod = getOutput().method(JMod.PUBLIC, void.class, "traverse");
+        JMethod traverseMethod;
+        if (includeType)
+            traverseMethod = getOutput().method(JMod.PUBLIC, void.class, "traverse" + implClass.name());
+        else
+            traverseMethod = getOutput().method(JMod.PUBLIC, void.class, "traverse");
         traverseMethod._throws(exceptionType);
         traverseMethod.param(implClass, "aBean");
         traverseMethod.param(narrowedVisitor, "aVisitor");

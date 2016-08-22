@@ -23,10 +23,12 @@ import static com.massfords.jaxb.ClassDiscoverer.allConcreteClasses;
 public class CreateBaseVisitorClass extends CodeCreator {
 
     private JDefinedClass visitor;
+    private boolean includeType;
 
-    public CreateBaseVisitorClass(JDefinedClass visitor, Outline outline, JPackage jPackage) {
+    public CreateBaseVisitorClass(JDefinedClass visitor, Outline outline, JPackage jPackage, boolean includeType) {
         super(outline, jPackage);
         this.visitor = visitor;
+        this.includeType = includeType;
     }
     
     @Override
@@ -44,7 +46,11 @@ public class CreateBaseVisitorClass extends CodeCreator {
     }
 
     private void implementVisitMethod(JTypeVar returnType, JTypeVar exceptionType, JClass implClass) {
-        JMethod _method = getOutput().method(JMod.PUBLIC, returnType, "visit");
+        JMethod _method;
+        if (includeType)
+            _method = getOutput().method(JMod.PUBLIC, returnType, "visit" + implClass.name());
+        else
+            _method = getOutput().method(JMod.PUBLIC, returnType, "visit");
         _method._throws(exceptionType);
         _method.param(implClass, "aBean");
         _method.body()._return(JExpr._null());
