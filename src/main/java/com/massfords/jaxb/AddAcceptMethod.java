@@ -12,6 +12,12 @@ import java.util.Set;
  */
 public class AddAcceptMethod {
 
+    private boolean includeType;
+
+    public AddAcceptMethod(boolean includeType) {
+        this.includeType = includeType;
+    }
+
     public void run(Set<ClassOutline> sorted, JDefinedClass visitor) {
         for (ClassOutline classOutline : sorted) {
             // skip over abstract classes
@@ -26,7 +32,10 @@ public class AddAcceptMethod {
         		final JClass narrowedVisitor = visitor.narrow(returnType, exceptionType);
         		JVar vizParam = acceptMethod.param(narrowedVisitor, "aVisitor");
                 JBlock block = acceptMethod.body();
-                block._return(vizParam.invoke("visit").arg(JExpr._this()));
+                if (includeType)
+                    block._return(vizParam.invoke("visit" + beanImpl.name()).arg(JExpr._this()));
+                else
+                    block._return(vizParam.invoke("visit").arg(JExpr._this()));
             }
         }
     }

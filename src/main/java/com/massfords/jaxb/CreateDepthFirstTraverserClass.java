@@ -35,14 +35,16 @@ public class CreateDepthFirstTraverserClass extends CodeCreator {
     private JDefinedClass visitor;
     private JDefinedClass traverser;
     private JDefinedClass visitable;
+    private boolean includeType;
 
     public CreateDepthFirstTraverserClass(JDefinedClass visitor, JDefinedClass traverser, JDefinedClass visitable,
                                           Outline outline,
-                                          JPackage jPackageackage) {
+                                          JPackage jPackageackage, boolean includeType) {
         super(outline, jPackageackage);
         this.visitor = visitor;
         this.traverser = traverser;
         this.visitable = visitable;
+        this.includeType = includeType;
     }
 
     @Override
@@ -71,7 +73,11 @@ public class CreateDepthFirstTraverserClass extends CodeCreator {
                     continue;
                 }
                 // add the bean to the traverserImpl
-                JMethod traverseMethodImpl = defaultTraverser.method(JMod.PUBLIC, void.class, "traverse");
+                JMethod traverseMethodImpl;
+                if (includeType)
+                    traverseMethodImpl = defaultTraverser.method(JMod.PUBLIC, void.class, "traverse" + classOutline.implClass.name());
+                else
+                    traverseMethodImpl = defaultTraverser.method(JMod.PUBLIC, void.class, "traverse");
                 traverseMethodImpl._throws(exceptionType);
                 JVar beanParam = traverseMethodImpl.param(classOutline.implClass, "aBean");
                 JVar vizParam = traverseMethodImpl.param(narrowedVisitor, "aVisitor");

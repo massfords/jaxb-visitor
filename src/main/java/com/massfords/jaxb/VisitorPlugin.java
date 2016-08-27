@@ -39,6 +39,7 @@ public class VisitorPlugin extends Plugin {
      * name of the package for our generated visitor classes. If not set, we'll pick the first package from the outline.
      */
     private String packageName;
+    private boolean includeType = false;
 
     @Override
     public String getOptionName() {
@@ -57,6 +58,14 @@ public class VisitorPlugin extends Plugin {
         String arg = args[index];
         if (arg.startsWith("-Xvisitor-package:")) {
             packageName = arg.split(":")[1];
+            return 1;
+        }
+        if (arg.startsWith("-Xvisitor-includeType:")) {
+            includeType = "true".equalsIgnoreCase(arg.split(":")[1]);
+            return 1;
+        }
+        if (arg.equals("-Xvisitor-includeType")) {
+            includeType = true;
             return 1;
         }
         return 0;
@@ -89,7 +98,7 @@ public class VisitorPlugin extends Plugin {
 
             // create visitor interface
             CreateVisitorInterface createVisitorInterface =
-                    new CreateVisitorInterface(outline, vizPackage);
+                    new CreateVisitorInterface(outline, vizPackage, includeType);
             createVisitorInterface.run(sorted, directClasses);
             JDefinedClass visitor = createVisitorInterface.getOutput();
             
@@ -100,25 +109,25 @@ public class VisitorPlugin extends Plugin {
             JDefinedClass visitable = createVisitableInterface.getOutput();
             
             // add accept method to beans
-            AddAcceptMethod addAcceptMethod = new AddAcceptMethod();
+            AddAcceptMethod addAcceptMethod = new AddAcceptMethod(includeType);
             addAcceptMethod.run(sorted, visitor);
             
             // create traverser interface
             CreateTraverserInterface createTraverserInterface =
-                    new CreateTraverserInterface(visitor, outline, vizPackage);
+                    new CreateTraverserInterface(visitor, outline, vizPackage, includeType);
             createTraverserInterface.run(sorted, directClasses);
             JDefinedClass traverser = createTraverserInterface.getOutput();
             
             // create base visitor class
             CreateBaseVisitorClass createBaseVisitorClass =
-                    new CreateBaseVisitorClass(visitor, outline, vizPackage);
+                    new CreateBaseVisitorClass(visitor, outline, vizPackage, includeType);
             createBaseVisitorClass.run(sorted, directClasses);
             createBaseVisitorClass.getOutput();
 
             // create default generic depth first traverser class
             CreateDepthFirstTraverserClass createDepthFirstTraverserClass =
                     new CreateDepthFirstTraverserClass(visitor, traverser,
-                            visitable, outline, vizPackage);
+                            visitable, outline, vizPackage, includeType);
             createDepthFirstTraverserClass.run(sorted, directClasses);
             
             // create progress monitor for traversing visitor
@@ -131,7 +140,7 @@ public class VisitorPlugin extends Plugin {
             // create traversing visitor class
             CreateTraversingVisitorClass createTraversingVisitorClass =
                     new CreateTraversingVisitorClass(visitor, progressMonitor,
-                            traverser, outline, vizPackage);
+                            traverser, outline, vizPackage, includeType);
             createTraversingVisitorClass.run(sorted, directClasses);
             
         } catch (Throwable t) {
@@ -184,6 +193,10 @@ public class VisitorPlugin extends Plugin {
     
     public String getPackageName() {
         return packageName;
+    }
+
+    public boolean getIncludeType() {
+	    return includeType;
     }
 
     @SuppressWarnings("UnusedDeclaration")
