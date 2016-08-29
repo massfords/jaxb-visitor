@@ -27,13 +27,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class CreateJAXBElementNameCallback extends CodeCreator {
+class CreateJAXBElementNameCallback extends CodeCreator {
 
-    public static final String SETTER = "setJAXBElementName";
-    public static final String GETTER = "getJAXBElementName";
-    public static final String FIELD = "jaxbElementName";
+    private static final String SETTER = "setJAXBElementName";
+    private static final String GETTER = "getJAXBElementName";
+    private static final String FIELD = "jaxbElementName";
 
-    public CreateJAXBElementNameCallback(Outline outline, JPackage jPackage) {
+    CreateJAXBElementNameCallback(Outline outline, JPackage jPackage) {
         super(outline, jPackage);
     }
 

@@ -10,6 +10,7 @@ import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.Outline;
 
 import java.util.Set;
+import java.util.function.Function;
 
 import static com.massfords.jaxb.ClassDiscoverer.allConcreteClasses;
 
@@ -18,13 +19,18 @@ import static com.massfords.jaxb.ClassDiscoverer.allConcreteClasses;
  * 
  * @author markford
  */
-public class CreateVisitorInterface extends CodeCreator {
-    
-    private boolean includeType;
+class CreateVisitorInterface extends CodeCreator {
 
-    public CreateVisitorInterface(Outline outline, JPackage jPackage, boolean includeType) {
+    /**
+     * Function that accepts a type name and returns the name of the method to
+     * create. This encapsulates the behavior associated with the includeType
+     * flag.
+     */
+    private final Function<String,String> visitMethodNamer;
+
+    CreateVisitorInterface(Outline outline, JPackage jPackage, Function<String, String> visitMethodNamer) {
         super(outline, jPackage);
-        this.includeType = includeType;
+        this.visitMethodNamer = visitMethodNamer;
     }
     
     @Override
@@ -45,10 +51,8 @@ public class CreateVisitorInterface extends CodeCreator {
 
     private void declareVisitMethod(JTypeVar returnType, JTypeVar exceptionType, JClass implClass) {
         JMethod vizMethod;
-        if (includeType)
-            vizMethod = getOutput().method(JMod.PUBLIC, returnType, "visit" + implClass.name());
-        else
-            vizMethod = getOutput().method(JMod.PUBLIC, returnType, "visit");
+        String visitMethod = visitMethodNamer.apply(implClass.name());
+        vizMethod = getOutput().method(JMod.PUBLIC, returnType, visitMethod);
         vizMethod._throws(exceptionType);
         vizMethod.param(implClass, "aBean");
     }

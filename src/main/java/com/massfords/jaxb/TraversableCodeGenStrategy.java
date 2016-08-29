@@ -24,7 +24,7 @@ import java.util.Set;
  *          be on the Visitor interface but doesn't have an accept
  *          method.
  */
-public enum TraversableCodeGenStrategy {
+enum TraversableCodeGenStrategy {
     /**
      * VISITABLE means we just have to test for a null instance.
      * We don't need to do a cast because the type is definitely a Visitable

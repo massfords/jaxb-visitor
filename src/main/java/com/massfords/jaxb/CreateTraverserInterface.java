@@ -10,6 +10,7 @@ import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.Outline;
 
 import java.util.Set;
+import java.util.function.Function;
 
 import static com.massfords.jaxb.ClassDiscoverer.allConcreteClasses;
 
@@ -18,15 +19,22 @@ import static com.massfords.jaxb.ClassDiscoverer.allConcreteClasses;
  * 
  * @author markford
  */
-public class CreateTraverserInterface extends CodeCreator {
+class CreateTraverserInterface extends CodeCreator {
     
-    private JDefinedClass visitor;
-    private boolean includeType;
+    private final JDefinedClass visitor;
+    /**
+     * Function that accepts a type name and returns the name of the method to
+     * create. This encapsulates the behavior associated with the includeType
+     * flag.
+     */
+    private final Function<String,String> traverseMethodNamer;
 
-    public CreateTraverserInterface(JDefinedClass visitor, Outline outline, JPackage jpackage, boolean includeType) {
+    CreateTraverserInterface(JDefinedClass visitor, Outline outline,
+                             JPackage jpackage,
+                             Function<String, String> traverseMethodNamer) {
         super(outline, jpackage);
         this.visitor = visitor;
-        this.includeType = includeType;
+        this.traverseMethodNamer = traverseMethodNamer;
     }
 
     @Override
@@ -49,10 +57,8 @@ public class CreateTraverserInterface extends CodeCreator {
 
     private void implTraverse(JTypeVar exceptionType, JClass narrowedVisitor, JClass implClass) {
         JMethod traverseMethod;
-        if (includeType)
-            traverseMethod = getOutput().method(JMod.PUBLIC, void.class, "traverse" + implClass.name());
-        else
-            traverseMethod = getOutput().method(JMod.PUBLIC, void.class, "traverse");
+        String methodName = traverseMethodNamer.apply(implClass.name());
+        traverseMethod = getOutput().method(JMod.PUBLIC, void.class, methodName);
         traverseMethod._throws(exceptionType);
         traverseMethod.param(implClass, "aBean");
         traverseMethod.param(narrowedVisitor, "aVisitor");

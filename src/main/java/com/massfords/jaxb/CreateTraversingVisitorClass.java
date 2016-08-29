@@ -1,11 +1,21 @@
 package com.massfords.jaxb;
 
-import com.sun.codemodel.*;
+import com.sun.codemodel.JBlock;
+import com.sun.codemodel.JClass;
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JFieldVar;
+import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JMod;
+import com.sun.codemodel.JPackage;
+import com.sun.codemodel.JTypeVar;
+import com.sun.codemodel.JVar;
 import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.Outline;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.function.Function;
 
 import static com.massfords.jaxb.ClassDiscoverer.allConcreteClasses;
 
@@ -15,20 +25,34 @@ import static com.massfords.jaxb.ClassDiscoverer.allConcreteClasses;
  *
  * @author markford
  */
-public class CreateTraversingVisitorClass extends CodeCreator {
+class CreateTraversingVisitorClass extends CodeCreator {
 
-    private JDefinedClass progressMonitor;
-    private JDefinedClass visitor;
-    private JDefinedClass traverser;
-    private boolean includeType;
+    private final JDefinedClass progressMonitor;
+    private final JDefinedClass visitor;
+    private final JDefinedClass traverser;
+    /**
+     * Function that accepts a type name and returns the name of the method to
+     * create. This encapsulates the behavior associated with the includeType
+     * flag. This applies to the visitor methods.
+     */
+    private final Function<String,String> visitMethodNamer;
+    /**
+     * Function that accepts a type name and returns the name of the method to
+     * create. This encapsulates the behavior associated with the includeType
+     * flag. This applies to the traverser methods.
+     */
+    private final Function<String,String> traverseMethodNamer;
 
-    public CreateTraversingVisitorClass(JDefinedClass visitor, JDefinedClass progressMonitor,
-                                        JDefinedClass traverser, Outline outline, JPackage jPackage, boolean includeType) {
+    CreateTraversingVisitorClass(JDefinedClass visitor, JDefinedClass progressMonitor,
+                                 JDefinedClass traverser, Outline outline, JPackage jPackage,
+                                 Function<String, String> visitMethodNamer,
+                                 Function<String, String> traverseMethodNamer) {
         super(outline, jPackage);
         this.visitor = visitor;
         this.traverser = traverser;
         this.progressMonitor = progressMonitor;
-        this.includeType = includeType;
+        this.visitMethodNamer = visitMethodNamer;
+        this.traverseMethodNamer = traverseMethodNamer;
     }
 
     @Override
@@ -56,7 +80,7 @@ public class CreateTraversingVisitorClass extends CodeCreator {
 
         setOutput(traversingVisitor);
 
-        for(JClass jc : allConcreteClasses(classes, Collections.<JClass>emptySet())) {
+        for(JClass jc : allConcreteClasses(classes, Collections.emptySet())) {
             generate(traversingVisitor, returnType, exceptionType, jc);
         }
         for(JClass jc : directClasses) {
@@ -67,10 +91,8 @@ public class CreateTraversingVisitorClass extends CodeCreator {
     private void generateForDirectClass(JDefinedClass traversingVisitor, JTypeVar returnType, JTypeVar exceptionType, JClass implClass) {
         // add method impl to traversing visitor
         JMethod travViz;
-        if (includeType)
-            travViz = traversingVisitor.method(JMod.PUBLIC, returnType, "visit" + implClass.name());
-        else
-            travViz = traversingVisitor.method(JMod.PUBLIC, returnType, "visit");
+        String visitMethodName = visitMethodNamer.apply(implClass.name());
+        travViz = traversingVisitor.method(JMod.PUBLIC, returnType, visitMethodName);
         travViz._throws(exceptionType);
         JVar beanVar = travViz.param(implClass, "aBean");
         travViz.annotate(Override.class);
@@ -80,10 +102,7 @@ public class CreateTraversingVisitorClass extends CodeCreator {
 
         JVar retVal = travVizBloc.decl(returnType, "returnVal");
 
-        if (includeType)
-	        travVizBloc.assign(retVal, JExpr.invoke(JExpr.invoke("getVisitor"), "visit" + implClass.name()).arg(beanVar));
-        else
-	        travVizBloc.assign(retVal, JExpr.invoke(JExpr.invoke("getVisitor"), "visit").arg(beanVar));
+        travVizBloc.assign(retVal, JExpr.invoke(JExpr.invoke("getVisitor"), visitMethodName).arg(beanVar));
 
         travVizBloc._if(JExpr.ref("progressMonitor").ne(JExpr._null()))._then().invoke(JExpr.ref("progressMonitor"), "visited").arg(beanVar);
 
@@ -95,10 +114,7 @@ public class CreateTraversingVisitorClass extends CodeCreator {
     private void generate(JDefinedClass traversingVisitor, JTypeVar returnType, JTypeVar exceptionType, JClass implClass) {
         // add method impl to traversing visitor
         JMethod travViz;
-        if (includeType)
-            travViz = traversingVisitor.method(JMod.PUBLIC, returnType, "visit" + implClass.name());
-        else
-            travViz = traversingVisitor.method(JMod.PUBLIC, returnType, "visit");
+        travViz = traversingVisitor.method(JMod.PUBLIC, returnType, visitMethodNamer.apply(implClass.name()));
         travViz._throws(exceptionType);
         JVar beanVar = travViz.param(implClass, "aBean");
         travViz.annotate(Override.class);
@@ -121,10 +137,8 @@ public class CreateTraversingVisitorClass extends CodeCreator {
 
         // case to traverse before the visit
         JBlock block = travVizBloc._if(JExpr.ref("traverseFirst").eq(JExpr.lit(flag)))._then();
-        if (includeType)
-            block.invoke(JExpr.invoke("getTraverser"), "traverse" + beanVar.type().name()).arg(beanVar).arg(JExpr._this());
-        else
-            block.invoke(JExpr.invoke("getTraverser"), "traverse").arg(beanVar).arg(JExpr._this());
+        String traverseMethodName = traverseMethodNamer.apply(beanVar.type().name());
+        block.invoke(JExpr.invoke("getTraverser"), traverseMethodName).arg(beanVar).arg(JExpr._this());
         block._if(JExpr.ref("progressMonitor").ne(JExpr._null()))._then().invoke(JExpr.ref("progressMonitor"), "traversed").arg(beanVar);
     }
 

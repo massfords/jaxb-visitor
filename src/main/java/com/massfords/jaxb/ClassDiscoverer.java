@@ -26,11 +26,12 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author mford
  */
-public class ClassDiscoverer {
+class ClassDiscoverer {
 
     /**
      * Finds all external class references
@@ -39,7 +40,7 @@ public class ClassDiscoverer {
      * @return set of external classes
      * @throws IllegalAccessException throw if there's an error introspecting the annotations
      */
-    public static Set<JClass> discoverDirectClasses(Outline outline, Set<ClassOutline> classes) throws IllegalAccessException {
+    static Set<JClass> discoverDirectClasses(Outline outline, Set<ClassOutline> classes) throws IllegalAccessException {
 
         Set<String> directClassNames = new LinkedHashSet<>();
         for(ClassOutline classOutline : classes) {
@@ -60,10 +61,10 @@ public class ClassDiscoverer {
             }
         }
 
-        Set<JClass> direct = new LinkedHashSet<>();
-        for(String cn : directClassNames) {
-            direct.add(outline.getCodeModel().directClass(cn));
-        }
+        Set<JClass> direct = directClassNames
+                .stream()
+                .map(cn -> outline.getCodeModel().directClass(cn))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
 
         return direct;
 
@@ -121,7 +122,7 @@ public class ClassDiscoverer {
         }
     }
 
-    protected static List<FieldOutline> findAllDeclaredAndInheritedFields(ClassOutline classOutline) {
+    static List<FieldOutline> findAllDeclaredAndInheritedFields(ClassOutline classOutline) {
         List<FieldOutline> fields = new LinkedList<>();
         ClassOutline currentClassOutline = classOutline;
         while(currentClassOutline != null) {
@@ -139,7 +140,7 @@ public class ClassDiscoverer {
      * @param fieldOutline reference to a field
      * @return Getter for the given field or null
      */
-    protected static JMethod getter(FieldOutline fieldOutline) {
+    static JMethod getter(FieldOutline fieldOutline) {
         final JDefinedClass theClass = fieldOutline.parent().implClass;
         final String publicName = fieldOutline.getPropertyInfo().getName(true);
         final JMethod getgetter = theClass.getMethod("get" + publicName, NONE);
@@ -162,7 +163,7 @@ public class ClassDiscoverer {
      * @param type element type to test to see if its a JAXBElement
      * @return true if the type is a JAXBElement
      */
-    protected static boolean isJAXBElement(JType type) {
+    static boolean isJAXBElement(JType type) {
         //noinspection RedundantIfStatement
         if (type.fullName().startsWith(JAXBElement.class.getName())) {
             return true;
@@ -175,8 +176,8 @@ public class ClassDiscoverer {
      * @param classes collection of classes to examine
      * @return List of concrete classes
      */
-    public static List<JClass> allConcreteClasses(Set<ClassOutline> classes) {
-        return allConcreteClasses(classes, Collections.<JClass>emptySet());
+    static List<JClass> allConcreteClasses(Set<ClassOutline> classes) {
+        return allConcreteClasses(classes, Collections.emptySet());
     }
 
     /**
@@ -185,14 +186,14 @@ public class ClassDiscoverer {
      * @param directClasses set of classes to append to the list of concrete classes
      * @return list of concrete classes
      */
-    public static List<JClass> allConcreteClasses(Set<ClassOutline> classes, Set<JClass> directClasses) {
+    static List<JClass> allConcreteClasses(Set<ClassOutline> classes, Set<JClass> directClasses) {
         List<JClass> results = new ArrayList<>();
-        for (ClassOutline classOutline : classes) {
-            if (!classOutline.target.isAbstract()) {
-                JClass implClass = classOutline.implClass;
-                results.add(implClass);
-            }
-        }
+        classes.stream()
+                .filter(classOutline -> !classOutline.target.isAbstract())
+                .forEach(classOutline -> {
+            JClass implClass = classOutline.implClass;
+            results.add(implClass);
+        });
         results.addAll(directClasses);
 
         return results;

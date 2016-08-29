@@ -11,7 +11,7 @@ import java.util.List;
  * @author mford
  */
 public class DirectClassesTest extends RunXJC2Mojo {
-    GeneratedCodeFixture generatedCodeFixture = new GeneratedCodeFixture(
+    private GeneratedCodeFixture generatedCodeFixture = new GeneratedCodeFixture(
             "src/test/resources/expected-direct/{0}.java.txt",
             "target/generated-sources/xjc/org/example/direct/{0}.java");
 

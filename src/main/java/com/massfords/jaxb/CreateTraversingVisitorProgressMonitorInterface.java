@@ -16,12 +16,12 @@ import java.util.Set;
  *
  * Not sure I want to keep this as part of the project...
  */
-public class CreateTraversingVisitorProgressMonitorInterface extends CodeCreator {
+class CreateTraversingVisitorProgressMonitorInterface extends CodeCreator {
 
-    private JDefinedClass visitable;
+    private final JDefinedClass visitable;
 
-    public CreateTraversingVisitorProgressMonitorInterface(JDefinedClass visitable, Outline outline,
-                                                           JPackage jPackage) {
+    CreateTraversingVisitorProgressMonitorInterface(JDefinedClass visitable, Outline outline,
+                                                    JPackage jPackage) {
         super(outline, jPackage);
         this.visitable = visitable;
     }

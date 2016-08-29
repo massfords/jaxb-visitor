@@ -15,11 +15,11 @@ import java.util.Set;
  * Creates the interface to tag each one of the beans to add
  * an accept method as part of the double dispatch Visitor pattern
  */
-public class CreateVisitableInterface extends CodeCreator {
+class CreateVisitableInterface extends CodeCreator {
 
     private JDefinedClass visitor;
 
-    public CreateVisitableInterface(JDefinedClass visitor, Outline outline, JPackage jPackage) {
+    CreateVisitableInterface(JDefinedClass visitor, Outline outline, JPackage jPackage) {
         super(outline, jPackage);
         this.visitor = visitor;
     }

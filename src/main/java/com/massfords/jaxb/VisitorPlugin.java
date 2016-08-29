@@ -15,9 +15,9 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
 
 /**
  * Plugin generates the following code:
@@ -96,9 +96,31 @@ public class VisitorPlugin extends Plugin {
                     new CreateJAXBElementNameCallback(outline, vizPackage);
             cni.run(sorted, directClasses);
 
+            /*
+             * These functions are used to produce the name of a Visitor or
+             * Traverser method. Previously, these names were hardcoded and
+             * we relied on Java's overloading to handle the dispatch but Issue #8
+             * was filed regarding performance issues.
+             *
+             * The names produced from these functions will include the
+             * type name if that feature is enabled. It's still possible that
+             * may have some overloaded methods due to inner types but this should
+             * cut down on overloading significantly.
+             */
+            Function<String,String> visitMethodNamer;
+            Function<String,String> traverseMethodNamer;
+            if (includeType) {
+                visitMethodNamer = s -> "visit" + s;
+                traverseMethodNamer = s -> "traverse" + s;
+            } else {
+                visitMethodNamer = s -> "visit";
+                traverseMethodNamer = s -> "traverse";
+            }
+
+
             // create visitor interface
             CreateVisitorInterface createVisitorInterface =
-                    new CreateVisitorInterface(outline, vizPackage, includeType);
+                    new CreateVisitorInterface(outline, vizPackage, visitMethodNamer);
             createVisitorInterface.run(sorted, directClasses);
             JDefinedClass visitor = createVisitorInterface.getOutput();
             
@@ -109,25 +131,25 @@ public class VisitorPlugin extends Plugin {
             JDefinedClass visitable = createVisitableInterface.getOutput();
             
             // add accept method to beans
-            AddAcceptMethod addAcceptMethod = new AddAcceptMethod(includeType);
+            AddAcceptMethod addAcceptMethod = new AddAcceptMethod(visitMethodNamer);
             addAcceptMethod.run(sorted, visitor);
             
             // create traverser interface
             CreateTraverserInterface createTraverserInterface =
-                    new CreateTraverserInterface(visitor, outline, vizPackage, includeType);
+                    new CreateTraverserInterface(visitor, outline, vizPackage, traverseMethodNamer);
             createTraverserInterface.run(sorted, directClasses);
             JDefinedClass traverser = createTraverserInterface.getOutput();
             
             // create base visitor class
             CreateBaseVisitorClass createBaseVisitorClass =
-                    new CreateBaseVisitorClass(visitor, outline, vizPackage, includeType);
+                    new CreateBaseVisitorClass(visitor, outline, vizPackage, visitMethodNamer);
             createBaseVisitorClass.run(sorted, directClasses);
             createBaseVisitorClass.getOutput();
 
             // create default generic depth first traverser class
             CreateDepthFirstTraverserClass createDepthFirstTraverserClass =
                     new CreateDepthFirstTraverserClass(visitor, traverser,
-                            visitable, outline, vizPackage, includeType);
+                            visitable, outline, vizPackage, traverseMethodNamer);
             createDepthFirstTraverserClass.run(sorted, directClasses);
             
             // create progress monitor for traversing visitor
@@ -140,7 +162,7 @@ public class VisitorPlugin extends Plugin {
             // create traversing visitor class
             CreateTraversingVisitorClass createTraversingVisitorClass =
                     new CreateTraversingVisitorClass(visitor, progressMonitor,
-                            traverser, outline, vizPackage, includeType);
+                            traverser, outline, vizPackage, visitMethodNamer, traverseMethodNamer);
             createTraversingVisitorClass.run(sorted, directClasses);
             
         } catch (Throwable t) {
@@ -158,17 +180,12 @@ public class VisitorPlugin extends Plugin {
      * @param outline
      */
     private Set<ClassOutline> sortClasses(Outline outline) {
-        Set<ClassOutline> sorted = new TreeSet<>(new Comparator<ClassOutline>() {
-            @Override
-            public int compare(ClassOutline aOne, ClassOutline aTwo) {
-                String one = aOne.implClass.fullName();
-                String two = aTwo.implClass.fullName();
-                return one.compareTo(two);
-            }
+        Set<ClassOutline> sorted = new TreeSet<>((aOne, aTwo) -> {
+            String one = aOne.implClass.fullName();
+            String two = aTwo.implClass.fullName();
+            return one.compareTo(two);
         });
-        for (ClassOutline classOutline : outline.getClasses()) {
-                sorted.add(classOutline);
-        }
+        sorted.addAll(outline.getClasses());
         return sorted;
     }
 
@@ -191,12 +208,9 @@ public class VisitorPlugin extends Plugin {
         return vizPackage;
     }
     
+    @SuppressWarnings("WeakerAccess")
     public String getPackageName() {
         return packageName;
-    }
-
-    public boolean getIncludeType() {
-	    return includeType;
     }
 
     @SuppressWarnings("UnusedDeclaration")

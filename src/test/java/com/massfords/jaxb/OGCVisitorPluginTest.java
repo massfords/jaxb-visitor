@@ -11,7 +11,7 @@ import java.util.List;
 
 public class OGCVisitorPluginTest extends RunXJC2Mojo {
 
-    GeneratedCodeFixture generatedCodeFixture = new GeneratedCodeFixture(
+    private GeneratedCodeFixture generatedCodeFixture = new GeneratedCodeFixture(
             "src/test/resources/ogc-expected/{0}.java.txt",
             "target/generated-sources/xjc/ogc/visitor/{0}.java");
 
@@ -28,7 +28,7 @@ public class OGCVisitorPluginTest extends RunXJC2Mojo {
 
     @Override
     public List<String> getArgs() {
-        final List<String> args = new ArrayList<String>(super.getArgs());
+        final List<String> args = new ArrayList<>(super.getArgs());
         args.add("-Xvisitor");
         args.add("-Xvisitor-package:ogc.visitor");
         return args;

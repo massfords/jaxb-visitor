@@ -11,16 +11,16 @@ import java.text.MessageFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class GeneratedCodeFixture extends Assert {
+class GeneratedCodeFixture extends Assert {
     private String expectedPathPattern;
     private String generatedPathPattern;
     
-    public GeneratedCodeFixture(String expectedPathPattern, String generatedPathPattern) {
+    GeneratedCodeFixture(String expectedPathPattern, String generatedPathPattern) {
         this.expectedPathPattern = expectedPathPattern;
         this.generatedPathPattern = generatedPathPattern;
     }
     
-    public void assertAllFiles() throws Exception {
+    void assertAllFiles() throws Exception {
         String[] files = {
                 "DepthFirstTraverserImpl",
                 "BaseVisitor",
@@ -38,12 +38,12 @@ public class GeneratedCodeFixture extends Assert {
         
     }
     
-    public void assertClassGenerated(String className) {
+    void assertClassGenerated(String className) {
         File file = new File(MessageFormat.format(generatedPathPattern, className));
         assertTrue("expected to find generated class:" + file, file.isFile());
     }
     
-    public void assertClassMatches(String className) throws Exception {
+    void assertClassMatches(String className) throws Exception {
         String expected = MessageFormat.format(expectedPathPattern, className);
         String actual = MessageFormat.format(generatedPathPattern, className);
         
@@ -54,7 +54,7 @@ public class GeneratedCodeFixture extends Assert {
         assertEquals(className + " failed to match", expectedValue, actualValue);
     }
 
-    protected String noComments(Reader r) throws IOException {
+    String noComments(Reader r) throws IOException {
         BufferedReader reader = new BufferedReader(r);
         StringBuilder sb = new StringBuilder();
         String line;

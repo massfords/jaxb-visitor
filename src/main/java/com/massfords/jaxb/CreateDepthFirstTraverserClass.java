@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 import static com.massfords.jaxb.ClassDiscoverer.findAllDeclaredAndInheritedFields;
 
@@ -30,21 +31,28 @@ import static com.massfords.jaxb.ClassDiscoverer.findAllDeclaredAndInheritedFiel
  * 
  * @author markford
  */
-public class CreateDepthFirstTraverserClass extends CodeCreator {
+class CreateDepthFirstTraverserClass extends CodeCreator {
     
-    private JDefinedClass visitor;
-    private JDefinedClass traverser;
-    private JDefinedClass visitable;
-    private boolean includeType;
+    private final JDefinedClass visitor;
+    private final JDefinedClass traverser;
+    private final JDefinedClass visitable;
+    /**
+     * Function that accepts a type name and returns the name of the method to
+     * create. This encapsulates the behavior associated with the includeType
+     * flag.
+     */
+    private final Function<String,String> traverseMethodNamer;
 
-    public CreateDepthFirstTraverserClass(JDefinedClass visitor, JDefinedClass traverser, JDefinedClass visitable,
-                                          Outline outline,
-                                          JPackage jPackageackage, boolean includeType) {
+    CreateDepthFirstTraverserClass(JDefinedClass visitor, JDefinedClass traverser,
+                                   JDefinedClass visitable,
+                                   Outline outline,
+                                   JPackage jPackageackage,
+                                   Function<String, String> traverseMethodNamer) {
         super(outline, jPackageackage);
         this.visitor = visitor;
         this.traverser = traverser;
         this.visitable = visitable;
-        this.includeType = includeType;
+        this.traverseMethodNamer = traverseMethodNamer;
     }
 
     @Override
@@ -74,10 +82,8 @@ public class CreateDepthFirstTraverserClass extends CodeCreator {
                 }
                 // add the bean to the traverserImpl
                 JMethod traverseMethodImpl;
-                if (includeType)
-                    traverseMethodImpl = defaultTraverser.method(JMod.PUBLIC, void.class, "traverse" + classOutline.implClass.name());
-                else
-                    traverseMethodImpl = defaultTraverser.method(JMod.PUBLIC, void.class, "traverse");
+                String traverseMethodName = traverseMethodNamer.apply(classOutline.implClass.name());
+                traverseMethodImpl = defaultTraverser.method(JMod.PUBLIC, void.class, traverseMethodName);
                 traverseMethodImpl._throws(exceptionType);
                 JVar beanParam = traverseMethodImpl.param(classOutline.implClass, "aBean");
                 JVar vizParam = traverseMethodImpl.param(narrowedVisitor, "aVisitor");

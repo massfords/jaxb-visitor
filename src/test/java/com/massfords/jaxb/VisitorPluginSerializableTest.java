@@ -9,7 +9,8 @@ import java.util.List;
 
 public class VisitorPluginSerializableTest extends RunXJC2Mojo {
 
-    GeneratedCodeFixture generatedCodeFixture = new GeneratedCodeFixture("src/test/resources/expected-serializable/{0}.java.txt",
+    private GeneratedCodeFixture generatedCodeFixture = new GeneratedCodeFixture(
+            "src/test/resources/expected-serializable/{0}.java.txt",
             "target/generated-sources/xjc/org/example/visitor/serializable/{0}.java");
 
     @Override

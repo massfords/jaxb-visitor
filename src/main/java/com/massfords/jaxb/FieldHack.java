@@ -11,13 +11,13 @@ import java.lang.reflect.Field;
  *
  * Unfortunately, there is no public getter on the field that contains these
  * annotations and even worse the AbstractListField class is not public so I can't have a
- * ref to it at compile time. Instead, I use the Class.forName trickery beow in
+ * ref to it at compile time. Instead, I use the Class.forName trickery below in
  * order to get to the class and then make the field accessible which is a hack.
  *
  * @author mford
  */
-public class FieldHack {
-    public static Field listField;
+class FieldHack {
+    static Field listField;
     static {
         try {
             Class<?> defaultAccessClass = Class.forName(
