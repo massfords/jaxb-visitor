@@ -15,9 +15,11 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Plugin generates the following code:
@@ -90,6 +92,17 @@ public class VisitorPlugin extends Plugin {
             Set<ClassOutline> sorted = sortClasses(outline);
 
             Set<JClass> directClasses = ClassDiscoverer.discoverDirectClasses(outline, sorted);
+
+            // #4: https://github.com/massfords/jaxb-visitor/issues/4
+            // Removes classes already present in 'outline' from directClasses.
+            for (ClassOutline clazzOutline: sorted) {
+                String coFQN = clazzOutline.implClass.fullName();
+                List<JClass> duplicates = directClasses.stream()
+                        .filter(dc -> coFQN.equals(dc.fullName()))
+                        .collect(Collectors.toList());
+
+                duplicates.forEach((dupl) -> directClasses.remove(dupl));
+            }
 
             // create JAXBElement name support for holding JAXBElement names
             CreateJAXBElementNameCallback cni =
