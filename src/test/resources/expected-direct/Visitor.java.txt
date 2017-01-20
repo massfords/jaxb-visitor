@@ -14,27 +14,27 @@ import extendedJaxbModel.Single;
 public interface Visitor<R, E extends Throwable >{
 
 
-    public R visit(Base aBean)
+    R visit(Base aBean)
         throws E
     ;
 
-    public R visit(Choice aBean)
+    R visit(Choice aBean)
         throws E
     ;
 
-    public R visit(ParamElem aBean)
+    R visit(ParamElem aBean)
         throws E
     ;
 
-    public R visit(Single aBean)
+    R visit(Single aBean)
         throws E
     ;
 
-    public R visit(Parameter aBean)
+    R visit(Parameter aBean)
         throws E
     ;
 
-    public R visit(Parameter2 aBean)
+    R visit(Parameter2 aBean)
         throws E
     ;
 

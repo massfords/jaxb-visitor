@@ -117,8 +117,9 @@ class ClassDiscoverer {
     }
 
     private static boolean foundWithinOutline(String s, Outline outline) {
-        outline.getClasses().forEach(co->System.out.println(co.implClass.binaryName()));
-        return outline.getClasses().stream().map(co->co.implClass.binaryName().replaceAll("\\$", ".")).anyMatch(name->name.equals(s));
+        return outline.getClasses()
+                .stream().map(co->co.implClass.binaryName().replaceAll("\\$", "."))
+                .anyMatch(name->name.equals(s));
     }
 
     private static void addIfDirectClass(Set<String> directClassNames, JType collType) {

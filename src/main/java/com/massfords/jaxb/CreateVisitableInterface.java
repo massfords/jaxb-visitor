@@ -28,7 +28,7 @@ class CreateVisitableInterface extends CodeCreator {
     protected void run(Set<ClassOutline> classes, Set<JClass> directClasses) {
         final JDefinedClass _interface = outline.getClassFactory().createInterface(jpackage, "Visitable", null);
 		setOutput( _interface );
-		final JMethod _method = getOutput().method(JMod.PUBLIC, void.class, "accept");
+		final JMethod _method = getOutput().method(JMod.NONE, void.class, "accept");
 		final JTypeVar returnType = _method.generify("R");
 		final JTypeVar exceptionType = _method.generify("E", Throwable.class);
 		_method.type(returnType);

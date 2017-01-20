@@ -58,7 +58,7 @@ class CreateTraverserInterface extends CodeCreator {
     private void implTraverse(JTypeVar exceptionType, JClass narrowedVisitor, JClass implClass) {
         JMethod traverseMethod;
         String methodName = traverseMethodNamer.apply(implClass.name());
-        traverseMethod = getOutput().method(JMod.PUBLIC, void.class, methodName);
+        traverseMethod = getOutput().method(JMod.NONE, void.class, methodName);
         traverseMethod._throws(exceptionType);
         traverseMethod.param(implClass, "aBean");
         traverseMethod.param(narrowedVisitor, "aVisitor");

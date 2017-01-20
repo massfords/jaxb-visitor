@@ -5,6 +5,8 @@ import org.jvnet.jaxb2.maven2.AbstractXJC2Mojo;
 import org.jvnet.jaxb2.maven2.test.RunXJC2Mojo;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author markford
@@ -13,10 +15,12 @@ public abstract class BaseVisitorPluginTest extends RunXJC2Mojo {
 
     private final GeneratedCodeFixture generatedCodeFixture;
     private final String srcDir;
+    private List<String> extraArgs;
 
-    BaseVisitorPluginTest(GeneratedCodeFixture generatedCodeFixture, String srcDir) {
+    BaseVisitorPluginTest(GeneratedCodeFixture generatedCodeFixture, String srcDir, List<String> extraArgs) {
         this.generatedCodeFixture = generatedCodeFixture;
         this.srcDir = srcDir;
+        this.extraArgs = extraArgs;
     }
 
     @Override
@@ -37,5 +41,13 @@ public abstract class BaseVisitorPluginTest extends RunXJC2Mojo {
         super.testExecute();
 
         generatedCodeFixture.assertAllFiles();
+    }
+
+    @Override
+    public List<String> getArgs() {
+        List<String> args = new ArrayList<>();
+        args.add("-Xvisitor");
+        args.addAll(extraArgs);
+        return args;
     }
 }

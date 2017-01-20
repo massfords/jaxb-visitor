@@ -64,343 +64,343 @@ import _2010._02.tyviseadus_1_10.ViideType;
 public interface Traverser<E extends Throwable >{
 
 
-    public void traverse(Aktinimi aBean, Visitor<?, E> aVisitor)
+    void traverse(Aktinimi aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(AlampunktType aBean, Visitor<?, E> aVisitor)
+    void traverse(AlampunktType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(AlampunktType.AlampunktNr aBean, Visitor<?, E> aVisitor)
+    void traverse(AlampunktType.AlampunktNr aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(AlgatusmargeType aBean, Visitor<?, E> aVisitor)
+    void traverse(AlgatusmargeType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(AlgatusmargeType.Esindaja aBean, Visitor<?, E> aVisitor)
+    void traverse(AlgatusmargeType.Esindaja aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(AlljaotisType aBean, Visitor<?, E> aVisitor)
+    void traverse(AlljaotisType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(AlljaotisType.AlljaotisNr aBean, Visitor<?, E> aVisitor)
+    void traverse(AlljaotisType.AlljaotisNr aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(Allkiri aBean, Visitor<?, E> aVisitor)
+    void traverse(Allkiri aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(AllkirjastajaType aBean, Visitor<?, E> aVisitor)
+    void traverse(AllkirjastajaType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(AnyURIID aBean, Visitor<?, E> aVisitor)
+    void traverse(AnyURIID aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(AvaldamismargeType aBean, Visitor<?, E> aVisitor)
+    void traverse(AvaldamismargeType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(AvaldamismargeType.RTosa aBean, Visitor<?, E> aVisitor)
+    void traverse(AvaldamismargeType.RTosa aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(Base64BinaryID aBean, Visitor<?, E> aVisitor)
+    void traverse(Base64BinaryID aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(ChangeType aBean, Visitor<?, E> aVisitor)
+    void traverse(ChangeType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(ChangestringID aBean, Visitor<?, E> aVisitor)
+    void traverse(ChangestringID aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(DateID aBean, Visitor<?, E> aVisitor)
+    void traverse(DateID aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(GYearID aBean, Visitor<?, E> aVisitor)
+    void traverse(GYearID aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(Isik aBean, Visitor<?, E> aVisitor)
+    void traverse(Isik aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(IsikType aBean, Visitor<?, E> aVisitor)
+    void traverse(IsikType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(JaguType aBean, Visitor<?, E> aVisitor)
+    void traverse(JaguType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(JaguType.JaguNr aBean, Visitor<?, E> aVisitor)
+    void traverse(JaguType.JaguNr aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(JalgiMuudatusi aBean, Visitor<?, E> aVisitor)
+    void traverse(JalgiMuudatusi aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(JaotisType aBean, Visitor<?, E> aVisitor)
+    void traverse(JaotisType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(JaotisType.JaotisNr aBean, Visitor<?, E> aVisitor)
+    void traverse(JaotisType.JaotisNr aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(JuurdepaasPiirangType aBean, Visitor<?, E> aVisitor)
+    void traverse(JuurdepaasPiirangType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(KehtivusType aBean, Visitor<?, E> aVisitor)
+    void traverse(KehtivusType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(Kommentaar aBean, Visitor<?, E> aVisitor)
+    void traverse(Kommentaar aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(LegaaldefinitsioonType aBean, Visitor<?, E> aVisitor)
+    void traverse(LegaaldefinitsioonType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(LisaOsaType aBean, Visitor<?, E> aVisitor)
+    void traverse(LisaOsaType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(LisaType aBean, Visitor<?, E> aVisitor)
+    void traverse(LisaType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(LisaType.LisaMarge aBean, Visitor<?, E> aVisitor)
+    void traverse(LisaType.LisaMarge aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(LisaType.LisaPealkiri aBean, Visitor<?, E> aVisitor)
+    void traverse(LisaType.LisaPealkiri aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(LisaType.LisaSisu aBean, Visitor<?, E> aVisitor)
+    void traverse(LisaType.LisaSisu aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(LisaViideType aBean, Visitor<?, E> aVisitor)
+    void traverse(LisaViideType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(LisaViideType.LisaPealkiri aBean, Visitor<?, E> aVisitor)
+    void traverse(LisaViideType.LisaPealkiri aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(LisaViideType.LisaViit aBean, Visitor<?, E> aVisitor)
+    void traverse(LisaViideType.LisaViit aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(Loend aBean, Visitor<?, E> aVisitor)
+    void traverse(Loend aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(LoigeType aBean, Visitor<?, E> aVisitor)
+    void traverse(LoigeType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(LoigeType.LoigeNr aBean, Visitor<?, E> aVisitor)
+    void traverse(LoigeType.LoigeNr aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(MetaandmedType aBean, Visitor<?, E> aVisitor)
+    void traverse(MetaandmedType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(MetaandmedType.EmsNr aBean, Visitor<?, E> aVisitor)
+    void traverse(MetaandmedType.EmsNr aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(MetaandmedType.Versioon aBean, Visitor<?, E> aVisitor)
+    void traverse(MetaandmedType.Versioon aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(MetaandmedType.VersiooniMuutus aBean, Visitor<?, E> aVisitor)
+    void traverse(MetaandmedType.VersiooniMuutus aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(MuuJaotisType aBean, Visitor<?, E> aVisitor)
+    void traverse(MuuJaotisType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(MuuJaotisType.JaotusNumber aBean, Visitor<?, E> aVisitor)
+    void traverse(MuuJaotisType.JaotusNumber aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(MuutmismargeType aBean, Visitor<?, E> aVisitor)
+    void traverse(MuutmismargeType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(NonNegativeIntegerID aBean, Visitor<?, E> aVisitor)
+    void traverse(NonNegativeIntegerID aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(Normtehnmarkus aBean, Visitor<?, E> aVisitor)
+    void traverse(Normtehnmarkus aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(Oigusakt aBean, Visitor<?, E> aVisitor)
+    void traverse(Oigusakt aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(OsaType aBean, Visitor<?, E> aVisitor)
+    void traverse(OsaType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(OsaType.OsaNr aBean, Visitor<?, E> aVisitor)
+    void traverse(OsaType.OsaNr aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(ParagrahvType aBean, Visitor<?, E> aVisitor)
+    void traverse(ParagrahvType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(ParagrahvType.ParagrahvNr aBean, Visitor<?, E> aVisitor)
+    void traverse(ParagrahvType.ParagrahvNr aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(PealkiriType aBean, Visitor<?, E> aVisitor)
+    void traverse(PealkiriType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(PeatykkType aBean, Visitor<?, E> aVisitor)
+    void traverse(PeatykkType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(PeatykkType.PeatykkNr aBean, Visitor<?, E> aVisitor)
+    void traverse(PeatykkType.PeatykkNr aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(PiirangLoppType aBean, Visitor<?, E> aVisitor)
+    void traverse(PiirangLoppType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(PiirangPikendamineType aBean, Visitor<?, E> aVisitor)
+    void traverse(PiirangPikendamineType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(PreambulType aBean, Visitor<?, E> aVisitor)
+    void traverse(PreambulType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(PreambulType.Viide aBean, Visitor<?, E> aVisitor)
+    void traverse(PreambulType.Viide aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(PunktType aBean, Visitor<?, E> aVisitor)
+    void traverse(PunktType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(PunktType.PunktNr aBean, Visitor<?, E> aVisitor)
+    void traverse(PunktType.PunktNr aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(SeletuskiriLisaType aBean, Visitor<?, E> aVisitor)
+    void traverse(SeletuskiriLisaType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(SeletuskiriLisaType.SeletuskirjaLisaSisu aBean, Visitor<?, E> aVisitor)
+    void traverse(SeletuskiriLisaType.SeletuskirjaLisaSisu aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(SeletuskiriOsaType aBean, Visitor<?, E> aVisitor)
+    void traverse(SeletuskiriOsaType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(SeletuskiriOsaType.SeletuskirjaOsaSisu aBean, Visitor<?, E> aVisitor)
+    void traverse(SeletuskiriOsaType.SeletuskirjaOsaSisu aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(SeletuskiriType aBean, Visitor<?, E> aVisitor)
+    void traverse(SeletuskiriType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(SisuType aBean, Visitor<?, E> aVisitor)
+    void traverse(SisuType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(StringID aBean, Visitor<?, E> aVisitor)
+    void traverse(StringID aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(TabelType aBean, Visitor<?, E> aVisitor)
+    void traverse(TabelType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(TabelType.Tr aBean, Visitor<?, E> aVisitor)
+    void traverse(TabelType.Tr aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(TabelType.Tr.Tc aBean, Visitor<?, E> aVisitor)
+    void traverse(TabelType.Tr.Tc aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(TavatekstID aBean, Visitor<?, E> aVisitor)
+    void traverse(TavatekstID aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(TekstType aBean, Visitor<?, E> aVisitor)
+    void traverse(TekstType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(TekstType.Fail aBean, Visitor<?, E> aVisitor)
+    void traverse(TekstType.Fail aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(TekstType.Viide aBean, Visitor<?, E> aVisitor)
+    void traverse(TekstType.Viide aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(TimeID aBean, Visitor<?, E> aVisitor)
+    void traverse(TimeID aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(TypeID aBean, Visitor<?, E> aVisitor)
+    void traverse(TypeID aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(Valjakuulutamine aBean, Visitor<?, E> aVisitor)
+    void traverse(Valjakuulutamine aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(ValjakuulutatudType aBean, Visitor<?, E> aVisitor)
+    void traverse(ValjakuulutatudType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(VastuvoetudType aBean, Visitor<?, E> aVisitor)
+    void traverse(VastuvoetudType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(VeaparandusType aBean, Visitor<?, E> aVisitor)
+    void traverse(VeaparandusType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(ViideType aBean, Visitor<?, E> aVisitor)
+    void traverse(ViideType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(ViideType.ViideAkt aBean, Visitor<?, E> aVisitor)
+    void traverse(ViideType.ViideAkt aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(ViideType.ViideURID aBean, Visitor<?, E> aVisitor)
+    void traverse(ViideType.ViideURID aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 

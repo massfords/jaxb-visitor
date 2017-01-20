@@ -52,7 +52,7 @@ class CreateVisitorInterface extends CodeCreator {
     private void declareVisitMethod(JTypeVar returnType, JTypeVar exceptionType, JClass implClass) {
         JMethod vizMethod;
         String visitMethod = visitMethodNamer.apply(implClass.name());
-        vizMethod = getOutput().method(JMod.PUBLIC, returnType, visitMethod);
+        vizMethod = getOutput().method(JMod.NONE, returnType, visitMethod);
         vizMethod._throws(exceptionType);
         vizMethod.param(implClass, "aBean");
     }

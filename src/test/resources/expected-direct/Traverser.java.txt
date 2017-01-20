@@ -14,27 +14,27 @@ import extendedJaxbModel.Single;
 public interface Traverser<E extends Throwable >{
 
 
-    public void traverse(Base aBean, Visitor<?, E> aVisitor)
+    void traverse(Base aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(Choice aBean, Visitor<?, E> aVisitor)
+    void traverse(Choice aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(ParamElem aBean, Visitor<?, E> aVisitor)
+    void traverse(ParamElem aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(Single aBean, Visitor<?, E> aVisitor)
+    void traverse(Single aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(Parameter aBean, Visitor<?, E> aVisitor)
+    void traverse(Parameter aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverse(Parameter2 aBean, Visitor<?, E> aVisitor)
+    void traverse(Parameter2 aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 

@@ -23,47 +23,47 @@ import org.example.simple.TSimpleResponse;
 public interface Traverser<E extends Throwable >{
 
 
-    public void traverseImportedData(ImportedData aBean, Visitor<?, E> aVisitor)
+    void traverseImportedData(ImportedData aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverseImportedType(ImportedType aBean, Visitor<?, E> aVisitor)
+    void traverseImportedType(ImportedType aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverseMessage(ImportedType.Message aBean, Visitor<?, E> aVisitor)
+    void traverseMessage(ImportedType.Message aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverseChoiceElement(ChoiceElement aBean, Visitor<?, E> aVisitor)
+    void traverseChoiceElement(ChoiceElement aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverseComplexObject(ComplexObject aBean, Visitor<?, E> aVisitor)
+    void traverseComplexObject(ComplexObject aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverseLocalElement(ComplexObject.LocalElement aBean, Visitor<?, E> aVisitor)
+    void traverseLocalElement(ComplexObject.LocalElement aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverseHasJAXBElement(HasJAXBElement aBean, Visitor<?, E> aVisitor)
+    void traverseHasJAXBElement(HasJAXBElement aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverseProblem(Problem aBean, Visitor<?, E> aVisitor)
+    void traverseProblem(Problem aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverseRecursive(Recursive aBean, Visitor<?, E> aVisitor)
+    void traverseRecursive(Recursive aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverseTSimpleRequest(TSimpleRequest aBean, Visitor<?, E> aVisitor)
+    void traverseTSimpleRequest(TSimpleRequest aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 
-    public void traverseTSimpleResponse(TSimpleResponse aBean, Visitor<?, E> aVisitor)
+    void traverseTSimpleResponse(TSimpleResponse aBean, Visitor<?, E> aVisitor)
         throws E
     ;
 

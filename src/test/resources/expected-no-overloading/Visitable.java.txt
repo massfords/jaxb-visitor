@@ -14,7 +14,7 @@ import javax.annotation.Generated;
 public interface Visitable {
 
 
-    public<R, E extends Throwable >R accept(Visitor<R, E> aVisitor)
+    <R, E extends Throwable >R accept(Visitor<R, E> aVisitor)
         throws E
     ;
 

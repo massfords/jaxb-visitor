@@ -29,8 +29,8 @@ class CreateTraversingVisitorProgressMonitorInterface extends CodeCreator {
     @Override
     protected void run(Set<ClassOutline> classes, Set<JClass> directClasses) {
         setOutput( outline.getClassFactory().createInterface(jpackage, "TraversingVisitorProgressMonitor", null) );
-        getOutput().method(JMod.PUBLIC, void.class, "visited").param(visitable, "aVisitable");
-        getOutput().method(JMod.PUBLIC, void.class, "traversed").param(visitable, "aVisitable");
+        getOutput().method(JMod.NONE, void.class, "visited").param(visitable, "aVisitable");
+        getOutput().method(JMod.NONE, void.class, "traversed").param(visitable, "aVisitable");
     }
 
 }

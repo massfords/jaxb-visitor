@@ -23,47 +23,47 @@ import org.example.simple.TSimpleResponse;
 public interface Visitor<R, E extends Throwable >{
 
 
-    public R visit(ImportedData aBean)
+    R visit(ImportedData aBean)
         throws E
     ;
 
-    public R visit(ImportedType aBean)
+    R visit(ImportedType aBean)
         throws E
     ;
 
-    public R visit(ImportedType.Message aBean)
+    R visit(ImportedType.Message aBean)
         throws E
     ;
 
-    public R visit(ChoiceElement aBean)
+    R visit(ChoiceElement aBean)
         throws E
     ;
 
-    public R visit(ComplexObject aBean)
+    R visit(ComplexObject aBean)
         throws E
     ;
 
-    public R visit(ComplexObject.LocalElement aBean)
+    R visit(ComplexObject.LocalElement aBean)
         throws E
     ;
 
-    public R visit(HasJAXBElement aBean)
+    R visit(HasJAXBElement aBean)
         throws E
     ;
 
-    public R visit(Problem aBean)
+    R visit(Problem aBean)
         throws E
     ;
 
-    public R visit(Recursive aBean)
+    R visit(Recursive aBean)
         throws E
     ;
 
-    public R visit(TSimpleRequest aBean)
+    R visit(TSimpleRequest aBean)
         throws E
     ;
 
-    public R visit(TSimpleResponse aBean)
+    R visit(TSimpleResponse aBean)
         throws E
     ;
 
