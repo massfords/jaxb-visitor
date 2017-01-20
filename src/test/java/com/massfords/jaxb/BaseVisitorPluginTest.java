@@ -1,5 +1,6 @@
 package com.massfords.jaxb;
 
+import org.junit.Test;
 import org.jvnet.jaxb2.maven2.AbstractXJC2Mojo;
 import org.jvnet.jaxb2.maven2.test.RunXJC2Mojo;
 
@@ -11,14 +12,16 @@ import java.io.File;
 public abstract class BaseVisitorPluginTest extends RunXJC2Mojo {
 
     private final GeneratedCodeFixture generatedCodeFixture;
+    private final String srcDir;
 
-    BaseVisitorPluginTest(GeneratedCodeFixture generatedCodeFixture) {
+    BaseVisitorPluginTest(GeneratedCodeFixture generatedCodeFixture, String srcDir) {
         this.generatedCodeFixture = generatedCodeFixture;
+        this.srcDir = srcDir;
     }
 
     @Override
     public File getSchemaDirectory() {
-        return new File(getBaseDir(), "src/test/resources");
+        return new File(getBaseDir(), srcDir);
     }
 
     @Override
@@ -29,6 +32,7 @@ public abstract class BaseVisitorPluginTest extends RunXJC2Mojo {
     }
 
     @Override
+    @Test
     public void testExecute() throws Exception {
         super.testExecute();
 

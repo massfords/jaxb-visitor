@@ -111,9 +111,14 @@ class ClassDiscoverer {
         type.generate(jf);
         String s = sw.toString();
         s = s.substring(0, s.length()-".class".length());
-        if (!s.startsWith("java") && outline.getCodeModel()._getClass(s) == null) {
+        if (!s.startsWith("java") && outline.getCodeModel()._getClass(s) == null && !foundWithinOutline(s, outline)) {
             directClasses.add(s);
         }
+    }
+
+    private static boolean foundWithinOutline(String s, Outline outline) {
+        outline.getClasses().forEach(co->System.out.println(co.implClass.binaryName()));
+        return outline.getClasses().stream().map(co->co.implClass.binaryName().replaceAll("\\$", ".")).anyMatch(name->name.equals(s));
     }
 
     private static void addIfDirectClass(Set<String> directClassNames, JType collType) {

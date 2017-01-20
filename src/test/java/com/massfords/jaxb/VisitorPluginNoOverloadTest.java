@@ -8,7 +8,8 @@ public class VisitorPluginNoOverloadTest extends BaseVisitorPluginTest {
     public VisitorPluginNoOverloadTest() {
         super(new GeneratedCodeFixture(
                 "src/test/resources/expected-no-overloading/{0}.java.txt",
-                "target/generated-sources/xjc/org/nooverload/visitor/{0}.java"));
+                "target/generated-sources/xjc/org/nooverload/visitor/{0}.java"),
+                "src/test/resources");
     }
 
     @Override

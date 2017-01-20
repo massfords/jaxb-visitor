@@ -1,0 +1,2588 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2008 rel. 2 sp2 (http://www.altova.com) by Eve Agur (Rigikantselei) -->
+<!-- 14.10.2010 -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="tyviseadus_1_10.02.2010"
+           targetNamespace="tyviseadus_1_10.02.2010" elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xs:annotation>
+        <xs:documentation>ID - tyviseadus_1_10.02.2010 Tüviseaduse õigusakti (eelnõu ja terviktekst) XML skeem Eesmärk -
+            võimaldada koostada tüviseaduse XML dokumenti
+        </xs:documentation>
+    </xs:annotation>
+    <xs:element name="oigusakt">
+        <xs:annotation>
+            <xs:documentation>Tüviseaduse õigusakti (eelnõu ja terviktekst) XML skeemi juurelement</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="TypeID">
+                    <xs:sequence>
+                        <xs:element ref="metaandmed" maxOccurs="unbounded">
+                            <xs:annotation>
+                                <xs:documentation>Metaandmed</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element ref="aktinimi">
+                            <xs:annotation>
+                                <xs:documentation>Akti pealkiri</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element ref="muutmismarge" minOccurs="0" maxOccurs="unbounded">
+                            <xs:annotation>
+                                <xs:documentation>Muutmismärge</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element ref="sisu">
+                            <xs:annotation>
+                                <xs:documentation>Akti sisu</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element ref="normtehnmarkus" minOccurs="0" maxOccurs="unbounded">
+                            <xs:annotation>
+                                <xs:documentation>Normtehniline märkus</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element ref="allkiri" minOccurs="0" maxOccurs="unbounded">
+                            <xs:annotation>
+                                <xs:documentation>Allkiri</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element ref="algatusmarge" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>Algatusmärge</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="lisaViide" type="lisaViideType" minOccurs="0" maxOccurs="unbounded">
+                            <xs:annotation>
+                                <xs:documentation>Viide lisale</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element ref="lisa" minOccurs="0" maxOccurs="unbounded">
+                            <xs:annotation>
+                                <xs:documentation>Lisa</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element ref="seletuskiri" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>Seletuskiri</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element ref="isik" minOccurs="0" maxOccurs="unbounded">
+                            <xs:annotation>
+                                <xs:documentation>Isikud</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element ref="jalgiMuudatusi" minOccurs="0" maxOccurs="unbounded">
+                            <xs:annotation>
+                                <xs:documentation>Jälgi muudatusi elemendid</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:complexType name="metaandmedType">
+        <xs:annotation>
+            <xs:documentation>Metaandmed</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:sequence>
+                    <xs:element name="seisund" default="EELNÕU" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Märge eelnõu kohta</xs:documentation>
+                        </xs:annotation>
+                        <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                                <xs:enumeration value=""/>
+                                <xs:enumeration value="EELNÕU"/>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:element>
+                    <xs:element name="valjaandja" default="Riigikogu">
+                        <xs:annotation>
+                            <xs:documentation>Akti väljaandja</xs:documentation>
+                        </xs:annotation>
+                        <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                                <xs:enumeration value="Riigikogu"/>
+                                <xs:enumeration value="Rahvahääletusel vastu võetud"/>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:element>
+                    <xs:element name="dokumentLiik" default="seadus">
+                        <xs:annotation>
+                            <xs:documentation>Dokumendi liik</xs:documentation>
+                        </xs:annotation>
+                        <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                                <xs:enumeration value="seadus"/>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:element>
+                    <xs:element name="tekstiliik" default="algtekst-terviktekst">
+                        <xs:annotation>
+                            <xs:documentation>Akti teksti liik</xs:documentation>
+                        </xs:annotation>
+                        <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                                <xs:enumeration value="algtekst"/>
+                                <xs:enumeration value="algtekst-terviktekst"/>
+                                <xs:enumeration value="terviktekst"/>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:element>
+                    <xs:element name="lyhend" type="stringID" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Akti pealkirja lühend</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="marksona" type="stringID" minOccurs="0" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation>Märksõna</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="juurdepaasPiirang" type="juurdepaasPiirangType" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Juurdepääsu piirang</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="dokumentEtapp">
+                        <xs:annotation>
+                            <xs:documentation>Dokumendi menetlusetapp</xs:documentation>
+                        </xs:annotation>
+                        <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                                <xs:enumeration value="koostamine"/>
+                                <xs:enumeration value="eelkooskõlastamine"/>
+                                <xs:enumeration value="kooskõlastamine"/>
+                                <xs:enumeration value="menetlus Vabariigi Valitsuses"/>
+                                <xs:enumeration value="menetlus Riigikogus"/>
+                                <xs:enumeration value="väljakuulutamine"/>
+                                <xs:enumeration value="avaldamine"/>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:element>
+                    <xs:element name="dokumentStaatus">
+                        <xs:annotation>
+                            <xs:documentation>Dokumendi staatus menetlusetapis</xs:documentation>
+                        </xs:annotation>
+                        <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                                <xs:enumeration value="koostamisel"/>
+                                <xs:enumeration value="esitatud kooskõlastamiseks"/>
+                                <xs:enumeration value="kooskõlastatud (märkuste ja ettepanekutega)"/>
+                                <xs:enumeration value="kooskõlastamata (märkuste ja ettepanekutega)"/>
+                                <xs:enumeration value="kooskõlastatud"/>
+                                <xs:enumeration value="kooskõlastamata"/>
+                                <xs:enumeration value="esitatud Vabariigi Valitsusele"/>
+                                <xs:enumeration value="menetlus lõpetatud Riigikantselei poolt"/>
+                                <xs:enumeration value="vormistatud Vabariigi Valitsuse istungile"/>
+                                <xs:enumeration value="heaks kiidetud"/>
+                                <xs:enumeration value="heaks kiidetud (sisuliste muudatustega)"/>
+                                <xs:enumeration value="tagasilükatud"/>
+                                <xs:enumeration value="algatatud"/>
+                                <xs:enumeration value="menetlusse võetud"/>
+                                <xs:enumeration value="tagastatud"/>
+                                <xs:enumeration value="saadetud arvamuse andmiseks Vabariigi Valitsusele"/>
+                                <xs:enumeration value="saadetud I lugemisele"/>
+                                <xs:enumeration value="I lugemine lõpetatud"/>
+                                <xs:enumeration value="menetlus juhtivkomisjonis"/>
+                                <xs:enumeration value="saadetud II lugemisele"/>
+                                <xs:enumeration value="II lugemine katkestatud"/>
+                                <xs:enumeration value="saadetud II lugemise jätkamisele"/>
+                                <xs:enumeration value="II lugemine lõpetatud"/>
+                                <xs:enumeration value="saadetud III lugemisele"/>
+                                <xs:enumeration value="III lugemine katkestatud"/>
+                                <xs:enumeration value="saadetud III lugemise jätkamisele"/>
+                                <xs:enumeration value="tagasivõetud"/>
+                                <xs:enumeration value="menetlus juhtivkomisjonis"/>
+                                <xs:enumeration value="vastuvõetud"/>
+                                <xs:enumeration value="esitatud Vabariigi Presidendile"/>
+                                <xs:enumeration value="väljakuulutatud"/>
+                                <xs:enumeration value="väljakuulutamata"/>
+                                <xs:enumeration value="saadetud Riigikohtule"/>
+                                <xs:enumeration value="esitatud avaldamiseks"/>
+                                <xs:enumeration value="peatatud"/>
+                                <xs:enumeration value="avaldatud"/>
+                                <xs:enumeration value="mitteavaldatud"/>
+                                <!--väldime teksti avaldamine - avaldatud -->
+                                <!--EELNÕU - koostamine -->
+                                <!--EELNÕU - eelkooskõlastamine -->
+                                <!--EELNÕU - eelkooskõlastamine -->
+                                <!--EELNÕU - eelkooskõlastamine -->
+                                <!--EELNÕU - kooskõlastamine -->
+                                <!--EELNÕU - kooskõlastamine -->
+                                <!--EELNÕU - kooskõlastamine -->
+                                <!--EELNÕU - kooskõlastamine -->
+                                <!--EELNÕU - kooskõlastamine -->
+                                <!--EELNÕU - menetlus Vabariigi Valitsuses -->
+                                <!--EELNÕU - menetlus Vabariigi Valitsuses -->
+                                <!--EELNÕU - menetlus Vabariigi Valitsuses -->
+                                <!--EELNÕU - menetlus Vabariigi Valitsuses -->
+                                <!--EELNÕU - menetlus Vabariigi Valitsuses -->
+                                <!--EELNÕU - menetlus Vabariigi Valitsuses -->
+                                <!--EELNÕU - menetlus Riigikogus -->
+                                <!--EELNÕU - menetlus Riigikogus -->
+                                <!--EELNÕU - menetlus Riigikogus -->
+                                <!--EELNÕU - menetlus Riigikogus -->
+                                <!--EELNÕU - menetlus Riigikogus -->
+                                <!--EELNÕU - menetlus Riigikogus -->
+                                <!--EELNÕU - menetlus Riigikogus -->
+                                <!--EELNÕU - menetlus Riigikogus -->
+                                <!--EELNÕU - menetlus Riigikogus -->
+                                <!--EELNÕU - menetlus Riigikogus -->
+                                <!--EELNÕU - menetlus Riigikogus -->
+                                <!--EELNÕU - menetlus Riigikogus -->
+                                <!--EELNÕU - menetlus Riigikogus -->
+                                <!--EELNÕU - menetlus Riigikogus -->
+                                <!--<xs:enumeration value="tagasi lükatud"/> -->
+                                <!--EELNÕU - menetlus Riigikogus -->
+                                <!--EELNÕU - menetlus Riigikogus -->
+                                <!-- menetlus Riigikogus -->
+                                <!-- väljakuulutamine -->
+                                <!-- väljakuulutamine -->
+                                <!-- väljakuulutamine -->
+                                <!-- väljakuulutamine -->
+                                <!-- avaldamine -->
+                                <!-- avaldamine -->
+                                <!-- avaldamine -->
+                                <!-- avaldamine -->
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:element>
+                    <xs:element ref="vastuvoetud" minOccurs="0"/>
+                    <xs:element name="EmsNr" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Riigikogu menetluse number</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="menetlusNr" type="stringID">
+                                    <xs:annotation>
+                                        <xs:documentation>Menetluse number</xs:documentation>
+                                    </xs:annotation>
+                                </xs:element>
+                                <xs:element name="tahis" type="stringID">
+                                    <xs:annotation>
+                                        <xs:documentation>Menetluse numbri tähis</xs:documentation>
+                                    </xs:annotation>
+                                </xs:element>
+                                <xs:element name="lugemiseNr" type="stringID">
+                                    <xs:annotation>
+                                        <xs:documentation>Menetluse lugemise number</xs:documentation>
+                                    </xs:annotation>
+                                </xs:element>
+                                <xs:element name="lugemiseKord" type="stringID">
+                                    <xs:annotation>
+                                        <xs:documentation>Menetluse lugemise kord</xs:documentation>
+                                    </xs:annotation>
+                                </xs:element>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element ref="valjakuulutamine" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Vabariigi Presidendi poolt väljakuulutamine</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="avaldamismarge" type="avaldamismargeType" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Avaldamismärge</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="kehtivus" type="kehtivusType" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Kehtivus</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="versioon" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Dokumendi versioon</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:complexContent>
+                                <xs:extension base="TypeID">
+                                    <xs:sequence>
+                                        <xs:element name="dokumentVersioon" type="xs:string" minOccurs="0">
+                                            <xs:annotation>
+                                                <xs:documentation>Dokumendi versiooni number</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                        <xs:element name="dokumentVersioonKuupaev" type="dateID" minOccurs="0">
+                                            <xs:annotation>
+                                                <xs:documentation>Dokumendi versiooni kuupäev</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:extension>
+                            </xs:complexContent>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="skeemiNimi" type="stringID">
+                        <xs:annotation>
+                            <xs:documentation>Skeemi nimetus</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="globaalID" type="stringID">
+                        <xs:annotation>
+                            <xs:documentation>Globaalselt unikaalne identifikaator</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="metaandmedVersioon" type="xs:nonNegativeInteger">
+                        <xs:annotation>
+                            <xs:documentation>Metaandmete versioon</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="metaandmedVersioonKuupaev" type="dateID">
+                        <xs:annotation>
+                            <xs:documentation>Metaandmete versiooni kuupäev</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="metaandmedVersioonPohjustaja" type="stringID">
+                        <xs:annotation>
+                            <xs:documentation>Metaandmete versiooni looja</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="terviktekstiGrupiID" type="xs:nonNegativeInteger" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Tervikteksti grupi ID</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="eesmark" type="stringID"
+                                default="Tüviseaduse raamskeem XML struktuuri koostamiseks" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>XML skeemi eesmärk XML faili teistest eristamiseks</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="versiooniMuutus" minOccurs="0" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation>Metaandmete varasem versioon</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:complexContent>
+                                <xs:extension base="TypeID">
+                                    <xs:sequence>
+                                        <xs:element name="dokumentEtapp">
+                                            <xs:annotation>
+                                                <xs:documentation>Dokumendi etapp</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:string">
+                                                    <xs:enumeration value="koostamine"/>
+                                                    <xs:enumeration value="eelkooskõlastamine"/>
+                                                    <xs:enumeration value="kooskõlastamine"/>
+                                                    <xs:enumeration value="menetlus Vabariigi Valitsuses"/>
+                                                    <xs:enumeration value="menetlus Riigikogus"/>
+                                                    <xs:enumeration value="väljakuulutamine"/>
+                                                    <xs:enumeration value="avaldamine"/>
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element name="dokumentStaatus">
+                                            <xs:annotation>
+                                                <xs:documentation>Dokumendi staatus</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:string">
+                                                    <xs:enumeration value="koostamisel"/>
+                                                    <xs:enumeration value="esitatud kooskõlastamiseks"/>
+                                                    <xs:enumeration
+                                                            value="kooskõlastatud (märkuste ja ettepanekutega)"/>
+                                                    <xs:enumeration
+                                                            value="kooskõlastamata (märkuste ja ettepanekutega)"/>
+                                                    <xs:enumeration value="kooskõlastatud"/>
+                                                    <xs:enumeration value="kooskõlastamata"/>
+                                                    <xs:enumeration value="esitatud Vabariigi Valitsusele"/>
+                                                    <xs:enumeration value="menetlus lõpetatud Riigikantselei poolt"/>
+                                                    <xs:enumeration value="vormistatud Vabariigi Valitsuse istungile"/>
+                                                    <xs:enumeration value="heaks kiidetud"/>
+                                                    <xs:enumeration value="heaks kiidetud (sisuliste muudatustega)"/>
+                                                    <xs:enumeration value="tagasilükatud"/>
+                                                    <xs:enumeration
+                                                            value="esitatud Riigikogule / algatatud Riigikogus"/>
+                                                    <xs:enumeration
+                                                            value="menetlusse võetud / tagastatud / uuesti arutamine "/>
+                                                    <xs:enumeration
+                                                            value="saadetud arvamuse andmiseks Vabariigi Valitsusele"/>
+                                                    <xs:enumeration value="saadetud I lugemisele"/>
+                                                    <xs:enumeration value="I lugemine lõpetatud"/>
+                                                    <xs:enumeration value="menetlus juhtivkomisjonis"/>
+                                                    <xs:enumeration value="saadetud II lugemisele"/>
+                                                    <xs:enumeration value="II lugemine katkestatud"/>
+                                                    <xs:enumeration value="saadetud II lugemise jätkamisele"/>
+                                                    <xs:enumeration value="II lugemine lõpetatud"/>
+                                                    <xs:enumeration value="saadetud III lugemisele"/>
+                                                    <xs:enumeration value="III lugemine katkestatud"/>
+                                                    <xs:enumeration value="saadetud III lugemise jätkamisele"/>
+                                                    <xs:enumeration value="tagasivõetud"/>
+                                                    <xs:enumeration value="menetlus juhtivkomisjonis"/>
+                                                    <xs:enumeration value="vastuvõetud"/>
+                                                    <xs:enumeration value="esitatud Vabariigi Presidendile"/>
+                                                    <xs:enumeration value="väljakuulutatud"/>
+                                                    <xs:enumeration value="väljakuulutamata"/>
+                                                    <xs:enumeration value="saadetud Riigikohtule"/>
+                                                    <xs:enumeration value="esitatud avaldamiseks"/>
+                                                    <xs:enumeration value="peatatud"/>
+                                                    <xs:enumeration value="avaldatud"/>
+                                                    <xs:enumeration value="mitteavaldatud"/>
+                                                    <!--väldime teksti avaldamine - avaldatud -->
+                                                    <!--EELNÕU - koostamine -->
+                                                    <!--EELNÕU - eelkooskõlastamine -->
+                                                    <!--EELNÕU - eelkooskõlastamine -->
+                                                    <!--EELNÕU - eelkooskõlastamine -->
+                                                    <!--EELNÕU - kooskõlastamine -->
+                                                    <!--EELNÕU - kooskõlastamine -->
+                                                    <!--EELNÕU - kooskõlastamine -->
+                                                    <!--EELNÕU - kooskõlastamine -->
+                                                    <!--EELNÕU - kooskõlastamine -->
+                                                    <!--EELNÕU - menetlus Vabariigi Valitsuses -->
+                                                    <!--EELNÕU - menetlus Vabariigi Valitsuses -->
+                                                    <!--EELNÕU - menetlus Vabariigi Valitsuses -->
+                                                    <!--EELNÕU - menetlus Vabariigi Valitsuses -->
+                                                    <!--EELNÕU - menetlus Vabariigi Valitsuses -->
+                                                    <!--EELNÕU - menetlus Vabariigi Valitsuses -->
+                                                    <!--EELNÕU - menetlus Riigikogus -->
+                                                    <!--EELNÕU - menetlus Riigikogus -->
+                                                    <!--EELNÕU - menetlus Riigikogus -->
+                                                    <!--EELNÕU - menetlus Riigikogus -->
+                                                    <!--EELNÕU - menetlus Riigikogus -->
+                                                    <!--EELNÕU - menetlus Riigikogus -->
+                                                    <!--EELNÕU - menetlus Riigikogus -->
+                                                    <!--EELNÕU - menetlus Riigikogus -->
+                                                    <!--EELNÕU - menetlus Riigikogus -->
+                                                    <!--EELNÕU - menetlus Riigikogus -->
+                                                    <!--EELNÕU - menetlus Riigikogus -->
+                                                    <!--EELNÕU - menetlus Riigikogus -->
+                                                    <!--EELNÕU - menetlus Riigikogus -->
+                                                    <!--EELNÕU - menetlus Riigikogus -->
+                                                    <!--<xs:enumeration value="tagasi lükatud"/> -->
+                                                    <!--EELNÕU - menetlus Riigikogus -->
+                                                    <!--EELNÕU - menetlus Riigikogus -->
+                                                    <!-- menetlus Riigikogus -->
+                                                    <!-- väljakuulutamine -->
+                                                    <!-- väljakuulutamine -->
+                                                    <!-- väljakuulutamine -->
+                                                    <!-- väljakuulutamine -->
+                                                    <!-- avaldamine -->
+                                                    <!-- avaldamine -->
+                                                    <!-- avaldamine -->
+                                                    <!-- avaldamine -->
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element name="metaandmedVersioon" type="xs:nonNegativeInteger">
+                                            <xs:annotation>
+                                                <xs:documentation>Metaandmete versioon</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                        <xs:element name="metaandmedVersioonKuupaev" type="dateID">
+                                            <xs:annotation>
+                                                <xs:documentation>Metaandmete versiooni kuupäev</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                        <xs:element name="metaandmedVersioonPohjustaja" type="stringID">
+                                            <xs:annotation>
+                                                <xs:documentation>Metaandmete versiooni looja</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:extension>
+                            </xs:complexContent>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="kehtivusType">
+        <xs:annotation>
+            <xs:documentation>Kehtivus</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:sequence>
+                    <xs:choice minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Kehtivuse algus</xs:documentation>
+                        </xs:annotation>
+                        <xs:element name="kehtivuseAlgus" type="dateID" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>Kehtivuse alguse kuupäev</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="tavatekstAlgus" type="tavatekstID" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>Kehtivuse alguse sündmus</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:choice>
+                    <xs:choice minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Kehtivuse lõpp</xs:documentation>
+                        </xs:annotation>
+                        <xs:element name="kehtivuseLopp" type="dateID" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>Kehtivuse lõpukuupäev</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="tavatekstLopp" type="tavatekstID" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>Kehtivuse lõpu sündmus</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:choice>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="valjakuulutatudType">
+        <xs:annotation>
+            <xs:documentation>Väljakuulutatud</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:sequence>
+                    <xs:element name="kellepoolt" type="changestringID" default="Vabariigi President">
+                        <xs:annotation>
+                            <xs:documentation>Kelle poolt väljakuulutatud</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="kuupaev" type="dateID">
+                        <xs:annotation>
+                            <xs:documentation>Väljakuulutamise otsuse kuupäev</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="otsusnr" type="changestringID">
+                        <xs:annotation>
+                            <xs:documentation>Väljakuulutamise otsuse number</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <!--xs:element ref="tavatekst" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>Tavatekst</xs:documentation>
+            </xs:annotation>
+          </xs:element-->
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="pealkiriType">
+        <xs:annotation>
+            <xs:documentation>Pealkiri</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:sequence>
+                    <xs:element name="pealkiri" type="tavatekstID">
+                        <xs:annotation>
+                            <xs:documentation>Akti pealkiri</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element ref="normtehnmarkus" minOccurs="0"/>
+                    <xs:element ref="veaparandus" minOccurs="0" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation>Veaparandus</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element ref="muutmismarge" minOccurs="0"/>
+                    <xs:element ref="kommentaar" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="vastuvoetudType">
+        <xs:annotation>
+            <xs:documentation>Vastuvõetud</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:choice maxOccurs="unbounded">
+                    <xs:element ref="tavatekst" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Vormindatud tekst</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="aktikuupaev" type="dateID">
+                        <xs:annotation>
+                            <xs:documentation>Vastuvõtmise kuupäev</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="avaldamismarge" type="avaldamismargeType" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Avaldamismärge</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="joustumine" type="dateID" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Jõustumise kuupäev</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <!--xs:element name="aktiandja" type="stringID" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>Aktiandja</xs:documentation>
+            </xs:annotation>
+          </xs:element-->
+                </xs:choice>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="muutmismargeType">
+        <xs:annotation>
+            <xs:documentation>Muutmismärge</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:choice maxOccurs="unbounded">
+                    <xs:element ref="tavatekst" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Vormindatud tekst</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="aktikuupaev" type="dateID">
+                        <xs:annotation>
+                            <xs:documentation>Muutva akti kuupäev</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="avaldamismarge" type="avaldamismargeType">
+                        <xs:annotation>
+                            <xs:documentation>Muutva akti avaldamismärge</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="joustumine" type="dateID" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Muudatuse jõustumise kuupäev</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <!--xs:element name="aktiandja" type="stringID" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>Aktiandja</xs:documentation>
+            </xs:annotation>
+          </xs:element-->
+                </xs:choice>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:simpleType name="RTosaEnum">
+        <xs:annotation>
+            <xs:documentation>Riigi Teataja osa elemendi väärtused</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="RT I"/>
+            <xs:enumeration value="RT II"/>
+            <xs:enumeration value="RT III"/>
+            <xs:enumeration value="RT IV"/>
+            <xs:enumeration value="RT V"/>
+            <xs:enumeration value="RTL"/>
+            <xs:enumeration value="KO"/>
+            <xs:enumeration value="ÜVT"/>
+            <xs:enumeration value="VMT"/>
+            <xs:enumeration value="RT"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="avaldamismargeType">
+        <xs:annotation>
+            <xs:documentation>Avaldamismärge</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:sequence>
+                    <xs:element name="RTosa">
+                        <xs:annotation>
+                            <xs:documentation>Riigi Teataja osa</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:simpleContent>
+                                <xs:extension base="RTosaEnum">
+                                    <xs:attribute name="id" type="xs:string"/>
+                                    <xs:attribute name="refId" type="xs:string"/>
+                                </xs:extension>
+                            </xs:simpleContent>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="avaldamineKuupaev" type="dateID" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Avaldamise kuupäev</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:sequence>
+                        <xs:element name="RTaasta" type="gYearID" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>Riigi Teataja avaldamisaasta</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="RTnr" type="nonNegativeIntegerID" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>Riigi Teataja number</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:sequence>
+                    <xs:element name="RTartikkel" type="changestringID">
+                        <xs:annotation>
+                            <xs:documentation>Riigi Teataja artikkel</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="aktViide" type="changestringID" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Link aktile</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="sisuType">
+        <xs:annotation>
+            <xs:documentation>Akti sisu</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:sequence>
+                    <xs:element name="preambul" type="preambulType" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Preambul</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element ref="veaparandus" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Veaparandus</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:choice minOccurs="0" maxOccurs="unbounded">
+                        <xs:element ref="osa">
+                            <xs:annotation>
+                                <xs:documentation>Osa</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element ref="paragrahv">
+                            <xs:annotation>
+                                <xs:documentation>Paragrahv</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element ref="peatykk">
+                            <xs:annotation>
+                                <xs:documentation>Peatükk</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element ref="sisuTekst">
+                            <xs:annotation>
+                                <xs:documentation>Tekstiline sisu</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:choice>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:group name="paragrahv.jaotus">
+        <xs:sequence>
+            <xs:element name="paragrahvNr">
+                <xs:annotation>
+                    <xs:documentation>Paragrahvi number</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:simpleContent>
+                        <xs:extension base="stringID">
+                            <xs:attributeGroup ref="nr.vorming"/>
+                        </xs:extension>
+                    </xs:simpleContent>
+                </xs:complexType>
+            </xs:element>
+            <xs:element ref="kuvatavNr"/>
+            <xs:element name="paragrahvPealkiri" type="tavatekstID" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Paragrahvi pealkiri</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="sisuTekst" type="tekstType" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>Tekstiline sisu</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element ref="normtehnmarkus" minOccurs="0"/>
+            <xs:element ref="veaparandus" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element ref="muutmismarge" minOccurs="0"/>
+            <xs:element ref="kommentaar" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:group>
+    <xs:element name="sisuTekst" type="tekstType">
+        <xs:annotation>
+            <xs:documentation>Tekstiline sisu</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:simpleType name="tabelPealkiriPaigutusType">
+        <xs:annotation>
+            <xs:documentation>Muudatuse elemendi atribuudi tegevuste loetelu</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="yleval">
+                <xs:annotation>
+                    <xs:documentation>Paigutus tabeli peal</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="all">
+                <xs:annotation>
+                    <xs:documentation>Paigutus tabeli all</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="tabelType">
+        <xs:annotation>
+            <xs:documentation>Tabel</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:sequence>
+                    <xs:element name="tabelPealkiri" type="changestringID" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Pealkirja/allkirja sisu</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="tr" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation>Tabeli rida</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:complexContent>
+                                <xs:extension base="TypeID">
+                                    <xs:sequence>
+                                        <xs:element name="tc" maxOccurs="unbounded">
+                                            <xs:annotation>
+                                                <xs:documentation>Tabeli veerg</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:complexType>
+                                                <xs:complexContent>
+                                                    <xs:extension base="TypeID">
+                                                        <xs:sequence>
+                                                            <xs:element ref="sisuTekst" minOccurs="0">
+                                                                <xs:annotation>
+                                                                    <xs:documentation>Tabeli veeru sisu
+                                                                    </xs:documentation>
+                                                                </xs:annotation>
+                                                            </xs:element>
+                                                        </xs:sequence>
+                                                        <xs:attribute name="colspan" type="xs:string">
+                                                            <xs:annotation>
+                                                                <xs:documentation>Tabeli veergude ühendamise atribuut
+                                                                    colspan
+                                                                </xs:documentation>
+                                                            </xs:annotation>
+                                                        </xs:attribute>
+                                                        <xs:attribute name="rowspan" type="xs:string">
+                                                            <xs:annotation>
+                                                                <xs:documentation>Tabeli ridade ühendamise atribuut
+                                                                    rowspan
+                                                                </xs:documentation>
+                                                            </xs:annotation>
+                                                        </xs:attribute>
+                                                    </xs:extension>
+                                                </xs:complexContent>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:extension>
+                            </xs:complexContent>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+                <xs:attribute name="pealkiriPaigutus" type="tabelPealkiriPaigutusType">
+                    <xs:annotation>
+                        <xs:documentation>Tabeli atribuut pealkirja paigutus</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+                <xs:attribute name="width" type="xs:string">
+                    <xs:annotation>
+                        <xs:documentation>Tabeli laiuse atribuut width</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+            </xs:extension>
+            <!--
+                                <xs:attribute name="colspan" type="xs:string">
+                                        <xs:annotation>
+                                                <xs:documentation>Ühenda veerud</xs:documentation>
+                                        </xs:annotation>
+                                </xs:attribute>
+                                <xs:attribute name="rowspan" type="xs:string">
+                                        <xs:annotation>
+                                                <xs:documentation>Ühenda read</xs:documentation>
+                                        </xs:annotation>
+                                </xs:attribute>
+                                -->
+            <!--  TODO - remove tabelil ei ole kõrguse atribuuti-->
+            <!--<xs:attribute name="height" type="xs:string">
+                                        <xs:annotation>
+                                                <xs:documentation>Tabeli kõrgus</xs:documentation>
+                                        </xs:annotation>
+                                </xs:attribute>-->
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:simpleType name="digiAllkiriType">
+        <xs:annotation>
+            <xs:documentation>Allkirjastatud digitaalselt</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value=""/>
+            <xs:enumeration value="(digitaalselt allkirjastatud)"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="allkirjastajaType">
+        <xs:annotation>
+            <xs:documentation>Allkirjastaja</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:sequence>
+                    <xs:element name="digiAllkiri" type="digiAllkiriType" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Märge digitaalse allkirjastamise kohta</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="ametinimetus" type="stringID">
+                        <xs:annotation>
+                            <xs:documentation>Ametinimetus</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="eesnimi" type="stringID">
+                        <xs:annotation>
+                            <xs:documentation>Eesnimi</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="perekonnanimi" type="stringID">
+                        <xs:annotation>
+                            <xs:documentation>Perekonnanimi</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="veaparandus" type="veaparandusType" minOccurs="0" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation>Veaparandus</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="algatusmargeType">
+        <xs:annotation>
+            <xs:documentation>Algatusmärge Riigikogus algatamise kohta</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:sequence>
+                    <xs:element name="algataja" type="changestringID" minOccurs="0" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation>Algataja</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="esindaja" minOccurs="0" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation>Esindaja</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:complexContent>
+                                <xs:extension base="TypeID">
+                                    <xs:sequence>
+                                        <xs:element name="allkiriEsindaja" type="allkirjastajaType" minOccurs="0"
+                                                    maxOccurs="unbounded">
+                                            <xs:annotation>
+                                                <xs:documentation>Esindaja allkiri</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                        <xs:element name="kuupaevAllkiri" type="dateID" minOccurs="0"
+                                                    maxOccurs="unbounded">
+                                            <xs:annotation>
+                                                <xs:documentation>Allkirja kuupäev</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:extension>
+                            </xs:complexContent>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="esituskiriNr" type="changestringID" minOccurs="0" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation>Esituskirja number</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="lisaType">
+        <xs:annotation>
+            <xs:documentation>Lisa</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:sequence>
+                    <xs:element name="lisaMarge">
+                        <xs:annotation>
+                            <xs:documentation>Märge lisa kuuluvuse kohta</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:complexContent>
+                                <xs:extension base="TypeID">
+                                    <xs:annotation>
+                                        <xs:documentation>Lisa märge</xs:documentation>
+                                    </xs:annotation>
+                                    <xs:sequence>
+                                        <xs:element name="valjaandja" type="changestringID" minOccurs="0">
+                                            <xs:annotation>
+                                                <xs:documentation>Akti väljaandja</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                        <xs:element name="kuupaev" type="dateID" minOccurs="0">
+                                            <xs:annotation>
+                                                <xs:documentation>Akti kuupäev</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                        <xs:element name="dokumentLiik" type="changestringID" minOccurs="0">
+                                            <xs:annotation>
+                                                <xs:documentation>Dokumendi liik</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                        <xs:element name="aktiPealkiri" type="changestringID" minOccurs="0">
+                                            <xs:annotation>
+                                                <xs:documentation>Akti pealkiri</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                        <xs:element ref="tavatekst" minOccurs="0" maxOccurs="unbounded"/>
+                                        <xs:element name="lisaNr" type="stringID" minOccurs="0">
+                                            <xs:annotation>
+                                                <xs:documentation>Lisa number</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                        <xs:element ref="veaparandus" minOccurs="0"/>
+                                        <xs:element ref="muutmismarge" minOccurs="0"/>
+                                        <xs:element ref="kommentaar" minOccurs="0" maxOccurs="unbounded"/>
+                                    </xs:sequence>
+                                </xs:extension>
+                            </xs:complexContent>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="lisaPealkiri" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Lisa pealkiri</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:complexContent>
+                                <xs:extension base="TypeID">
+                                    <xs:sequence>
+                                        <xs:element name="lisaNimi" type="stringID">
+                                            <xs:annotation>
+                                                <xs:documentation>Lisa teksitiline pealkiri</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                        <xs:element ref="normtehnmarkus" minOccurs="0" maxOccurs="unbounded"/>
+                                        <xs:element ref="veaparandus" minOccurs="0"/>
+                                        <xs:element ref="muutmismarge" minOccurs="0"/>
+                                        <xs:element ref="kommentaar" minOccurs="0" maxOccurs="unbounded"/>
+                                    </xs:sequence>
+                                </xs:extension>
+                            </xs:complexContent>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="lisaSisu">
+                        <xs:annotation>
+                            <xs:documentation>Lisa sisu</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:complexContent>
+                                <xs:extension base="TypeID">
+                                    <xs:sequence>
+                                        <xs:element name="preambul" type="preambulType" minOccurs="0">
+                                            <xs:annotation>
+                                                <xs:documentation>Preambul</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                        <xs:choice minOccurs="0" maxOccurs="unbounded">
+                                            <xs:element name="osa" type="lisaOsaType">
+                                                <xs:annotation>
+                                                    <xs:documentation>Osa</xs:documentation>
+                                                </xs:annotation>
+                                            </xs:element>
+                                            <xs:element name="punkt" type="punktType">
+                                                <xs:annotation>
+                                                    <xs:documentation>Punkt</xs:documentation>
+                                                </xs:annotation>
+                                            </xs:element>
+                                            <xs:element ref="sisuTekst">
+                                                <xs:annotation>
+                                                    <xs:documentation>sisuTekst</xs:documentation>
+                                                </xs:annotation>
+                                            </xs:element>
+                                        </xs:choice>
+                                    </xs:sequence>
+                                </xs:extension>
+                            </xs:complexContent>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element ref="normtehnmarkus" minOccurs="0" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation>Normitehniline märkus</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element ref="veaparandus" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="muutmismarge" minOccurs="0"/>
+                    <xs:element ref="kommentaar" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="lisaAllkirjastaja" type="allkirjastajaType" minOccurs="0" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation>Lisa allkirjastaja</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="lisaOsa" type="lisaOsaType">
+        <xs:annotation>
+            <xs:documentation>Lisa osa</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:complexType name="lisaOsaType">
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:sequence>
+                    <xs:group ref="osa.jaotus"/>
+                    <xs:element name="punkt" type="punktType" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="tavatekstID" mixed="true">
+        <xs:complexContent mixed="true">
+            <xs:extension base="TypeID">
+                <xs:choice minOccurs="0" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation>Tavateksti baas, millel on kaasas atribuut ID</xs:documentation>
+                    </xs:annotation>
+                    <xs:element ref="loend"/>
+                    <xs:element ref="b"/>
+                    <xs:element ref="i"/>
+                    <xs:element ref="u"/>
+                    <xs:element ref="sup"/>
+                    <xs:element ref="sub"/>
+                    <xs:element name="reavahetus">
+                        <xs:annotation>
+                            <xs:documentation>Reavahetus</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:choice>
+                <xs:attributeGroup ref="tekst.staatus"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="tekstType">
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:choice minOccurs="0" maxOccurs="unbounded">
+                    <xs:element name="tabel" type="tabelType">
+                        <xs:annotation>
+                            <xs:documentation>Tabel</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element ref="tavatekst">
+                        <xs:annotation>
+                            <xs:documentation>Vormindatud tekst</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="legaaldefinitsioon" type="legaaldefinitsioonType">
+                        <xs:annotation>
+                            <xs:documentation>Legaaldefinitsioon</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="viide">
+                        <xs:annotation>
+                            <xs:documentation>Viide</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:complexContent>
+                                <xs:extension base="viideType">
+                                    <xs:attributeGroup ref="tekst.staatus"/>
+                                </xs:extension>
+                            </xs:complexContent>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="muuJaotis" type="muuJaotisType">
+                        <xs:annotation>
+                            <xs:documentation>Muu jaotis</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="fail">
+                        <xs:annotation>
+                            <xs:documentation>Fail</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:simpleContent>
+                                <xs:extension base="base64BinaryID">
+                                    <xs:attribute name="failNimi" type="xs:string" use="required">
+                                        <xs:annotation>
+                                            <xs:documentation>Faili nimi</xs:documentation>
+                                        </xs:annotation>
+                                    </xs:attribute>
+                                    <xs:attribute name="failVorming" type="xs:string" use="required">
+                                        <xs:annotation>
+                                            <xs:documentation>Faili vorming</xs:documentation>
+                                        </xs:annotation>
+                                    </xs:attribute>
+                                    <xs:attribute name="failKuvamine" use="required">
+                                        <xs:annotation>
+                                            <xs:documentation>Faili kuvamine</xs:documentation>
+                                        </xs:annotation>
+                                        <xs:simpleType>
+                                            <xs:restriction base="xs:string">
+                                                <xs:enumeration value="tekstis"/>
+                                                <xs:enumeration value="viitena"/>
+                                            </xs:restriction>
+                                        </xs:simpleType>
+                                    </xs:attribute>
+                                    <xs:attribute name="laius" type="xs:string" use="optional">
+                                        <xs:annotation>
+                                            <xs:documentation>Pildi laius</xs:documentation>
+                                        </xs:annotation>
+                                    </xs:attribute>
+                                    <xs:attribute name="korgus" type="xs:string" use="optional">
+                                        <xs:annotation>
+                                            <xs:documentation>Pildi kõrgus</xs:documentation>
+                                        </xs:annotation>
+                                    </xs:attribute>
+                                </xs:extension>
+                            </xs:simpleContent>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element ref="normtehnmarkus"/>
+                    <xs:element ref="veaparandus"/>
+                    <xs:element ref="muutmismarge"/>
+                    <xs:element name="avaldamismarge" type="avaldamismargeType">
+                        <xs:annotation>
+                            <xs:documentation>Avaldamismärge</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="viideRakendusakt" type="viideType">
+                        <xs:annotation>
+                            <xs:documentation>Volitusnorm</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element ref="HTMLKonteiner"/>
+                </xs:choice>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="preambulType">
+        <xs:annotation>
+            <xs:documentation>Preambul</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:sequence>
+                    <xs:choice maxOccurs="unbounded">
+                        <xs:element ref="tavatekst">
+                            <xs:annotation>
+                                <xs:documentation>Vormindatud tekst</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="viide">
+                            <xs:annotation>
+                                <xs:documentation>Viide</xs:documentation>
+                            </xs:annotation>
+                            <xs:complexType>
+                                <xs:complexContent>
+                                    <xs:extension base="viideType">
+                                        <xs:attributeGroup ref="tekst.staatus"/>
+                                    </xs:extension>
+                                </xs:complexContent>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:choice>
+                    <xs:element ref="normtehnmarkus" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="veaparandus" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="muutmismarge" minOccurs="0"/>
+                    <xs:element ref="kommentaar" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="seletuskiriOsaType">
+        <xs:annotation>
+            <xs:documentation>Seletuskirja osa</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:sequence>
+                    <xs:element name="seletuskirjaOsaPealkiri" type="changestringID" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Seletuskirja osa pealkiri</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="seletuskirjaOsaSisu" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Seletuskirja osa sisu</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:complexContent>
+                                <xs:extension base="TypeID">
+                                    <xs:sequence>
+                                        <xs:element ref="sisuTekst" minOccurs="0" maxOccurs="unbounded"/>
+                                        <xs:element ref="kommentaar" minOccurs="0" maxOccurs="unbounded"/>
+                                    </xs:sequence>
+                                </xs:extension>
+                            </xs:complexContent>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="seletuskiriLisaType">
+        <xs:annotation>
+            <xs:documentation>Seletuskirja lisa</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:sequence>
+                    <xs:element name="seletuskirjaLisaPealkiri" type="changestringID" default="Seletuskirja lisa">
+                        <xs:annotation>
+                            <xs:documentation>Seletuskirja lisa pealkiri</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="seletuskirjaLisaSisu">
+                        <xs:annotation>
+                            <xs:documentation>Seletuskirja lisa sisu</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:complexContent>
+                                <xs:extension base="TypeID">
+                                    <xs:sequence>
+                                        <xs:element name="lisa" type="lisaType" minOccurs="0" maxOccurs="unbounded">
+                                            <xs:annotation>
+                                                <xs:documentation>Seletuskirja lisa</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:extension>
+                            </xs:complexContent>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="seletuskiriType">
+        <xs:annotation>
+            <xs:documentation>Seletuskiri</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:sequence>
+                    <xs:element name="seletuskiriPealkiri" type="changestringID">
+                        <xs:annotation>
+                            <xs:documentation>Seletuskirja pealkiri</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="seletuskiriSissejuhatus" type="seletuskiriOsaType" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Sissejuhatus</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="seletuskiriEesmark" type="seletuskiriOsaType" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Seaduse eesmärk</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="seletuskiriAnalyysYld" type="seletuskiriOsaType" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Eelnõu sisu kirjeldus ja võrdlev analüüs</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="seletuskiriTerminoloogia" type="seletuskiriOsaType" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Eelnõu terminoloogia</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="seletuskiriVastavusEL" type="seletuskiriOsaType" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Eelnõu vastavus Euroopa Liidu õigusele</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="seletuskiriMoju" type="seletuskiriOsaType" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Seaduse mõjud</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="seletuskiriKulutulu" type="seletuskiriOsaType" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Eeldatavad kulud ja tulud</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="seletuskiriRakendusaktid" type="seletuskiriOsaType" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Rakendusaktid</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="seletuskiriVaba" type="seletuskiriOsaType" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Seletuskirja vaba tekst</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="seletuskiriJoustumine" type="seletuskiriOsaType" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Seaduse jõustumine</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element ref="normtehnmarkus" minOccurs="0" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation>Normitehniline märkus</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element ref="kommentaar" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="seletuskiriAllkirjastaja" type="allkirjastajaType" minOccurs="0"
+                                maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation>Seletuskirja allkirjastaja</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="seletuskiriLisa" type="seletuskiriLisaType" minOccurs="0" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation>Seletuskirja lisa</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="veaparandusType">
+        <xs:annotation>
+            <xs:documentation>Veaparandus</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:sequence>
+                    <xs:element name="veaparandusKuupaev" type="dateID">
+                        <xs:annotation>
+                            <xs:documentation>Veaparanduse kuupäev</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="veaparandusKellaaeg" type="timeID">
+                        <xs:annotation>
+                            <xs:documentation>Veaparanduse kellaaeg</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="veaparandusTekst" type="stringID">
+                        <xs:annotation>
+                            <xs:documentation>Veaparandust selgitav tekst</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:group name="osa.jaotus">
+        <xs:sequence>
+            <xs:element name="osaNr">
+                <xs:annotation>
+                    <xs:documentation>Osa number</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:simpleContent>
+                        <xs:extension base="stringID">
+                            <xs:attributeGroup ref="nr.vorming"/>
+                        </xs:extension>
+                    </xs:simpleContent>
+                </xs:complexType>
+            </xs:element>
+            <xs:element ref="kuvatavNr"/>
+            <xs:element name="osaPealkiri" type="tavatekstID">
+                <xs:annotation>
+                    <xs:documentation>Osa pealkiri</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element ref="normtehnmarkus" minOccurs="0"/>
+            <xs:element ref="veaparandus" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element ref="muutmismarge" minOccurs="0"/>
+            <xs:element ref="kommentaar" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:group>
+    <xs:attributeGroup name="nr.vorming">
+        <xs:attribute name="vorming" use="optional">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="araabia"/>
+                    <xs:enumeration value="rooma"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="ylaIndeks" type="xs:string" use="optional"/>
+        <xs:attribute name="kehtiv">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="1"/>
+                    <xs:enumeration value="0"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:attributeGroup>
+    <xs:group name="peatykk.jaotus">
+        <xs:sequence>
+            <xs:annotation>
+                <xs:documentation>Peatüki number</xs:documentation>
+            </xs:annotation>
+            <xs:element name="peatykkNr" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>Peatüki number</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:simpleContent>
+                        <xs:extension base="stringID">
+                            <xs:attributeGroup ref="nr.vorming"/>
+                        </xs:extension>
+                    </xs:simpleContent>
+                </xs:complexType>
+            </xs:element>
+            <xs:element ref="kuvatavNr"/>
+            <xs:element name="peatykkPealkiri" type="tavatekstID">
+                <xs:annotation>
+                    <xs:documentation>Peatüki pealkiri</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element ref="normtehnmarkus" minOccurs="0"/>
+            <xs:element ref="veaparandus" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element ref="muutmismarge" minOccurs="0"/>
+            <xs:element ref="kommentaar" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:group>
+    <xs:group name="jagu.jaotus">
+        <xs:sequence>
+            <xs:element name="jaguNr">
+                <xs:annotation>
+                    <xs:documentation>Jao number</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:simpleContent>
+                        <xs:extension base="stringID">
+                            <xs:attributeGroup ref="nr.vorming"/>
+                        </xs:extension>
+                    </xs:simpleContent>
+                </xs:complexType>
+            </xs:element>
+            <xs:element ref="kuvatavNr"/>
+            <xs:element name="jaguPealkiri" type="tavatekstID">
+                <xs:annotation>
+                    <xs:documentation>Jao pealkiri</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element ref="normtehnmarkus" minOccurs="0"/>
+            <xs:element ref="veaparandus" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element ref="muutmismarge" minOccurs="0"/>
+            <xs:element ref="kommentaar" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:group>
+    <xs:group name="jaotis.jaotus">
+        <xs:sequence>
+            <xs:element name="jaotisNr">
+                <xs:annotation>
+                    <xs:documentation>Jaotise number</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:simpleContent>
+                        <xs:extension base="stringID">
+                            <xs:attributeGroup ref="nr.vorming"/>
+                        </xs:extension>
+                    </xs:simpleContent>
+                </xs:complexType>
+            </xs:element>
+            <xs:element ref="kuvatavNr"/>
+            <xs:element name="jaotisPealkiri" type="tavatekstID">
+                <xs:annotation>
+                    <xs:documentation>Jaotise pealkiri</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element ref="normtehnmarkus" minOccurs="0"/>
+            <xs:element ref="veaparandus" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element ref="muutmismarge" minOccurs="0"/>
+            <xs:element ref="kommentaar" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:group>
+    <xs:group name="alljaotis.jaotus">
+        <xs:sequence>
+            <xs:element name="alljaotisNr">
+                <xs:annotation>
+                    <xs:documentation>Alljaotise number</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:simpleContent>
+                        <xs:extension base="stringID">
+                            <xs:attributeGroup ref="nr.vorming"/>
+                        </xs:extension>
+                    </xs:simpleContent>
+                </xs:complexType>
+            </xs:element>
+            <xs:element ref="kuvatavNr"/>
+            <xs:element name="alljaotisPealkiri" type="tavatekstID">
+                <xs:annotation>
+                    <xs:documentation>Alljaotise pealkiri</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element ref="normtehnmarkus" minOccurs="0"/>
+            <xs:element ref="veaparandus" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element ref="muutmismarge" minOccurs="0"/>
+            <xs:element ref="kommentaar" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:group>
+    <xs:group name="loige.jaotus">
+        <xs:sequence>
+            <xs:element name="loigeNr">
+                <xs:annotation>
+                    <xs:documentation>Lõike number</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:simpleContent>
+                        <xs:extension base="stringID">
+                            <xs:attributeGroup ref="nr.vorming"/>
+                        </xs:extension>
+                    </xs:simpleContent>
+                </xs:complexType>
+            </xs:element>
+            <xs:element ref="kuvatavNr"/>
+        </xs:sequence>
+    </xs:group>
+    <xs:group name="alampunkt.jaotus">
+        <xs:sequence>
+            <xs:element name="alampunktNr">
+                <xs:complexType>
+                    <xs:simpleContent>
+                        <xs:extension base="stringID">
+                            <xs:attributeGroup ref="nr.vorming"/>
+                        </xs:extension>
+                    </xs:simpleContent>
+                </xs:complexType>
+            </xs:element>
+            <xs:element ref="kuvatavNr"/>
+        </xs:sequence>
+    </xs:group>
+    <xs:complexType name="osaType">
+        <xs:annotation>
+            <xs:documentation>Osa</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:sequence>
+                    <xs:group ref="osa.jaotus"/>
+                    <xs:element ref="peatykk" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="peatykkType">
+        <xs:annotation>
+            <xs:documentation>Peatükk</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:sequence>
+                    <xs:group ref="peatykk.jaotus"/>
+                    <xs:choice minOccurs="0" maxOccurs="unbounded">
+                        <xs:element ref="jagu"/>
+                        <xs:element ref="paragrahv"/>
+                    </xs:choice>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="jaguType">
+        <xs:annotation>
+            <xs:documentation>Jagu</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:sequence>
+                    <xs:group ref="jagu.jaotus"/>
+                    <xs:choice minOccurs="0" maxOccurs="unbounded">
+                        <xs:element ref="jaotis"/>
+                        <xs:element ref="paragrahv"/>
+                    </xs:choice>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="jaotisType">
+        <xs:annotation>
+            <xs:documentation>Jaotis</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:sequence>
+                    <xs:group ref="jaotis.jaotus"/>
+                    <xs:choice minOccurs="0" maxOccurs="unbounded">
+                        <xs:element ref="alljaotis"/>
+                        <xs:element ref="paragrahv"/>
+                    </xs:choice>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="alljaotisType">
+        <xs:annotation>
+            <xs:documentation>Alljaotis</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:sequence>
+                    <xs:group ref="alljaotis.jaotus"/>
+                    <xs:element ref="paragrahv" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="paragrahvType">
+        <xs:annotation>
+            <xs:documentation>Paragrahv</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:sequence>
+                    <xs:group ref="paragrahv.jaotus"/>
+                    <xs:element ref="loige" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="loigeType">
+        <xs:annotation>
+            <xs:documentation>Lõige</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:sequence>
+                    <xs:group ref="loige.jaotus" minOccurs="0"/>
+                    <xs:element ref="sisuTekst" minOccurs="0" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation>Lõike tekst</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element ref="normtehnmarkus" minOccurs="0"/>
+                    <xs:element ref="veaparandus" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="muutmismarge" minOccurs="0"/>
+                    <xs:element ref="kommentaar" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="alampunkt" minOccurs="0" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation>Lõike alampunkt</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:group name="punkt.jaotus">
+        <xs:sequence>
+            <xs:element name="punktNr">
+                <xs:annotation>
+                    <xs:documentation>Punkti number</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:simpleContent>
+                        <xs:extension base="stringID">
+                            <xs:attributeGroup ref="nr.vorming"/>
+                        </xs:extension>
+                    </xs:simpleContent>
+                </xs:complexType>
+            </xs:element>
+            <xs:element ref="kuvatavNr"/>
+        </xs:sequence>
+    </xs:group>
+    <xs:complexType name="punktType">
+        <xs:annotation>
+            <xs:documentation>Punkt</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:sequence>
+                    <xs:group ref="punkt.jaotus"/>
+                    <xs:element ref="sisuTekst" minOccurs="0" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation>Punkti tekst</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element ref="normtehnmarkus" minOccurs="0"/>
+                    <xs:element ref="veaparandus" minOccurs="0"/>
+                    <xs:element ref="muutmismarge" minOccurs="0"/>
+                    <xs:element ref="kommentaar" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="alampunkt" minOccurs="0" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation>Alampunkt</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="alampunktType">
+        <xs:annotation>
+            <xs:documentation>Alampunkt</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:sequence>
+                    <xs:group ref="alampunkt.jaotus"/>
+                    <xs:element ref="sisuTekst" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="normtehnmarkus" minOccurs="0"/>
+                    <xs:element ref="veaparandus" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="muutmismarge" minOccurs="0"/>
+                    <xs:element ref="kommentaar" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="viideType">
+        <xs:annotation>
+            <xs:documentation>Viide</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:sequence>
+                    <xs:element name="kuvatavTekst" type="stringID">
+                        <xs:annotation>
+                            <xs:documentation>Viite kuvatav tekst</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="viideURID" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Sisemise viite URID</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:complexContent>
+                                <xs:extension base="TypeID">
+                                    <xs:choice>
+                                        <xs:element name="viideURI" type="anyURIID" minOccurs="0">
+                                            <xs:annotation>
+                                                <xs:documentation>Sisemise viite URID ja ID</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                        <xs:element name="viideID" type="stringID" minOccurs="0">
+                                            <xs:annotation>
+                                                <xs:documentation>Viidatava elemendi ID</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                    </xs:choice>
+                                </xs:extension>
+                            </xs:complexContent>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="viideValine" type="anyURIID" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Välise viite URL</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="viideAkt" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Sisemine viide Riigi Teataja aktile ja selle osale</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:complexContent>
+                                <xs:extension base="TypeID">
+                                    <xs:sequence>
+                                        <xs:element name="viideRT" type="avaldamismargeType" minOccurs="0">
+                                            <xs:annotation>
+                                                <xs:documentation>Viide Riigi Teataja osale</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                        <xs:element name="viidePunkt" type="stringID" minOccurs="0">
+                                            <xs:annotation>
+                                                <xs:documentation>Viide õiguskati sättele</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                        <xs:element name="viideID" type="stringID" minOccurs="0">
+                                            <xs:annotation>
+                                                <xs:documentation>Viidatava elemendi ID</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:extension>
+                            </xs:complexContent>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="muuJaotisType">
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:sequence>
+                    <xs:element name="jaotusNumber" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Jaotise number</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:simpleContent>
+                                <xs:extension base="stringID">
+                                    <xs:attributeGroup ref="nr.vorming"/>
+                                </xs:extension>
+                            </xs:simpleContent>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="jaotusTekst" type="tekstType" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation>Jaotise tekst</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="isikType">
+        <xs:annotation>
+            <xs:documentation>Isikud</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="allkirjastajaType">
+                <xs:attribute name="isikID" type="xs:string"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="kommentaar">
+        <xs:annotation>
+            <xs:documentation>Kommentaar</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="TypeID">
+                    <xs:sequence>
+                        <xs:element name="kommSisu" type="changestringID">
+                            <xs:annotation>
+                                <xs:documentation>Kommentaari sisu</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="autor" type="stringID" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>Kommentaari autor</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="kommAeg" type="stringID" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>Kommentaari kuupäev</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:attributeGroup name="tekst.staatus">
+        <xs:attribute name="kustutatud" type="xs:boolean" use="optional"/>
+        <xs:attribute name="lisatud" type="xs:boolean" use="optional"/>
+        <xs:attribute name="teostaja" type="xs:IDREF" use="optional"/>
+        <xs:attribute name="muudatusAeg" type="xs:string" use="optional"/>
+    </xs:attributeGroup>
+    <xs:element name="metaandmed" type="metaandmedType">
+        <xs:annotation>
+            <xs:documentation>Õigusakti sisesed metaandmed</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="aktinimi">
+        <xs:annotation>
+            <xs:documentation>Akti nimi</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="TypeID">
+                    <xs:sequence>
+                        <xs:element name="nimi" type="pealkiriType">
+                            <xs:annotation>
+                                <xs:documentation>Nimi</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="muutmismarge" type="muutmismargeType">
+        <xs:annotation>
+            <xs:documentation>Muutmismärge</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="sisu" type="sisuType">
+        <xs:annotation>
+            <xs:documentation>Õigusakti sisu</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="allkiri">
+        <xs:annotation>
+            <xs:documentation>Allkiri</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="TypeID">
+                    <xs:sequence>
+                        <xs:element name="allkiriKoht" type="changestringID" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>Allkirjastamise koht</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="allkirjastaja" type="allkirjastajaType" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>Allkirjastaja</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element ref="tavatekst" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>Vormindatud tekst</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element ref="veaparandus" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="algatusmarge" type="algatusmargeType">
+        <xs:annotation>
+            <xs:documentation>Algatusmärge</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="lisa" type="lisaType">
+        <xs:annotation>
+            <xs:documentation>Lisa</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="seletuskiri" type="seletuskiriType">
+        <xs:annotation>
+            <xs:documentation>Seletuskiri</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="veaparandus" type="veaparandusType">
+        <xs:annotation>
+            <xs:documentation>Veaparandus</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="isik">
+        <xs:annotation>
+            <xs:documentation>Isik</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="isikType"/>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="osa" type="osaType">
+        <xs:annotation>
+            <xs:documentation>Osa</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="peatykk" type="peatykkType">
+        <xs:annotation>
+            <xs:documentation>Peatükk</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="paragrahv" type="paragrahvType">
+        <xs:annotation>
+            <xs:documentation>Paragrahv</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="jaotis" type="jaotisType">
+        <xs:annotation>
+            <xs:documentation>Jaotis</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="jagu" type="jaguType">
+        <xs:annotation>
+            <xs:documentation>Jagu</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="loige" type="loigeType">
+        <xs:annotation>
+            <xs:documentation>Lõige</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="alampunkt" type="alampunktType">
+        <xs:annotation>
+            <xs:documentation>Punkt</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="alljaotis" type="alljaotisType">
+        <xs:annotation>
+            <xs:documentation>Alljaotis</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="valjakuulutamine">
+        <xs:annotation>
+            <xs:documentation>Väljakuulutamine</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="TypeID">
+                    <xs:sequence>
+                        <xs:element name="valjakuulutatud" type="valjakuulutatudType" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>Välja kuulutatud</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="vastuvoetud" type="vastuvoetudType">
+        <xs:annotation>
+            <xs:documentation>Vastu võetud</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="normtehnmarkus">
+        <xs:annotation>
+            <xs:documentation>Normtehniline märkus</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="TypeID">
+                    <xs:sequence>
+                        <xs:element name="normtehnmarkusNr" type="changestringID">
+                            <xs:annotation>
+                                <xs:documentation>Normtehnilise märkuse number</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="normtehnmarkusTekst" type="tavatekstID" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>Normtehnilise märkuse tekst</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <!-- Lisatud 08.07.2010 -->
+                        <xs:element ref="muutmismarge" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>Muutmismärge</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:sequence>
+                    <xs:attribute name="kuuluvus" type="xs:string" use="optional"/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="jalgiMuudatusi">
+        <xs:annotation>
+            <xs:documentation>Jälgi muudatusi grupp, sisaldab muutus elemente</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="muutus" type="changeType" minOccurs="0" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation>Muudatus</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="id" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:complexType name="TypeID">
+        <xs:annotation>
+            <xs:documentation>Komplekstüübi baas, varustatud atribuudiga ID dokumendi siseseks viitamiseks
+            </xs:documentation>
+        </xs:annotation>
+        <xs:attribute name="id" type="xs:string"/>
+        <xs:attribute name="refId" type="xs:string"/>
+    </xs:complexType>
+    <xs:complexType name="stringID">
+        <xs:annotation>
+            <xs:documentation>Teksti baas, varustatud atribuudiga ID dokumendi siseseks viitamiseks (v.a. enumeration
+                loendid)
+            </xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="id" type="xs:string"/>
+                <xs:attribute name="refId" type="xs:string"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:complexType name="changestringID" mixed="true">
+        <xs:annotation>
+            <xs:documentation>Muutust sisaldava teksti baas, varustatud atribuudiga ID dokumendi siseseks viitamiseks
+                (v.a. enumeration loendid)
+            </xs:documentation>
+        </xs:annotation>
+        <xs:attribute name="id" type="xs:string"/>
+        <xs:attribute name="refId" type="xs:string"/>
+        <xs:attributeGroup ref="tekst.staatus"/>
+    </xs:complexType>
+    <xs:complexType name="timeID">
+        <xs:annotation>
+            <xs:documentation>Kellaaja baas, varustatud atribuudiga ID dokumendi siseseks viitamiseks</xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:extension base="xs:time">
+                <xs:attribute name="id" type="xs:string"/>
+                <xs:attribute name="refId" type="xs:string"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:complexType name="dateID">
+        <xs:annotation>
+            <xs:documentation>Kuupäeva baas, varustatud atribuudiga ID dokumendi siseseks viitamiseks</xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:extension base="xs:date">
+                <xs:attribute name="id" type="xs:string"/>
+                <xs:attribute name="refId" type="xs:string"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:complexType name="gYearID">
+        <xs:annotation>
+            <xs:documentation>Aasta baas, varustatud atribuudiga ID dokumendi siseseks viitamiseks</xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:extension base="xs:gYear">
+                <xs:attribute name="id" type="xs:string"/>
+                <xs:attribute name="refId" type="xs:string"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:complexType name="base64BinaryID">
+        <xs:annotation>
+            <xs:documentation>Faili elemendi baas varustatud ID-ga</xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:extension base="xs:base64Binary">
+                <xs:attribute name="id" type="xs:string"/>
+                <xs:attribute name="refId" type="xs:string"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:complexType name="nonNegativeIntegerID">
+        <xs:annotation>
+            <xs:documentation>Positiivse täisarvu baas, varustatud atribuudiga ID dokumendi siseseks viitamiseks
+            </xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:extension base="xs:nonNegativeInteger">
+                <xs:attribute name="id" type="xs:string"/>
+                <xs:attribute name="refId" type="xs:string"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:complexType name="anyURIID">
+        <xs:annotation>
+            <xs:documentation>Tavalise urli baas, varustatud atribuudiga ID dokumendi siseseks viitamiseks
+            </xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:extension base="xs:anyURI">
+                <xs:attribute name="id" type="xs:string"/>
+                <xs:attribute name="refId" type="xs:string"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:element name="b" type="tavatekstID">
+        <xs:annotation>
+            <xs:documentation>Paksus kirjas tekst</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="i" type="tavatekstID">
+        <xs:annotation>
+            <xs:documentation>Kaldkirjas tekst</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="u" type="tavatekstID">
+        <xs:annotation>
+            <xs:documentation>Allajoonitud tekst</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="ylaIndeks" type="stringID">
+        <xs:annotation>
+            <xs:documentation>Ülaindeks</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="alaIndeks" type="stringID">
+        <xs:annotation>
+            <xs:documentation>Alaindeks</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="sup" type="stringID">
+        <xs:annotation>
+            <xs:documentation>Ülaindeks</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="sub" type="stringID">
+        <xs:annotation>
+            <xs:documentation>Alaindeks</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="HTMLKonteiner" type="stringID">
+        <xs:annotation>
+            <xs:documentation>HTML konteiner</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="tavatekst" type="tavatekstID">
+        <xs:annotation>
+            <xs:documentation>Vormindatud tekst</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="loend">
+        <xs:annotation>
+            <xs:documentation>Loend</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="TypeID">
+                    <xs:sequence>
+                        <xs:choice>
+                            <xs:element name="number" type="changestringID">
+                                <xs:annotation>
+                                    <xs:documentation>Loendi number</xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="taht" type="changestringID">
+                                <xs:annotation>
+                                    <xs:documentation>Loendi täht</xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                        </xs:choice>
+                        <xs:element ref="tavatekst" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>Vormindatud tekst</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="kuvatavNr" type="stringID">
+        <xs:annotation>
+            <xs:documentation>Numbrilise elemendi kuvamise viis</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:complexType name="changeType" mixed="true">
+        <xs:annotation>
+            <xs:documentation>Muudatuse elemendi baas</xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="kommentaar" type="changestringID">
+                <xs:annotation>
+                    <xs:documentation>Kasutaja kommentaar</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:all>
+        <xs:attribute name="id" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>Atribuut unikaalne identifikaator</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="tyyp" type="changeAttrType">
+            <xs:annotation>
+                <xs:documentation>Atribuut tüüp - "insert" või "delete"</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="kuupaev" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>Atribuut kuupäev</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="autor" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>Atribuut autor</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="muutusElementId" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>Muutuse elemendi ID</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="pikkus" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>Atribuut autor</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="positsioonTekstis" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>Atribuut autor</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:simpleType name="changeAttrType">
+        <xs:annotation>
+            <xs:documentation>Muudatuse elemendi atribuudi tegevuste loetelu</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="lisa"/>
+            <xs:enumeration value="kustuta"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="legaaldefinitsioonType">
+        <xs:annotation>
+            <xs:documentation>Legaaldefinitsioon</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:annotation>
+                <xs:documentation>Legaaldefinitsioon</xs:documentation>
+            </xs:annotation>
+            <xs:extension base="TypeID">
+                <xs:sequence>
+                    <xs:element name="moiste" type="stringID">
+                        <xs:annotation>
+                            <xs:documentation>Mõiste</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="maaratlus" type="stringID">
+                        <xs:annotation>
+                            <xs:documentation>Mõiste määratlus</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:simpleType name="piirangType">
+        <xs:annotation>
+            <xs:documentation>AK</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="AK"/>
+            <xs:enumeration value="Asutusesiseseks kasutamiseks"/>
+            <xs:enumeration value=""/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="juurdepaasPiirangType">
+        <xs:annotation>
+            <xs:documentation>Juurdepääsupiirang</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:sequence>
+                    <xs:element name="piirang" type="piirangType">
+                        <xs:annotation>
+                            <xs:documentation>Piirangu määratlus</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="teabeValdaja" type="stringID">
+                        <xs:annotation>
+                            <xs:documentation>Piirangu kehtestanud teabevaldaja</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="piirangAlgus" type="dateID">
+                        <xs:annotation>
+                            <xs:documentation>Piirangu alguskuupäev</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="piirangLopp" type="piirangLoppType">
+                        <xs:annotation>
+                            <xs:documentation>Piirangu lõpp</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="piirangAlus" type="stringID">
+                        <xs:annotation>
+                            <xs:documentation>Piirangu õiguslik alus</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="piirangPikendamine" type="piirangPikendamineType" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Piirangu pikendamine</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="piirangKehtetuseAlgus" type="dateID" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Piirangu kehtetuks tunnistamise kuupäev</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="piirangKehtetuseAlus" type="stringID" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Piirangu kehtetuks tunnistamise õiguslik alus</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="piirangLoppType">
+        <xs:annotation>
+            <xs:documentation>Juurdepääsupiirangu lõpp</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:choice>
+                    <xs:element name="piirangLoppKuupaev" type="dateID" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Piirangu lõpukuupäev</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="piirangLoppSyndmus" type="stringID" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Piirangu lõpetav sündmus</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:choice>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="piirangPikendamineType">
+        <xs:annotation>
+            <xs:documentation>Juurdepääsupiirangu pikendamine</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:all>
+                    <xs:element name="pikendamineAlgus" type="dateID" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Piirangu pikendamise kuupäev</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="pikendamineLopp" type="stringID" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Pikendatud piirangu lõpp</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="pikendamineAlus" type="stringID" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Piirangu pikendamise õiguslik alus</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:all>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="lisaViideType">
+        <xs:annotation>
+            <xs:documentation>Lisa viide</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="TypeID">
+                <xs:sequence>
+                    <xs:element name="lisaViit" minOccurs="0" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation>Viidatav lisa</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:complexContent>
+                                <xs:extension base="TypeID">
+                                    <xs:sequence>
+                                        <xs:element ref="sisuTekst" minOccurs="0" maxOccurs="unbounded"/>
+                                    </xs:sequence>
+                                </xs:extension>
+                            </xs:complexContent>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="lisaPealkiri" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Lisa pealkiri</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:complexContent>
+                                <xs:extension base="TypeID">
+                                    <xs:sequence>
+                                        <xs:element name="lisaNimi" type="stringID">
+                                            <xs:annotation>
+                                                <xs:documentation>Lisa teksitiline pealkiri</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                        <xs:element ref="veaparandus" minOccurs="0"/>
+                                        <xs:element ref="muutmismarge" minOccurs="0"/>
+                                    </xs:sequence>
+                                </xs:extension>
+                            </xs:complexContent>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+</xs:schema>
