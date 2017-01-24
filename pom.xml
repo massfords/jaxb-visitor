@@ -3,7 +3,7 @@
     <groupId>com.massfords</groupId>
     <artifactId>jaxb-visitor</artifactId>
     <name>JAXB Visitor Plugin</name>
-    <version>2.5</version>
+    <version>2.6-SNAPSHOT</version>
     <description>XJC plugin that adds the Visitor pattern to JAXB generated
         classes. Generates a simple Visitor interface as well as separate
         Traverser and sample implementations to perform depth first traversals
@@ -22,7 +22,7 @@
         <url>https://github.com/massfords/jaxb-visitor</url>
         <connection>scm:git:git://github.com/massfords/jaxb-visitor.git</connection>
         <developerConnection>scm:git:git@github.com:massfords/jaxb-visitor.git</developerConnection>
-      <tag>jaxb-visitor-2.5</tag>
+      <tag>HEAD</tag>
   </scm>
     <distributionManagement>
         <snapshotRepository>
