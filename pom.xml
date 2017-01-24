@@ -39,7 +39,7 @@
             <id>mark</id>
             <name>Mark Ford</name>
             <email>mark@massfords.com</email>
-            <url>code.massfords.com</url>
+            <url>www.massfords.com</url>
         </developer>
     </developers>
     <build>
