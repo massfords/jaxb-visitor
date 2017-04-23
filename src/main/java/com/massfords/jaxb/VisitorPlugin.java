@@ -154,7 +154,7 @@ public class VisitorPlugin extends Plugin {
             
             // create progress monitor for traversing visitor
             CreateTraversingVisitorProgressMonitorInterface progMon =
-                    new CreateTraversingVisitorProgressMonitorInterface(visitable,
+                    new CreateTraversingVisitorProgressMonitorInterface(
                             outline, vizPackage);
             progMon.run(sorted, directClasses);
             JDefinedClass progressMonitor = progMon.getOutput();

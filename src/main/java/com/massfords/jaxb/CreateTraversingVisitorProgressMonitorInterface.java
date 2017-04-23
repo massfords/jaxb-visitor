@@ -1,7 +1,6 @@
 package com.massfords.jaxb;
 
 import com.sun.codemodel.JClass;
-import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMod;
 import com.sun.codemodel.JPackage;
 import com.sun.tools.xjc.outline.ClassOutline;
@@ -18,19 +17,16 @@ import java.util.Set;
  */
 class CreateTraversingVisitorProgressMonitorInterface extends CodeCreator {
 
-    private final JDefinedClass visitable;
-
-    CreateTraversingVisitorProgressMonitorInterface(JDefinedClass visitable, Outline outline,
+    CreateTraversingVisitorProgressMonitorInterface(Outline outline,
                                                     JPackage jPackage) {
         super(outline, jPackage);
-        this.visitable = visitable;
     }
 
     @Override
     protected void run(Set<ClassOutline> classes, Set<JClass> directClasses) {
         setOutput( outline.getClassFactory().createInterface(jpackage, "TraversingVisitorProgressMonitor", null) );
-        getOutput().method(JMod.NONE, void.class, "visited").param(visitable, "aVisitable");
-        getOutput().method(JMod.NONE, void.class, "traversed").param(visitable, "aVisitable");
+        getOutput().method(JMod.NONE, void.class, "visited").param(Object.class, "aVisitable");
+        getOutput().method(JMod.NONE, void.class, "traversed").param(Object.class, "aVisitable");
     }
 
 }

@@ -8,8 +8,8 @@ import javax.annotation.Generated;
 public interface TraversingVisitorProgressMonitor {
 
 
-    void visited(Visitable aVisitable);
+    void visited(Object aVisitable);
 
-    void traversed(Visitable aVisitable);
+    void traversed(Object aVisitable);
 
 }
