@@ -93,7 +93,7 @@ jaxb-visitor is now in Maven Central. You only need to configure the dependency 
 | ------------- | :-------------:| 
 | -Xvisitor | Main option name that triggers the plugin's behavior | 
 | -Xvisitor-package:com.your.package.name | Tells the plugin which package to use for the generated code. If not specified, defaults to first package encountered during codegen | 
-| -Xvisitor-includType | Changes the default code generator for the visitor and traverse to avoid overloading and instead include the type name. This is in response to Issue #8 where very large schemas resulted in a large number of overloaded methods which can be a performance issue. | 
+| -Xvisitor-includeType | Changes the default code generator for the visitor and traverse to avoid overloading and instead include the type name. This is in response to Issue #8 where very large schemas resulted in a large number of overloaded methods which can be a performance issue. | 
 | -Xvisitor-noClasses | Skips the generation of classes. The plugin will only generate interfaces and modify the beans to support the visitor pattern. | 
 
  	
