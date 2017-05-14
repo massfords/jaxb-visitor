@@ -85,7 +85,7 @@ jaxb-visitor is now in Maven Central. You only need to configure the dependency 
        <dependency>
           <groupId>com.massfords</groupId>
           <artifactId>jaxb-visitor</artifactId>
-          <version>2.0</version>
+          <version>2.7</version>
        </dependency>
 
 
@@ -131,7 +131,7 @@ jaxb-visitor is now in Maven Central. You only need to configure the dependency 
                       <plugin>
                          <groupId>com.massfords</groupId>
                          <artifactId>jaxb-visitor</artifactId>
-                         <version>2.0</version>
+                         <version>2.7</version>
                       </plugin>
                   </plugins>
               </configuration>
@@ -147,7 +147,7 @@ jaxb-visitor is now in Maven Central. You only need to configure the dependency 
                <dependency>
                   <groupId>com.massfords</groupId>
                   <artifactId>jaxb-visitor</artifactId>
-                  <version>2.0</version>
+                  <version>2.7</version>
                </dependency>
             </dependencies>
             <executions>
@@ -187,7 +187,7 @@ jaxb-visitor is now in Maven Central. You only need to configure the dependency 
             <dependency>
               <groupId>com.massfords</groupId>
               <artifactId>jaxb-visitor</artifactId>
-              <version>2.0</version>
+              <version>2.7</version>
             </dependency>
           </dependencies>
           <executions>
