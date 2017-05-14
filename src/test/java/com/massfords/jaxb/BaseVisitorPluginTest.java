@@ -13,7 +13,7 @@ import java.util.List;
  */
 public abstract class BaseVisitorPluginTest extends RunXJC2Mojo {
 
-    private final GeneratedCodeFixture generatedCodeFixture;
+    final GeneratedCodeFixture generatedCodeFixture;
     private final String srcDir;
     private List<String> extraArgs;
 

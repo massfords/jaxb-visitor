@@ -19,7 +19,21 @@ class GeneratedCodeFixture extends Assert {
         this.expectedPathPattern = expectedPathPattern;
         this.generatedPathPattern = generatedPathPattern;
     }
-    
+
+    void assertInterfaces() throws Exception {
+        String[] files = {
+                "Traverser",
+                "TraversingVisitorProgressMonitor",
+                "Visitor",
+                "Visitable"
+        };
+
+        for(String f : files) {
+            assertClassGenerated(f);
+            assertClassMatches(f);
+        }
+    }
+
     void assertAllFiles() throws Exception {
         String[] files = {
                 "DepthFirstTraverserImpl",
@@ -35,7 +49,6 @@ class GeneratedCodeFixture extends Assert {
             assertClassGenerated(f);
             assertClassMatches(f);
         }
-        
     }
     
     void assertClassGenerated(String className) {

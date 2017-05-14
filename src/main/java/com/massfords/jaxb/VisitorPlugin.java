@@ -41,6 +41,11 @@ public class VisitorPlugin extends Plugin {
     private String packageName;
     private boolean includeType = false;
 
+    /**
+     * If true, we generate default implementations for some of the generated interfaces
+     */
+    private boolean generateClasses = true;
+
     @Override
     public String getOptionName() {
         return "Xvisitor";
@@ -66,6 +71,10 @@ public class VisitorPlugin extends Plugin {
         }
         if (arg.equals("-Xvisitor-includeType")) {
             includeType = true;
+            return 1;
+        }
+        if (arg.equals("-Xvisitor-noClasses")) {
+            generateClasses = false;
             return 1;
         }
         return 0;
@@ -139,32 +148,32 @@ public class VisitorPlugin extends Plugin {
                     new CreateTraverserInterface(visitor, outline, vizPackage, traverseMethodNamer);
             createTraverserInterface.run(sorted, directClasses);
             JDefinedClass traverser = createTraverserInterface.getOutput();
-            
-            // create base visitor class
-            CreateBaseVisitorClass createBaseVisitorClass =
-                    new CreateBaseVisitorClass(visitor, outline, vizPackage, visitMethodNamer);
-            createBaseVisitorClass.run(sorted, directClasses);
-            createBaseVisitorClass.getOutput();
 
-            // create default generic depth first traverser class
-            CreateDepthFirstTraverserClass createDepthFirstTraverserClass =
-                    new CreateDepthFirstTraverserClass(visitor, traverser,
-                            visitable, outline, vizPackage, traverseMethodNamer);
-            createDepthFirstTraverserClass.run(sorted, directClasses);
-            
             // create progress monitor for traversing visitor
             CreateTraversingVisitorProgressMonitorInterface progMon =
                     new CreateTraversingVisitorProgressMonitorInterface(
                             outline, vizPackage);
             progMon.run(sorted, directClasses);
             JDefinedClass progressMonitor = progMon.getOutput();
-            
-            // create traversing visitor class
-            CreateTraversingVisitorClass createTraversingVisitorClass =
-                    new CreateTraversingVisitorClass(visitor, progressMonitor,
-                            traverser, outline, vizPackage, visitMethodNamer, traverseMethodNamer);
-            createTraversingVisitorClass.run(sorted, directClasses);
-            
+
+            if (generateClasses) {
+                // create base visitor class
+                CreateBaseVisitorClass createBaseVisitorClass =
+                        new CreateBaseVisitorClass(visitor, outline, vizPackage, visitMethodNamer);
+                createBaseVisitorClass.run(sorted, directClasses);
+
+                // create default generic depth first traverser class
+                CreateDepthFirstTraverserClass createDepthFirstTraverserClass =
+                        new CreateDepthFirstTraverserClass(visitor, traverser,
+                                visitable, outline, vizPackage, traverseMethodNamer);
+                createDepthFirstTraverserClass.run(sorted, directClasses);
+
+                // create traversing visitor class
+                CreateTraversingVisitorClass createTraversingVisitorClass =
+                        new CreateTraversingVisitorClass(visitor, progressMonitor,
+                                traverser, outline, vizPackage, visitMethodNamer, traverseMethodNamer);
+                createTraversingVisitorClass.run(sorted, directClasses);
+            }
         } catch (Throwable t) {
             t.printStackTrace();
             return false;
