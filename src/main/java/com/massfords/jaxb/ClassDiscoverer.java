@@ -123,13 +123,11 @@ class ClassDiscoverer {
     }
 
     private static void addIfDirectClass(Set<String> directClassNames, JType collType) {
-    	//Skip if the `direct`class is also available as JDefinedClass (see ISSUE-12).
-    	if(collType.owner()._getClass(collType.fullName()) != null){
-    		System.out.println("Skipping: " + collType.fullName());
-    		return;
-    	}
         if (collType.getClass().getName().equals("com.sun.codemodel.JDirectClass")) {
-            directClassNames.add(collType.fullName());
+        	//Skip if the `direct`class is also available as JDefinedClass (see ISSUE-12).
+        	if(collType.owner()._getClass(collType.fullName()) == null){
+                directClassNames.add(collType.fullName());
+        	} 
         }
     }
 
