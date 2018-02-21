@@ -181,7 +181,10 @@ jaxb-visitor is now in Maven Central. You only need to configure the dependency 
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>jaxb2-maven-plugin</artifactId>
           <configuration>
-            <arguments>-Xvisitor -Xvisitor-package:com.massfords.humantask</arguments>
+            <arguments>
+              <argument>-Xvisitor</argument>
+              <argument>-Xvisitor-package:com.massfords.humantask</argument>
+            </arguments>
           </configuration>
           <dependencies>
             <dependency>
