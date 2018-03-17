@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jxb:bindings xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+              xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+              xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance"
+              xmlns:xs="http://www.w3.org/2001/XMLSchema"
+              xmlns:vec="http://www.prostep.org/ecad-if/2011/vec"
+              node="/xs:schema"
+              schemaLocation="vec-minified.xsd"
+              version="2.1"
+              extensionBindingPrefixes="xjc">
+   <jxb:globalBindings>
+      <xjc:simple/>
+      <jxb:serializable uid="1"/>
+   </jxb:globalBindings>
+   <jxb:schemaBindings>
+      <jxb:package name="org.prostep.ecadif.vec113"/>
+      <jxb:nameXmlTransform>
+         <jxb:typeName prefix="Vec"/>
+      </jxb:nameXmlTransform>
+   </jxb:schemaBindings>
+   <jxb:bindings node="//xs:complexType[@name='DocumentVersion']">
+      <jxb:bindings node=".//xs:element[@name='ReferencedPart']">
+         <jxb:property>
+            <jxb:baseType name="org.prostep.ecadif.vec113.VecPartVersion"/>
+         </jxb:property>
+      </jxb:bindings>
+   </jxb:bindings>
+</jxb:bindings>
