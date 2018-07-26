@@ -1,8 +1,18 @@
 package com.massfords.jaxb;
 
+import static com.massfords.jaxb.ClassDiscoverer.findAllDeclaredAndInheritedFields;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+
+import com.sun.codemodel.JAnnotationUse;
 import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JFieldVar;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
 import com.sun.codemodel.JPackage;
@@ -13,14 +23,6 @@ import com.sun.tools.xjc.model.CPropertyInfo;
 import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.FieldOutline;
 import com.sun.tools.xjc.outline.Outline;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-
-import static com.massfords.jaxb.ClassDiscoverer.findAllDeclaredAndInheritedFields;
 
 
 /**
@@ -42,17 +44,19 @@ class CreateDepthFirstTraverserClass extends CodeCreator {
      * flag.
      */
     private final Function<String,String> traverseMethodNamer;
+	private final boolean noIdrefTraversal;
 
     CreateDepthFirstTraverserClass(JDefinedClass visitor, JDefinedClass traverser,
                                    JDefinedClass visitable,
                                    Outline outline,
                                    JPackage jPackageackage,
-                                   Function<String, String> traverseMethodNamer) {
+                                   Function<String, String> traverseMethodNamer, boolean noIdrefTraversal) {
         super(outline, jPackageackage);
         this.visitor = visitor;
         this.traverser = traverser;
         this.visitable = visitable;
         this.traverseMethodNamer = traverseMethodNamer;
+		this.noIdrefTraversal = noIdrefTraversal;
     }
 
     @Override
@@ -94,7 +98,7 @@ class CreateDepthFirstTraverserClass extends CodeCreator {
                 for (FieldOutline fieldOutline : fields) {
                     JType rawType = fieldOutline.getRawType();
                     JMethod getter = ClassDiscoverer.getter(fieldOutline);
-                    if (getter != null) {
+                    if (getter != null &&  !(noIdrefTraversal && isIdrefField(fieldOutline))) {
                         boolean isJAXBElement = ClassDiscoverer.isJAXBElement(getter.type());
                         CPropertyInfo propertyInfo = fieldOutline.getPropertyInfo();
                         boolean isCollection = propertyInfo.isCollection();
@@ -137,6 +141,19 @@ class CreateDepthFirstTraverserClass extends CodeCreator {
         } finally {
             getPackage().remove(scratch);
         }
+    }
+    
+    private boolean isIdrefField(FieldOutline fieldOutline) {
+    	JFieldVar field = ClassDiscoverer.field(fieldOutline);
+    	if(field == null) {
+    		return false;
+    	}
+    	for(JAnnotationUse use :  field.annotations()) {
+    		if(use.getAnnotationClass().fullName().equals("javax.xml.bind.annotation.XmlIDREF")) {
+    			return true;
+    		}
+    	}    	
+    	return false;
     }
 
     /**
