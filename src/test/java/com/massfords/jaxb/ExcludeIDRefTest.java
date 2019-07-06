@@ -29,6 +29,7 @@ public class ExcludeIDRefTest extends RunXJC2Mojo {
     public List<String> getArgs() {
         final List<String> args = new ArrayList<>(super.getArgs());
         args.add("-Xvisitor");
+        args.add("-Xvisitor-noIdrefTraversal");
         args.add("-Xvisitor-package:org.prostep.ecadif.vec113.visitor");
         return args;
     }

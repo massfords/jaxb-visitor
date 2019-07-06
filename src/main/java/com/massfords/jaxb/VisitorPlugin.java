@@ -45,6 +45,11 @@ public class VisitorPlugin extends Plugin {
      * If true, we generate default implementations for some of the generated interfaces
      */
     private boolean generateClasses = true;
+    
+    /**
+     * If true, do not traverse idrefs
+     */
+    private boolean noIdrefTraversal = false;
 
     @Override
     public String getOptionName() {
@@ -75,6 +80,10 @@ public class VisitorPlugin extends Plugin {
         }
         if (arg.equals("-Xvisitor-noClasses")) {
             generateClasses = false;
+            return 1;
+        }
+        if (arg.equals("-Xvisitor-noIdrefTraversal")) {
+        	noIdrefTraversal = true;
             return 1;
         }
         return 0;
@@ -165,7 +174,7 @@ public class VisitorPlugin extends Plugin {
                 // create default generic depth first traverser class
                 CreateDepthFirstTraverserClass createDepthFirstTraverserClass =
                         new CreateDepthFirstTraverserClass(visitor, traverser,
-                                visitable, outline, vizPackage, traverseMethodNamer);
+                                visitable, outline, vizPackage, traverseMethodNamer, noIdrefTraversal);
                 createDepthFirstTraverserClass.run(sorted, directClasses);
 
                 // create traversing visitor class

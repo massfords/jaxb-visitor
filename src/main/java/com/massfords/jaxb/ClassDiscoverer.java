@@ -165,6 +165,13 @@ class ClassDiscoverer {
             }
         }
     }
+    
+    static JFieldVar field(FieldOutline fieldOutline) {
+        final JDefinedClass theClass = fieldOutline.parent().implClass;
+        final String privateName = fieldOutline.getPropertyInfo().getName(false);
+        
+        return theClass.fields().get(privateName);
+    }
 
     /**
      * Returns true if the type is a JAXBElement. In the case of JAXBElements, we want to traverse its
