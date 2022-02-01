@@ -14,9 +14,10 @@ import com.sun.tools.xjc.model.CPropertyInfo;
 import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.FieldOutline;
 import com.sun.tools.xjc.outline.Outline;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlElements;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlElements;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;

@@ -6,8 +6,8 @@ import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JPackage;
 import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.Outline;
+import jakarta.annotation.Generated;
 
-import javax.annotation.Generated;
 import java.util.Set;
 
 /**
