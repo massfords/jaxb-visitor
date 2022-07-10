@@ -3,7 +3,7 @@
     <groupId>com.massfords</groupId>
     <artifactId>jaxb-visitor</artifactId>
     <name>JAXB Visitor Plugin</name>
-    <version>2.10-SNAPSHOT</version>
+    <version>2.9-SNAPSHOT</version>
     <description>XJC plugin that adds the Visitor pattern to JAXB generated
         classes. Generates a simple Visitor interface as well as separate
         Traverser and sample implementations to perform depth first traversals
