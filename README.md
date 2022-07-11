@@ -1,8 +1,6 @@
-jaxb-visitor
-============
+# jaxb-visitor
  
-What it does
-------------
+## What it does
  
 This plugin adds the visitor pattern that includes all of the JAXB objects 
 produced by the xjc compiler. The plugin produces the following changes in the beans:
@@ -14,15 +12,18 @@ produced by the xjc compiler. The plugin produces the following changes in the b
 * create BaseVisitor class with no-op methods for each visit as a suitable base class for providing your own operations
 * create TraversingVisitor that has a Visitor and Traverser and performs a traversing visit on all nodes in the graph
 * create TraversingVisitorProgressMonitor to get callbacks when a bean is visited and traversed 
- 
-Changes in 2.0
---------------
+
+### Changes in 3.0
+
+- ***Upgrade to jakarta package for XJC**
+- use maven invoker for the tests
+
+### Changes in 2.0
 
 Version 2.0 of the plugin changed the code generator to produce a Visitor and 
 supporting classes that have a return type and an Exception on each visit method.
 
-Visitor Pattern
----------------
+## Visitor Pattern
 The standard [Visitor Pattern](http://en.wikipedia.org/wiki/Visitor_pattern) provides a way to perform an operation on the elements 
 of an object structure without changing the code for the object on which it 
 operates (see [Gang of Four](http://en.wikipedia.org/wiki/Design_Patterns)).
@@ -56,10 +57,10 @@ single nodes without traversing or work with a Traverser to visit the entire gra
 The plugin generates a few classes to help provide the user a starting point in 
 their implementations.
 
-| Class         | Description   | 
-| ------------- | :-------------:| 
-| DepthFirstTraverser | Implementation of the Traverser interface that traverses all of the children in a depth first order | 
-| TraversingVisitor      | Implementation of the Visitor interface that contains a delegate Visitor for its operation and a Traverser to traverse the graph. | 
+| Class                            | Description                                                                                                                          |
+|----------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
+| DepthFirstTraverser              | Implementation of the Traverser interface that traverses all of the children in a depth first order                                  |
+| TraversingVisitor                | Implementation of the Visitor interface that contains a delegate Visitor for its operation and a Traverser to traverse the graph.    | 
 | TraversingVisitorProgressMonitor | Interface that receives callbacks when a node is visisted or traversed. Useful if you're maintaing a stack and pushing/popping nodes | 
 
  	
@@ -88,14 +89,13 @@ jaxb-visitor is now in Maven Central. You only need to configure the dependency 
           <version>2.7</version>
        </dependency>
 
-
-| Command Line Argument | Description   | 
-| ------------- | :-------------:| 
-| -Xvisitor | Main option name that triggers the plugin's behavior | 
-| -Xvisitor-package:com.your.package.name | Tells the plugin which package to use for the generated code. If not specified, defaults to first package encountered during codegen | 
-| -Xvisitor-includeType | Changes the default code generator for the visitor and traverse to avoid overloading and instead include the type name. This is in response to Issue #8 where very large schemas resulted in a large number of overloaded methods which can be a performance issue. | 
-| -Xvisitor-noClasses | Skips the generation of classes. The plugin will only generate interfaces and modify the beans to support the visitor pattern. | 
-| -Xvisitor-noIdrefTraversal | The DepthFirstTraverserImpl will only traverse the XML tree, and will not follow IDREFs |
+| Command Line Argument                   | Description                                                                                                                                                                                                                                                         |
+|-----------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| -Xvisitor                               | Main option name that triggers the plugin's behavior                                                                                                                                                                                                                | 
+| -Xvisitor-package:com.your.package.name | Tells the plugin which package to use for the generated code. If not specified, defaults to first package encountered during codegen                                                                                                                                | 
+| -Xvisitor-includeType                   | Changes the default code generator for the visitor and traverse to avoid overloading and instead include the type name. This is in response to Issue #8 where very large schemas resulted in a large number of overloaded methods which can be a performance issue. | 
+| -Xvisitor-noClasses                     | Skips the generation of classes. The plugin will only generate interfaces and modify the beans to support the visitor pattern.                                                                                                                                      | 
+| -Xvisitor-noIdrefTraversal              | The DepthFirstTraverserImpl will only traverse the XML tree, and will not follow IDREFs                                                                                                                                                                             |
 
  	
 ### maven-jaxb2-plugin Sample
@@ -205,8 +205,7 @@ jaxb-visitor is now in Maven Central. You only need to configure the dependency 
         </plugin>
 
 
-Sample Projects
-===============
+# Sample Projects
 
 If you are using the plugin in your project and you are able to share your schema 
 then please feel free to add a comment here and I'll add a link or some 
@@ -214,15 +213,13 @@ documentation describing your project.
 
 [calc-viz](https://github.com/massfords/calcviz)
 
-JAXBElement Behavior
-====================
+# JAXBElement Behavior
 
 The JAXB tutorial suggests modifying your schema to avoid having JAXBElement<?> types. 
 The problem with the JAXBElement wrapper is that you don't have a distinct class 
 for the top level type which makes visiting and traversing difficult.
 
-Use Simple Binding
-------------------
+# Use Simple Binding
 
 The simple binding may help reduce some of the JAXBElement generation.
 Example Schema with JAXBElements
@@ -286,8 +283,7 @@ method could be working with any of the following operators:
 
         =, !=, >, >=, <, <=.
 
-1.13+ handling
---------------
+# 1.13+ handling
 
 An additional step in the VisitorPlugin? adds a QName to beans that are wrapped 
 within a JAXBElement. This field is automatically set via an Unmarshaller 
@@ -309,14 +305,12 @@ Listener.
                     }
                 });
 
-1.12 handling
--------------
+# 1.12 handling
 
 The generated visitor and traversal classes do not address this issue. One 
 workaround here is that the implementor could store the name during the traversal.
 
-Current Approach
-----------------
+# Current Approach
 
 The DepthFirstTraverserImpl? generated by the plugin is the class most affected 
 by JAXBElements. When examining a generated bean, this portion of the code 
@@ -327,13 +321,13 @@ traversed.
 
 The decision for whether to traverse a any element is made by examining its type.
 
-| Type | Traversal Code | 
-| ------------- | :-------------:| 
-| SomeGeneratedBean	| null check required but no cast since the generated bean will implement Visitable | 
-| SomeSimpleType | no traversal since simple types are not Visitable | 
-| Collection of SomeGeneratedBean | for each bean, null check required but no cast since the generated bean will implement Visitable | 
-| Collection of SomeSimpleType | no traversal since simple types are not Visitable | 
-| Collection of ? extends Object | for each bean check for instanceof Visitable and traverse if it is | 
-| JAXBElement of SomeGeneratedBean | check element for not null and traverse its value if available | 
-| JAXBElement of ? extends Object | check element for not null and its value for instanceof Visitable and traverse if it is | 
+| Type                             | Traversal Code                                                                                   |
+|----------------------------------|--------------------------------------------------------------------------------------------------|
+| SomeGeneratedBean	               | null check required but no cast since the generated bean will implement Visitable                | 
+| SomeSimpleType                   | no traversal since simple types are not Visitable                                                | 
+| Collection of SomeGeneratedBean  | for each bean, null check required but no cast since the generated bean will implement Visitable | 
+| Collection of SomeSimpleType     | no traversal since simple types are not Visitable                                                | 
+| Collection of ? extends Object   | for each bean check for instanceof Visitable and traverse if it is                               | 
+| JAXBElement of SomeGeneratedBean | check element for not null and traverse its value if available                                   | 
+| JAXBElement of ? extends Object  | check element for not null and its value for instanceof Visitable and traverse if it is          | 
 
