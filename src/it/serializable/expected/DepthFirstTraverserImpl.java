@@ -1,4 +1,4 @@
-package org.example.visitor.serializable;
+package org.example.visitor;
 
 import java.io.Serializable;
 import jakarta.annotation.Generated;

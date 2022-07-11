@@ -1,4 +1,4 @@
-package org.example.direct;
+package org.example.visitor;
 
 import extended.Parameter;
 import extended.Parameter2;

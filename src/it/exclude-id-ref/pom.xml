@@ -31,7 +31,7 @@
                     <args>
                         <arg>-Xvisitor</arg>
                         <arg>-Xvisitor-noIdrefTraversal</arg>
-                        <arg>-Xvisitor-package:org.prostep.ecadif.vec113.visitor</arg>
+                        <arg>-Xvisitor-package:org.example.visitor</arg>
                     </args>
                     <plugins>
                         <plugin>

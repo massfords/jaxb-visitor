@@ -31,7 +31,7 @@
                     <args>
                         <arg>-Xvisitor</arg>
                         <arg>-Xvisitor-includeType</arg>
-                        <arg>-Xvisitor-package:org.nooverload.visitor</arg>
+                        <arg>-Xvisitor-package:org.example.visitor</arg>
                     </args>
                     <plugins>
                         <plugin>

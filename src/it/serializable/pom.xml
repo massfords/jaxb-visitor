@@ -30,7 +30,7 @@
                     </schemaDirectory>
                     <args>
                         <arg>-Xvisitor</arg>
-                        <arg>-Xvisitor-package:org.example.visitor.serializable</arg>
+                        <arg>-Xvisitor-package:org.example.visitor</arg>
                     </args>
                     <plugins>
                         <plugin>

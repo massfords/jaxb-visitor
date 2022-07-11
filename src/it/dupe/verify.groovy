@@ -2,6 +2,6 @@ import com.massfords.jaxb.test.Fixture
 
 File actualDir = new File(basedir, "target/generated-sources/xjc")
 File expectedDir = new File(basedir, "expected")
-String packageAsPath = "dupe"
+String packageAsPath = "org/example/visitor"
 
-Fixture.runStandardTests(actualDir, expectedDir, packageAsPath);
+assert Fixture.runStandardTests(actualDir, expectedDir, packageAsPath);

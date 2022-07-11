@@ -1,4 +1,4 @@
-package dupe;
+package org.example.visitor;
 
 import _2010._02.tyviseadus_1_10.Aktinimi;
 import _2010._02.tyviseadus_1_10.AlampunktType;

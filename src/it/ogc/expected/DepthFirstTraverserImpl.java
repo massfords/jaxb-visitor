@@ -1,4 +1,4 @@
-package ogc.visitor;
+package org.example.visitor;
 
 import jakarta.annotation.Generated;
 import jakarta.xml.bind.JAXBElement;

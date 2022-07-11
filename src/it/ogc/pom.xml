@@ -30,7 +30,7 @@
                     </schemaDirectory>
                     <args>
                         <arg>-Xvisitor</arg>
-                        <arg>-Xvisitor-package:ogc.visitor</arg>
+                        <arg>-Xvisitor-package:org.example.visitor</arg>
                     </args>
                     <plugins>
                         <plugin>
@@ -56,9 +56,10 @@
                     <directories>
                         <directory>${project.build.directory}/generated-sources/xjc</directory>
                     </directories>
-<!--                    <includes>-->
-<!--                        <include>org/**/*.java</include>-->
-<!--                    </includes>-->
+                    <includes>
+                        <include>org/**/*.java</include>
+                        <include>net/**/*.java</include>
+                    </includes>
                     <encoding>utf-8</encoding>
                 </configuration>
                 <executions>

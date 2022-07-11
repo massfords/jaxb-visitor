@@ -1,4 +1,4 @@
-package org.example.direct;
+package org.example.visitor;
 
 import jakarta.annotation.Generated;
 

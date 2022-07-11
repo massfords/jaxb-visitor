@@ -1,4 +1,4 @@
-package dupe;
+package org.example.visitor;
 
 import java.io.Serializable;
 

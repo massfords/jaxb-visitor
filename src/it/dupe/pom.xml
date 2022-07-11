@@ -30,7 +30,7 @@
                     </schemaDirectory>
                     <args>
                         <arg>-Xvisitor</arg>
-                        <arg>-Xvisitor-package:dupe</arg>
+                        <arg>-Xvisitor-package:org.example.visitor</arg>
                     </args>
                     <plugins>
                         <plugin>
@@ -57,7 +57,7 @@
                         <directory>${project.build.directory}/generated-sources/xjc</directory>
                     </directories>
                     <includes>
-                        <include>dupe/**/*.java</include>
+                        <include>org/**/*.java</include>
                     </includes>
                     <encoding>utf-8</encoding>
                 </configuration>

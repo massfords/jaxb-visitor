@@ -1,4 +1,4 @@
-package org.prostep.ecadif.vec113.visitor;
+package org.example.visitor;
 
 import jakarta.annotation.Generated;
 

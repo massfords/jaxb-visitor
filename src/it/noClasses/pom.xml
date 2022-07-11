@@ -31,7 +31,7 @@
                     <args>
                         <arg>-Xvisitor</arg>
                         <arg>-Xvisitor-noClasses</arg>
-                        <arg>-Xvisitor-package:org.noclasses.visitor</arg>
+                        <arg>-Xvisitor-package:org.example.visitor</arg>
                     </args>
                     <plugins>
                         <plugin>
