@@ -1,6 +1,11 @@
 package com.massfords.jaxb;
 
-import static com.massfords.jaxb.ClassDiscoverer.findAllDeclaredAndInheritedFields;
+import com.sun.codemodel.*;
+import com.sun.tools.xjc.model.CPropertyInfo;
+import com.sun.tools.xjc.outline.ClassOutline;
+import com.sun.tools.xjc.outline.FieldOutline;
+import com.sun.tools.xjc.outline.Outline;
+import jakarta.xml.bind.annotation.XmlIDREF;
 
 import java.util.HashMap;
 import java.util.List;
@@ -8,21 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
-import com.sun.codemodel.JAnnotationUse;
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JClass;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JFieldVar;
-import com.sun.codemodel.JMethod;
-import com.sun.codemodel.JMod;
-import com.sun.codemodel.JPackage;
-import com.sun.codemodel.JType;
-import com.sun.codemodel.JTypeVar;
-import com.sun.codemodel.JVar;
-import com.sun.tools.xjc.model.CPropertyInfo;
-import com.sun.tools.xjc.outline.ClassOutline;
-import com.sun.tools.xjc.outline.FieldOutline;
-import com.sun.tools.xjc.outline.Outline;
+import static com.massfords.jaxb.ClassDiscoverer.findAllDeclaredAndInheritedFields;
 
 
 /**
@@ -149,10 +140,13 @@ class CreateDepthFirstTraverserClass extends CodeCreator {
     		return false;
     	}
     	for(JAnnotationUse use :  field.annotations()) {
+            if(use.getAnnotationClass().fullName().equals(XmlIDREF.class.getName())) {
+                return true;
+            }
     		if(use.getAnnotationClass().fullName().equals("javax.xml.bind.annotation.XmlIDREF")) {
     			return true;
     		}
-    	}    	
+    	}
     	return false;
     }
 
