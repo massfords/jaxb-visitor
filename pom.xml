@@ -94,9 +94,6 @@
                 <configuration>
                     <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
                     <cloneClean>true</cloneClean>
-<!--                    <pomIncludes>-->
-<!--                        <pomInclude>*/pom.xml</pomInclude>-->
-<!--                    </pomIncludes>-->
                     <preBuildHookScript>setup</preBuildHookScript>
                     <postBuildHookScript>verify</postBuildHookScript>
                     <addTestClassPath>true</addTestClassPath>

@@ -74,8 +74,10 @@ public class Fixture {
         Pattern p = Pattern.compile("/\\*.*?\\*/", Pattern.MULTILINE | Pattern.DOTALL);
         Matcher m = p.matcher(s);
         return m.replaceAll("")
+                .replaceAll("public<", "public <")
                 .replaceAll("\\n+", " ")
-                .replaceAll("[ \\n]+;", ";")
+                .replaceAll(" +([>{!=:();&|])", "$1")
+                .replaceAll("(>)([^ ])", "$1 $2")
                 .replaceAll(" +", " ").trim();
     }
 }
