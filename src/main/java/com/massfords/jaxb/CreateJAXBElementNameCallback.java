@@ -1,6 +1,15 @@
 package com.massfords.jaxb;
 
-import com.sun.codemodel.*;
+import com.sun.codemodel.JAnnotationUse;
+import com.sun.codemodel.JAnnotationValue;
+import com.sun.codemodel.JClass;
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JFormatter;
+import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JMod;
+import com.sun.codemodel.JPackage;
+import com.sun.codemodel.JType;
 import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.Outline;
 import com.sun.tools.xjc.outline.PackageOutline;
@@ -12,7 +21,11 @@ import jakarta.xml.bind.annotation.XmlTransient;
 import javax.xml.namespace.QName;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 class CreateJAXBElementNameCallback extends CodeCreator {
 
@@ -96,7 +109,7 @@ class CreateJAXBElementNameCallback extends CodeCreator {
                         if (typeParameters.get(0) instanceof JDefinedClass && !typeParameters.get(0).isAbstract()) {
                             String namespace = null;
                             String localPart = null;
-                            for(JAnnotationUse  au : method.annotations()) {
+                            for(JAnnotationUse au : method.annotations()) {
                                 if (au.getAnnotationClass().fullName().equals(XmlElementDecl.class.getName())) {
                                     namespace = annotationValueToString(au.getAnnotationMembers().get("namespace"));
                                     localPart = annotationValueToString(au.getAnnotationMembers().get("name"));

@@ -1,6 +1,14 @@
 package com.massfords.jaxb;
 
-import com.sun.codemodel.*;
+import com.sun.codemodel.JBlock;
+import com.sun.codemodel.JClass;
+import com.sun.codemodel.JConditional;
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JFieldRef;
+import com.sun.codemodel.JForEach;
+import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JVar;
 import com.sun.tools.xjc.outline.Outline;
 import jakarta.xml.bind.JAXBElement;
 

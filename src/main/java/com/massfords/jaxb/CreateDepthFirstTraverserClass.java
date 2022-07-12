@@ -1,6 +1,16 @@
 package com.massfords.jaxb;
 
-import com.sun.codemodel.*;
+import com.sun.codemodel.JAnnotationUse;
+import com.sun.codemodel.JBlock;
+import com.sun.codemodel.JClass;
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JFieldVar;
+import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JMod;
+import com.sun.codemodel.JPackage;
+import com.sun.codemodel.JType;
+import com.sun.codemodel.JTypeVar;
+import com.sun.codemodel.JVar;
 import com.sun.tools.xjc.model.CPropertyInfo;
 import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.FieldOutline;
@@ -155,7 +165,8 @@ class CreateDepthFirstTraverserClass extends CodeCreator {
      *
      * @return TraversableCodeGenStrategy VISITABLE, NO, MAYBE, DIRECT
 	 * 
-	 * @param rawType
+	 * @param rawType type to inspect
+     * @param directClasses used to filter direct classes
 	 */
 	private TraversableCodeGenStrategy getTraversableStrategy(JType rawType, Map<String,JClass> directClasses) {
 
