@@ -10,8 +10,8 @@ import com.sun.codemodel.JForEach;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JVar;
 import com.sun.tools.xjc.outline.Outline;
+import jakarta.xml.bind.JAXBElement;
 
-import javax.xml.bind.JAXBElement;
 import java.util.Set;
 
 /**

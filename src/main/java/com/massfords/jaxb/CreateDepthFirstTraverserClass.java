@@ -1,13 +1,5 @@
 package com.massfords.jaxb;
 
-import static com.massfords.jaxb.ClassDiscoverer.findAllDeclaredAndInheritedFields;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-
 import com.sun.codemodel.JAnnotationUse;
 import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JClass;
@@ -23,6 +15,15 @@ import com.sun.tools.xjc.model.CPropertyInfo;
 import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.FieldOutline;
 import com.sun.tools.xjc.outline.Outline;
+import jakarta.xml.bind.annotation.XmlIDREF;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+
+import static com.massfords.jaxb.ClassDiscoverer.findAllDeclaredAndInheritedFields;
 
 
 /**
@@ -149,10 +150,13 @@ class CreateDepthFirstTraverserClass extends CodeCreator {
     		return false;
     	}
     	for(JAnnotationUse use :  field.annotations()) {
+            if(use.getAnnotationClass().fullName().equals(XmlIDREF.class.getName())) {
+                return true;
+            }
     		if(use.getAnnotationClass().fullName().equals("javax.xml.bind.annotation.XmlIDREF")) {
     			return true;
     		}
-    	}    	
+    	}
     	return false;
     }
 
@@ -161,7 +165,8 @@ class CreateDepthFirstTraverserClass extends CodeCreator {
      *
      * @return TraversableCodeGenStrategy VISITABLE, NO, MAYBE, DIRECT
 	 * 
-	 * @param rawType
+	 * @param rawType type to inspect
+     * @param directClasses used to filter direct classes
 	 */
 	private TraversableCodeGenStrategy getTraversableStrategy(JType rawType, Map<String,JClass> directClasses) {
 
