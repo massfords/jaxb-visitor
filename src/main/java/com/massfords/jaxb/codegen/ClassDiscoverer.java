@@ -14,7 +14,6 @@ import com.sun.tools.xjc.model.CPropertyInfo;
 import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.FieldOutline;
 import com.sun.tools.xjc.outline.Outline;
-import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlElements;
 
 import java.io.PrintWriter;
@@ -164,20 +163,6 @@ public class ClassDiscoverer {
         final String privateName = fieldOutline.getPropertyInfo().getName(false);
         
         return theClass.fields().get(privateName);
-    }
-
-    /**
-     * Returns true if the type is a JAXBElement. In the case of JAXBElements, we want to traverse its
-     * underlying value as opposed to the JAXBElement.
-     * @param type element type to test to see if its a JAXBElement
-     * @return true if the type is a JAXBElement
-     */
-    public static boolean isJAXBElement(JType type) {
-        //noinspection RedundantIfStatement
-        if (type.fullName().startsWith(JAXBElement.class.getName())) {
-            return true;
-        }
-        return false;
     }
 
     /**

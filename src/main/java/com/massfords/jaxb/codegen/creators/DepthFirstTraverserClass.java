@@ -78,7 +78,7 @@ public final class DepthFirstTraverserClass {
                             JType rawType = fieldOutline.getRawType();
                             JMethod getter = ClassDiscoverer.getter(fieldOutline);
                             if (getter != null && !(options.isNoIdrefTraversal() && isIdrefField(fieldOutline))) {
-                                boolean isJAXBElement = ClassDiscoverer.isJAXBElement(getter.type());
+                                boolean isJAXBElement = options.isJAXBElement(getter.type());
                                 CPropertyInfo propertyInfo = fieldOutline.getPropertyInfo();
                                 boolean isCollection = propertyInfo.isCollection();
                                 if (isCollection) {
