@@ -3,7 +3,10 @@ package com.massfords.jaxb.codegen.creators;
 import com.sun.codemodel.JAnnotationUse;
 import com.sun.codemodel.JDefinedClass;
 import jakarta.annotation.Generated;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CodeCreator {
     static void annotateGenerated(JDefinedClass output) {
         JAnnotationUse annotationUse = output.annotate(Generated.class);

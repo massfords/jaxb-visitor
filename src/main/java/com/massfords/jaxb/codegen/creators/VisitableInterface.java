@@ -7,7 +7,6 @@ import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
 import com.sun.codemodel.JTypeVar;
-import com.sun.tools.xjc.outline.ClassOutline;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
@@ -22,18 +21,16 @@ public final class VisitableInterface {
 
     public static JDefinedClass create(VisitorCreated state, CodeGenOptions options) {
         final JDefinedClass _interface = state.getInitial().getOutline().getClassFactory().createInterface(options.getPackageForVisitor(), "Visitable", null);
-		annotateGenerated( _interface );
-		final JMethod _method = _interface.method(JMod.NONE, void.class, "accept");
-		final JTypeVar returnType = _method.generify("R");
-		final JTypeVar exceptionType = _method.generify("E", Throwable.class);
-		_method.type(returnType);
-		_method._throws(exceptionType);
-		final JClass narrowedVisitor = state.getVisitor().narrow(returnType, exceptionType);
-		_method.param(narrowedVisitor, "aVisitor");
-        
-        for(ClassOutline classOutline : state.getInitial().getSorted()) {
-            classOutline.implClass._implements(_interface);
-        }
+        annotateGenerated(_interface);
+        final JMethod _method = _interface.method(JMod.NONE, void.class, "accept");
+        final JTypeVar returnType = _method.generify("R");
+        final JTypeVar exceptionType = _method.generify("E", Throwable.class);
+        _method.type(returnType);
+        _method._throws(exceptionType);
+        final JClass narrowedVisitor = state.getVisitor().narrow(returnType, exceptionType);
+        _method.param(narrowedVisitor, "aVisitor");
+
+        state.getInitial().getSorted().forEach(classOutline -> classOutline.implClass._implements(_interface));
         return _interface;
     }
 }

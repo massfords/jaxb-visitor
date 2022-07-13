@@ -17,7 +17,7 @@ import static com.massfords.jaxb.codegen.creators.CodeCreator.annotateGenerated;
 
 /**
  * Creates the traverser interface. A traverse method is added for each of the generated beans.
- * 
+ *
  * @author markford
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -33,14 +33,15 @@ public final class TraverserInterface {
             final JTypeVar exceptionType = _interface.generify("E", Throwable.class);
             final JClass narrowedVisitor = state.getVisitor().narrow(retType).narrow(exceptionType);
 
-            for (JClass jc : allConcreteClasses(state.getInitial().getSorted(), state.getInitial().getDirectClasses())) {
-                JMethod traverseMethod;
-                String methodName = options.getTraverseMethodNamer().apply(jc.name());
-                traverseMethod = _interface.method(JMod.NONE, void.class, methodName);
-                traverseMethod._throws(exceptionType);
-                traverseMethod.param(jc, "aBean");
-                traverseMethod.param(narrowedVisitor, "aVisitor");
-            }
+            allConcreteClasses(state.getInitial().getSorted(), state.getInitial().getDirectClasses())
+                    .forEach((jc -> {
+                        JMethod traverseMethod;
+                        String methodName = options.getTraverseMethodNamer().apply(jc.name());
+                        traverseMethod = _interface.method(JMod.NONE, void.class, methodName);
+                        traverseMethod._throws(exceptionType);
+                        traverseMethod.param(jc, "aBean");
+                        traverseMethod.param(narrowedVisitor, "aVisitor");
+                    }));
             return _interface;
         } finally {
             options.getPackageForVisitor().remove(scratch);

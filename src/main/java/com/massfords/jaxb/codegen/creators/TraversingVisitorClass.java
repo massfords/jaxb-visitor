@@ -51,12 +51,8 @@ public final class TraversingVisitorClass {
 
         annotateGenerated(traversingVisitor);
 
-        for(JClass jc : allConcreteClasses(codeGenState.getInitialState().getSorted(), Collections.emptySet())) {
-            generate(traversingVisitor, returnType, exceptionType, jc, options);
-        }
-        for(JClass jc : codeGenState.getInitialState().getDirectClasses()) {
-            generateForDirectClass(traversingVisitor, returnType, exceptionType, jc, options);
-        }
+        allConcreteClasses(codeGenState.getInitialState().getSorted(), Collections.emptySet()).forEach(jc -> generate(traversingVisitor, returnType, exceptionType, jc, options));
+        codeGenState.getInitialState().getDirectClasses().forEach(jc -> generateForDirectClass(traversingVisitor, returnType, exceptionType, jc, options));
     }
 
     private static void generateForDirectClass(JDefinedClass traversingVisitor, JTypeVar returnType, JTypeVar exceptionType, JClass implClass, CodeGenOptions options) {
