@@ -28,7 +28,7 @@ public final class TraverserInterface {
         JDefinedClass scratch = outline.getClassFactory().createInterface(jpackage, "_scratch", null);
         try {
             JDefinedClass _interface = outline.getClassFactory().createInterface(jpackage, "Traverser", null);
-            annotateGenerated(_interface);
+            annotateGenerated(_interface, options);
             final JTypeVar retType = scratch.generify("?");
             final JTypeVar exceptionType = _interface.generify("E", Throwable.class);
             final JClass narrowedVisitor = state.getVisitor().narrow(retType).narrow(exceptionType);

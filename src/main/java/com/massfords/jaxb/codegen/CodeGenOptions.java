@@ -1,6 +1,7 @@
 package com.massfords.jaxb.codegen;
 
 import com.sun.codemodel.JPackage;
+import jakarta.xml.bind.JAXBElement;
 import lombok.Builder;
 import lombok.Value;
 
@@ -14,4 +15,11 @@ public class CodeGenOptions {
     JPackage packageForVisitor;
     Function<String,String> visitMethodNamer;
     Function<String,String> traverseMethodNamer;
+
+    public Class<?> getJAXBElementClass() {
+        if (isUseLegacyImports()){
+            return javax.xml.bind.JAXBElement.class;
+        }
+        return JAXBElement.class;
+    }
 }

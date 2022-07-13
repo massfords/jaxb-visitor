@@ -49,7 +49,7 @@ public final class TraversingVisitorClass {
         ctor.body().assign(fieldTraverser, JExpr.ref("aTraverser"));
         ctor.body().assign(fieldVisitor, JExpr.ref("aVisitor"));
 
-        annotateGenerated(traversingVisitor);
+        annotateGenerated(traversingVisitor, options);
 
         allConcreteClasses(codeGenState.getInitialState().getSorted(), Collections.emptySet()).forEach(jc -> generate(traversingVisitor, returnType, exceptionType, jc, options));
         codeGenState.getInitialState().getDirectClasses().forEach(jc -> generateForDirectClass(traversingVisitor, returnType, exceptionType, jc, options));

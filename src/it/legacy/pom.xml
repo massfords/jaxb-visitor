@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.massfords.test</groupId>
-    <artifactId>jaxb-direct-classes</artifactId>
+    <artifactId>jaxb-legacy</artifactId>
     <version>1.0</version>
     <properties>
         <maven.test.skip>true</maven.test.skip>
@@ -29,6 +29,7 @@
                     <args>
                         <arg>-Xvisitor</arg>
                         <arg>-Xvisitor-package:org.example.visitor</arg>
+                        <arg>-Xvisitor-legacy</arg>
                     </args>
                     <plugins>
                         <plugin>

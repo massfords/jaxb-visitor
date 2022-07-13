@@ -26,7 +26,7 @@ public final class VisitorInterface {
         final JTypeVar returnType = _interface.generify("R");
         final JTypeVar exceptionType = _interface.generify("E", Throwable.class);
 
-        annotateGenerated(_interface);
+        annotateGenerated(_interface, options);
 
         allConcreteClasses(codeGenState.getSorted(), codeGenState.getDirectClasses()).forEach(jc -> {
             JMethod vizMethod;

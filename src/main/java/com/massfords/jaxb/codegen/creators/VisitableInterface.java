@@ -21,7 +21,7 @@ public final class VisitableInterface {
 
     public static JDefinedClass create(VisitorCreated state, CodeGenOptions options) {
         final JDefinedClass _interface = state.getInitial().getOutline().getClassFactory().createInterface(options.getPackageForVisitor(), "Visitable", null);
-        annotateGenerated(_interface);
+        annotateGenerated(_interface, options);
         final JMethod _method = _interface.method(JMod.NONE, void.class, "accept");
         final JTypeVar returnType = _method.generify("R");
         final JTypeVar exceptionType = _method.generify("E", Throwable.class);

@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.massfords</groupId>
     <artifactId>jaxb-visitor</artifactId>
@@ -13,7 +14,7 @@
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
             <comments>A business-friendly OSS license</comments>
         </license>
@@ -22,8 +23,8 @@
         <url>https://github.com/massfords/jaxb-visitor</url>
         <connection>scm:git:git://github.com/massfords/jaxb-visitor.git</connection>
         <developerConnection>scm:git:git@github.com:massfords/jaxb-visitor.git</developerConnection>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
@@ -121,6 +122,12 @@
             <groupId>jakarta.annotation</groupId>
             <artifactId>jakarta.annotation-api</artifactId>
             <version>2.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>1.3.2</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>jakarta.xml.bind</groupId>

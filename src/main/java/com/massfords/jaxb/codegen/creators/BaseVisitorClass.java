@@ -24,7 +24,7 @@ import static com.massfords.jaxb.codegen.creators.CodeCreator.annotateGenerated;
 public final class BaseVisitorClass {
     public static void createClass(AllInterfacesCreated codeGenState, CodeGenOptions options) {
         JDefinedClass _class = codeGenState.getInitialState().getOutline().getClassFactory().createClass(options.getPackageForVisitor(), "BaseVisitor", null);
-        annotateGenerated(_class);
+        annotateGenerated(_class, options);
         final JTypeVar returnType = _class.generify("R");
         final JTypeVar exceptionType = _class.generify("E", Throwable.class);
         final JClass narrowedVisitor = codeGenState.getVisitor().narrow(returnType, exceptionType);

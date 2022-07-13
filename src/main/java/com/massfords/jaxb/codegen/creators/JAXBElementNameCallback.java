@@ -42,7 +42,7 @@ public final class JAXBElementNameCallback {
     public static void create(InitialState codeGenState, CodeGenOptions options) {
         Outline outline = codeGenState.getOutline();
         JDefinedClass _class = outline.getClassFactory().createInterface(options.getPackageForVisitor(), "Named", null);
-        annotateGenerated(_class);
+        annotateGenerated(_class, options);
         _class.method(JMod.PUBLIC, void.class, SETTER).param(QName.class, "name");
         _class.method(JMod.PUBLIC, QName.class, GETTER);
 

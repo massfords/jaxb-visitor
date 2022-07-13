@@ -23,8 +23,6 @@
                 <artifactId>jaxb30-maven-plugin</artifactId>
                 <version>0.15.0</version>
                 <configuration>
-                    <strict>false</strict>
-                    <extension>true</extension>
                     <schemaDirectory>
                         ${basedir}/src/main/resources/filter-2.0/
                     </schemaDirectory>

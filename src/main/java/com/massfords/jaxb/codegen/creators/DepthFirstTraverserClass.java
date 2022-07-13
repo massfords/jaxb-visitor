@@ -53,7 +53,7 @@ public final class DepthFirstTraverserClass {
             JClass narrowedTraverser = codeGenState.getTraverser().narrow(exceptionType);
             defaultTraverser._implements(narrowedTraverser);
 
-            annotateGenerated(defaultTraverser);
+            annotateGenerated(defaultTraverser, options);
 
             Map<String, JClass> dcMap = codeGenState.getInitialState()
                     .getDirectClasses()
@@ -84,18 +84,18 @@ public final class DepthFirstTraverserClass {
                                 if (isCollection) {
                                     JClass collClazz = (JClass) rawType;
                                     JClass collType = collClazz.getTypeParameters().get(0);
-                                    TraversableCodeGenStrategy t = getTraversableStrategy(collType, dcMap, codeGenState.getVisitable());
+                                    TraversableCodeGenStrategy t = getTraversableStrategy(collType, dcMap, codeGenState);
                                     if (collType.name().startsWith("JAXBElement")) {
-                                        t.jaxbElementCollection(traverseBlock, collType, beanParam, getter, vizParam, codeGenState.getVisitable());
+                                        t.jaxbElementCollection(traverseBlock, collType, beanParam, getter, vizParam, codeGenState, options);
                                     } else {
-                                        t.collection(outline, traverseBlock, (JClass) rawType, beanParam, getter, vizParam, codeGenState.getVisitable(), codeGenState.getInitialState().getDirectClasses());
+                                        t.collection(outline, traverseBlock, (JClass) rawType, beanParam, getter, vizParam, codeGenState, options);
                                     }
                                 } else {
-                                    TraversableCodeGenStrategy t = getTraversableStrategy(rawType, dcMap, codeGenState.getVisitable());
+                                    TraversableCodeGenStrategy t = getTraversableStrategy(rawType, dcMap, codeGenState);
                                     if (isJAXBElement) {
-                                        t.jaxbElement(traverseBlock, (JClass) rawType, beanParam, getter, vizParam, codeGenState.getVisitable());
+                                        t.jaxbElement(traverseBlock, (JClass) rawType, beanParam, getter, vizParam, codeGenState, options);
                                     } else {
-                                        t.bean(traverseBlock, beanParam, getter, vizParam, codeGenState.getVisitable());
+                                        t.bean(traverseBlock, beanParam, getter, vizParam, codeGenState, options);
                                     }
                                 }
                             }
@@ -138,7 +138,7 @@ public final class DepthFirstTraverserClass {
      * @param directClasses used to filter direct classes
      * @return TraversableCodeGenStrategy VISITABLE, NO, MAYBE, DIRECT
      */
-    private static TraversableCodeGenStrategy getTraversableStrategy(JType rawType, Map<String, JClass> directClasses, JDefinedClass visitable) {
+    private static TraversableCodeGenStrategy getTraversableStrategy(JType rawType, Map<String, JClass> directClasses, AllInterfacesCreated state) {
 
         if (rawType.isPrimitive()) {
             // primitive types are never traversable
@@ -161,7 +161,7 @@ public final class DepthFirstTraverserClass {
             // if it is an interface (like Serializable) it could also be anything
             // handle it like java.lang.Object
             return TraversableCodeGenStrategy.MAYBE;
-        } else if (visitable.isAssignableFrom(clazz)) {
+        } else if (state.getVisitable().isAssignableFrom(clazz)) {
             // it's a real type. if it's one of ours, then it'll be assignable from Visitable
             return TraversableCodeGenStrategy.VISITABLE;
         } else if (directClasses.containsKey(name)) {

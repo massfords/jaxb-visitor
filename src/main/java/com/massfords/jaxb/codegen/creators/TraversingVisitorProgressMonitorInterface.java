@@ -21,7 +21,7 @@ public final class TraversingVisitorProgressMonitorInterface {
     public static JDefinedClass createInterface(VisitorCreated state, CodeGenOptions options) {
         JDefinedClass _interface = state.getInitial().getOutline().getClassFactory().createInterface(
                 options.getPackageForVisitor(), "TraversingVisitorProgressMonitor", null);
-        annotateGenerated(_interface);
+        annotateGenerated(_interface, options);
         _interface.method(JMod.NONE, void.class, "visited").param(Object.class, "aVisitable");
         _interface.method(JMod.NONE, void.class, "traversed").param(Object.class, "aVisitable");
         return _interface;

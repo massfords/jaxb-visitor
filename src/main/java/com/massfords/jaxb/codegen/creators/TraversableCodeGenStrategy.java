@@ -1,30 +1,28 @@
 package com.massfords.jaxb.codegen.creators;
 
+import com.massfords.jaxb.codegen.AllInterfacesCreated;
+import com.massfords.jaxb.codegen.CodeGenOptions;
 import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JConditional;
-import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JFieldRef;
 import com.sun.codemodel.JForEach;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JVar;
 import com.sun.tools.xjc.outline.Outline;
-import jakarta.xml.bind.JAXBElement;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
-import java.util.Set;
-
 /**
  * enum that reports whether a bean property is traversable.
- * VISITABLE = it's definitely traversable and we just need to do a null check
- * NO = it's definitely NOT traversable and we should skip the bean property
- * MAYBE = it's a JAXBElement&lt;?&gt; or Object so we'll test the value with an
- *         instanceof and perform a cast
+ * VISITABLE = it's definitely traversable, and we just need to do a null check
+ * NO = it's definitely NOT traversable, and we should skip the bean property
+ * MAYBE = it's a JAXBElement&lt;?&gt; or Object, so we'll test the value with an
+ * instanceof and perform a cast
  * DIRECT = It's one of the externally mapped classes which will
- *          be on the Visitor interface but doesn't have an accept
- *          method.
+ * be on the Visitor interface but doesn't have an accept
+ * method.
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum TraversableCodeGenStrategy {
@@ -34,26 +32,26 @@ public enum TraversableCodeGenStrategy {
      */
     VISITABLE {
         @Override
-        public void jaxbElementCollection(JBlock traverseBlock, JClass collType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable) {
+        public void jaxbElementCollection(JBlock traverseBlock, JClass collType, JVar beanParam, JMethod getter, JVar vizParam, AllInterfacesCreated state, CodeGenOptions options) {
             JForEach forEach = traverseBlock.forEach(collType, "obj", JExpr.invoke(beanParam, getter));
             forEach.body()._if(JExpr.ref("obj").invoke("getValue").ne(JExpr._null()))._then().invoke(JExpr.ref("obj").invoke("getValue"), "accept").arg(vizParam);
         }
 
         @Override
-        public void collection(Outline outline, JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable, Set<JClass> directClasses) {
+        public void collection(Outline outline, JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, AllInterfacesCreated state, CodeGenOptions options) {
             JForEach forEach = traverseBlock.forEach(rawType.getTypeParameters().get(0), "bean", JExpr.invoke(beanParam, getter));
             forEach.body().invoke(JExpr.ref("bean"), "accept").arg(vizParam);
         }
 
         @Override
-        public void bean(JBlock traverseBlock, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable) {
+        public void bean(JBlock traverseBlock, JVar beanParam, JMethod getter, JVar vizParam, AllInterfacesCreated state, CodeGenOptions options) {
             traverseBlock._if(JExpr.invoke(beanParam, getter).ne(JExpr._null()))._then().invoke(JExpr.invoke(beanParam, getter), "accept").arg(vizParam);
         }
 
         @Override
-        public void jaxbElement(JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable) {
+        public void jaxbElement(JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, AllInterfacesCreated state, CodeGenOptions options) {
             traverseBlock._if(
-                    JExpr.invoke(beanParam, getter).ne(JExpr._null()))._then()
+                            JExpr.invoke(beanParam, getter).ne(JExpr._null()))._then()
                     .invoke(JExpr.invoke(beanParam, getter).invoke("getValue"), "accept").arg(vizParam);
         }
     },
@@ -63,65 +61,65 @@ public enum TraversableCodeGenStrategy {
      */
     NO {
         @Override
-        public void jaxbElementCollection(JBlock traverseBlock, JClass collType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable) {
+        public void jaxbElementCollection(JBlock traverseBlock, JClass collType, JVar beanParam, JMethod getter, JVar vizParam, AllInterfacesCreated state, CodeGenOptions options) {
 
         }
 
         @Override
-        public void jaxbElement(JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable) {
+        public void jaxbElement(JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, AllInterfacesCreated state, CodeGenOptions options) {
 
         }
 
         @Override
-        public void collection(Outline outline, JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable, Set<JClass> directClasses) {
+        public void collection(Outline outline, JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, AllInterfacesCreated state, CodeGenOptions options) {
 
         }
 
         @Override
-        public void bean(JBlock traverseBlock, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable) {
+        public void bean(JBlock traverseBlock, JVar beanParam, JMethod getter, JVar vizParam, AllInterfacesCreated state, CodeGenOptions options) {
 
         }
     },
     /**
      * MAYBE means we just have to test for an instanceof Visitable and cast where it's true
      * This is often the case when elements share a common type.
-     * I don't like this approach but it's a necessary evil since you can't always change the
+     * I don't like this approach, but it's a necessary evil since you can't always change the
      * schema to better support codegen
      */
     MAYBE {
         @Override
-        public void jaxbElementCollection(JBlock traverseBlock, JClass collType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable) {
+        public void jaxbElementCollection(JBlock traverseBlock, JClass collType, JVar beanParam, JMethod getter, JVar vizParam, AllInterfacesCreated state, CodeGenOptions options) {
             JForEach forEach = traverseBlock.forEach(collType, "obj", JExpr.invoke(beanParam, getter));
-            forEach.body()._if(JExpr.ref("obj").invoke("getValue")._instanceof(visitable))._then().invoke(JExpr.cast(visitable, JExpr.ref("obj").invoke("getValue")), "accept").arg(vizParam);
+            forEach.body()._if(JExpr.ref("obj").invoke("getValue")._instanceof(state.getVisitable()))._then().invoke(JExpr.cast(state.getVisitable(), JExpr.ref("obj").invoke("getValue")), "accept").arg(vizParam);
         }
 
         @Override
-        public void jaxbElement(JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable) {
+        public void jaxbElement(JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, AllInterfacesCreated state, CodeGenOptions options) {
             traverseBlock._if(
-                    JExpr.invoke(beanParam, getter).ne(JExpr._null())
-                            .cand(
-                                    JExpr.invoke(beanParam, getter).invoke("getValue")._instanceof(visitable))  )._then()
-                    .invoke(JExpr.cast(visitable, JExpr.invoke(beanParam, getter).invoke("getValue")), "accept").arg(vizParam);
+                            JExpr.invoke(beanParam, getter).ne(JExpr._null())
+                                    .cand(
+                                            JExpr.invoke(beanParam, getter).invoke("getValue")._instanceof(state.getVisitable())))._then()
+                    .invoke(JExpr.cast(state.getVisitable(), JExpr.invoke(beanParam, getter).invoke("getValue")), "accept").arg(vizParam);
         }
 
         @Override
-        public void collection(Outline outline, JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable, Set<JClass> directClasses) {
+        public void collection(Outline outline, JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, AllInterfacesCreated state, CodeGenOptions options) {
 
-            JClass jaxbElementClass = outline.getCodeModel().ref(JAXBElement.class).narrow(outline.getCodeModel().ref(Object.class).wildcard());
+            JClass jaxbElementClass = outline.getCodeModel().ref(options.getJAXBElementClass()).narrow(outline.getCodeModel().ref(Object.class).wildcard());
 
             JForEach forEach = traverseBlock.forEach(rawType.getTypeParameters().get(0), "bean", JExpr.invoke(beanParam, getter));
             JBlock body = forEach.body();
             JFieldRef bean = JExpr.ref("bean");
-            JConditional conditional = body._if(bean._instanceof(visitable));
-            conditional._then().invoke(JExpr.cast(visitable, bean), "accept").arg(vizParam);
+            JConditional conditional = body._if(bean._instanceof(state.getVisitable()));
+            conditional._then().invoke(JExpr.cast(state.getVisitable(), bean), "accept").arg(vizParam);
 
             // if it's a mixed type schema, then it could be returning JAXBElement's here
             // add some code to check to see if the element has a value that is visitable
             // and if so, visit it.
             conditional = conditional._elseif(bean._instanceof(jaxbElementClass));
-            conditional._then()._if(JExpr.invoke(JExpr.cast(jaxbElementClass, bean), "getValue")._instanceof(visitable))._then()
-                    .invoke(JExpr.cast(visitable, JExpr.invoke(JExpr.cast(jaxbElementClass, bean), "getValue")), "accept").arg(vizParam);
-            for(JClass jc : directClasses) {
+            conditional._then()._if(JExpr.invoke(JExpr.cast(jaxbElementClass, bean), "getValue")._instanceof(state.getVisitable()))._then()
+                    .invoke(JExpr.cast(state.getVisitable(), JExpr.invoke(JExpr.cast(jaxbElementClass, bean), "getValue")), "accept").arg(vizParam);
+            for (JClass jc : state.getInitialState().getDirectClasses()) {
                 // Despite the name below, _elseif doesn't actually produce
                 // an else if. Instead, it produces an else with an if
                 // in the body. This is syntax issue only, it's semantically
@@ -132,42 +130,45 @@ public enum TraversableCodeGenStrategy {
         }
 
         @Override
-        public void bean(JBlock traverseBlock, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable) {
-            traverseBlock._if(JExpr.invoke(beanParam, getter)._instanceof(visitable))._then().invoke(JExpr.cast(visitable,JExpr.invoke(beanParam, getter)), "accept").arg(vizParam);
+        public void bean(JBlock traverseBlock, JVar beanParam, JMethod getter, JVar vizParam, AllInterfacesCreated state, CodeGenOptions options) {
+            traverseBlock._if(JExpr.invoke(beanParam, getter)._instanceof(state.getVisitable()))._then().invoke(JExpr.cast(state.getVisitable(), JExpr.invoke(beanParam, getter)), "accept").arg(vizParam);
         }
 
     },
     DIRECT {
         @Override
-        public void jaxbElementCollection(JBlock traverseBlock, JClass collType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable) {
+        public void jaxbElementCollection(JBlock traverseBlock, JClass collType, JVar beanParam, JMethod getter, JVar vizParam, AllInterfacesCreated state, CodeGenOptions options) {
             // should prob throw an error here. I don't think we should ever have
             // a jaxb element w/ an external class
         }
 
         @Override
-        public void jaxbElement(JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable) {
+        public void jaxbElement(JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, AllInterfacesCreated state, CodeGenOptions options) {
             // should prob throw an error here. I don't think we should ever have
             // a jaxb element w/ an external class
         }
 
         @Override
-        public void collection(Outline outline, JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable, Set<JClass> directClasses) {
+        public void collection(Outline outline, JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, AllInterfacesCreated state, CodeGenOptions options) {
             JForEach forEach = traverseBlock.forEach(rawType.getTypeParameters().get(0), "bean", JExpr.invoke(beanParam, getter));
             JBlock body = forEach.body();
             body.invoke(vizParam, "visit").arg(forEach.var());
         }
 
         @Override
-        public void bean(JBlock traverseBlock, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable) {
+        public void bean(JBlock traverseBlock, JVar beanParam, JMethod getter, JVar vizParam, AllInterfacesCreated state, CodeGenOptions options) {
             traverseBlock._if(
-                    JExpr.invoke(beanParam, getter).ne(JExpr._null()))._then()
+                            JExpr.invoke(beanParam, getter).ne(JExpr._null()))._then()
                     .invoke(vizParam, "visit").arg(JExpr.invoke(beanParam, getter));
         }
 
     };
 
-    public abstract void jaxbElementCollection(JBlock traverseBlock, JClass collType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable);
-    public abstract void jaxbElement(JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable);
-    public abstract void collection(Outline outline, JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable, Set<JClass> directClasses);
-    public abstract void bean(JBlock traverseBlock, JVar beanParam, JMethod getter, JVar vizParam, JDefinedClass visitable);
+    public abstract void jaxbElementCollection(JBlock traverseBlock, JClass collType, JVar beanParam, JMethod getter, JVar vizParam, AllInterfacesCreated state, CodeGenOptions options);
+
+    public abstract void jaxbElement(JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, AllInterfacesCreated state, CodeGenOptions options);
+
+    public abstract void collection(Outline outline, JBlock traverseBlock, JClass rawType, JVar beanParam, JMethod getter, JVar vizParam, AllInterfacesCreated state, CodeGenOptions options);
+
+    public abstract void bean(JBlock traverseBlock, JVar beanParam, JMethod getter, JVar vizParam, AllInterfacesCreated state, CodeGenOptions options);
 }

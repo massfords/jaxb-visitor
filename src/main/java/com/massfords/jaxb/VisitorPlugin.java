@@ -102,7 +102,7 @@ public class VisitorPlugin extends Plugin {
         	noIdrefTraversal = true;
             return 1;
         }
-        if (arg.equals("-Xvisitor-jaxb2")) {
+        if (arg.equals("-Xvisitor-legacy")) {
             noJakarta = true;
             return 1;
         }
