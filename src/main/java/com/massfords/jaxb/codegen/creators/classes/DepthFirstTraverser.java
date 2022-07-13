@@ -1,4 +1,4 @@
-package com.massfords.jaxb.codegen.creators;
+package com.massfords.jaxb.codegen.creators.classes;
 
 import com.massfords.jaxb.codegen.AllInterfacesCreated;
 import com.massfords.jaxb.codegen.ClassDiscoverer;
@@ -21,11 +21,13 @@ import lombok.AllArgsConstructor;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.massfords.jaxb.codegen.ClassDiscoverer.findAllDeclaredAndInheritedFields;
-import static com.massfords.jaxb.codegen.creators.CodeCreator.annotateGenerated;
+import static com.massfords.jaxb.codegen.creators.Utils.annotateGenerated;
 
 
 /**
@@ -37,10 +39,10 @@ import static com.massfords.jaxb.codegen.creators.CodeCreator.annotateGenerated;
  * @author markford
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DepthFirstTraverserClass {
+public final class DepthFirstTraverser {
 
     public static void createClass(AllInterfacesCreated codeGenState, CodeGenOptions options) {
-        Outline outline = codeGenState.getInitialState().getOutline();
+        Outline outline = codeGenState.getOutline();
 
         // create the class
         JDefinedClass defaultTraverser = outline.getClassFactory().createClass(options.getPackageForVisitor(),
@@ -48,20 +50,26 @@ public final class DepthFirstTraverserClass {
         JDefinedClass scratch = outline.getClassFactory().createInterface(options.getPackageForVisitor(), "scratch", null);
         try {
             final JTypeVar exceptionType = defaultTraverser.generify("E", Throwable.class);
+            final JTypeVar argType = options.isIncludeArg() ? defaultTraverser.generify("A") : null;
 
-            JClass narrowedVisitor = codeGenState.getVisitor().narrow(scratch.generify("?")).narrow(exceptionType);
-            JClass narrowedTraverser = codeGenState.getTraverser().narrow(exceptionType);
+            JClass narrowedVisitor = codeGenState.getVisitor()
+                    .narrow(Stream.of(scratch.generify("?"), exceptionType, argType)
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toList()));
+            JClass narrowedTraverser = codeGenState.getTraverser().narrow(
+                    Stream.of(exceptionType, argType)
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toList()));
             defaultTraverser._implements(narrowedTraverser);
 
             annotateGenerated(defaultTraverser, options);
 
-            Map<String, JClass> dcMap = codeGenState.getInitialState()
-                    .getDirectClasses()
+            Map<String, JClass> dcMap = codeGenState.getDirectClasses()
                     .stream()
                     .collect(Collectors.toMap(JType::fullName, Function.identity()));
 
 
-            codeGenState.getInitialState().getSorted().stream()
+            codeGenState.getSorted().stream()
                     .filter(classOutline -> !classOutline.target.isAbstract())
                     .forEach(classOutline -> {
                         // add the bean to the traverserImpl
@@ -71,6 +79,7 @@ public final class DepthFirstTraverserClass {
                         traverseMethodImpl._throws(exceptionType);
                         JVar beanParam = traverseMethodImpl.param(classOutline.implClass, "aBean");
                         JVar vizParam = traverseMethodImpl.param(narrowedVisitor, "aVisitor");
+                        JVar argParam = argType != null ? traverseMethodImpl.param(argType, "arg") : null;
                         traverseMethodImpl.annotate(Override.class);
                         JBlock traverseBlock = traverseMethodImpl.body();
                         // for each field, if it's a bean, then visit it
@@ -86,26 +95,29 @@ public final class DepthFirstTraverserClass {
                                     JClass collType = collClazz.getTypeParameters().get(0);
                                     TraversableCodeGenStrategy t = getTraversableStrategy(collType, dcMap, codeGenState);
                                     if (collType.name().startsWith("JAXBElement")) {
-                                        t.jaxbElementCollection(traverseBlock, collType, beanParam, getter, vizParam, codeGenState, options);
+                                        t.jaxbElementCollection(traverseBlock, collType, beanParam, getter, vizParam, argParam, codeGenState, options);
                                     } else {
-                                        t.collection(outline, traverseBlock, (JClass) rawType, beanParam, getter, vizParam, codeGenState, options);
+                                        t.collection(outline, traverseBlock, (JClass) rawType, beanParam, getter, vizParam, argParam, codeGenState, options);
                                     }
                                 } else {
                                     TraversableCodeGenStrategy t = getTraversableStrategy(rawType, dcMap, codeGenState);
                                     if (isJAXBElement) {
-                                        t.jaxbElement(traverseBlock, (JClass) rawType, beanParam, getter, vizParam, codeGenState, options);
+                                        t.jaxbElement(traverseBlock, (JClass) rawType, beanParam, getter, vizParam, argParam, codeGenState, options);
                                     } else {
-                                        t.bean(traverseBlock, beanParam, getter, vizParam, codeGenState, options);
+                                        t.bean(traverseBlock, beanParam, getter, vizParam, argParam, codeGenState, options);
                                     }
                                 }
                             }
                         });
                     });
-            codeGenState.getInitialState().getDirectClasses().forEach(dc -> {
+            codeGenState.getDirectClasses().forEach(dc -> {
                 JMethod traverseMethodImpl = defaultTraverser.method(JMod.PUBLIC, void.class, "traverse");
                 traverseMethodImpl._throws(exceptionType);
                 traverseMethodImpl.param(dc, "aBean");
                 traverseMethodImpl.param(narrowedVisitor, "aVisitor");
+                if (argType != null) {
+                    traverseMethodImpl.param(argType, "arg");
+                }
                 traverseMethodImpl.annotate(Override.class);
                 JBlock traverseBlock = traverseMethodImpl.body();
                 String[] source = {"// details about %s are not known at compile time.",

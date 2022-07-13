@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    targetNamespace="http://www.example.org/simple" 
+    xmlns:tns="http://www.example.org/simple" 
+    xmlns:imp="http://www.example.org/imported" 
+    elementFormDefault="qualified">
+    
+    <xs:import namespace="http://www.example.org/imported" schemaLocation="imported.xsd"/>
+    
+    <xs:complexType name="tSimpleRequest">
+        <xs:sequence>
+            <xs:element name="request1" type="xs:string"/>
+            <xs:element name="request2" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="SimpleRequest" type="tns:tSimpleRequest"/>
+    
+    <xs:element name="ComplexObject">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="tns:SimpleRequest" maxOccurs="unbounded"/>
+                <xs:element name="simple" type="xs:string" minOccurs="0"/>
+                <xs:element name="repeating" type="xs:string" maxOccurs="unbounded"/>
+                <xs:element ref="tns:SimpleResponse"/>
+                <xs:element ref="imp:ImportedData"/>
+                <xs:element name="localElement">
+                    <xs:complexType>
+                        <xs:complexContent>
+                            <xs:extension base="imp:ImportedType">
+                                <xs:sequence>
+                                    <xs:element ref="tns:SimpleResponse"/>
+                                </xs:sequence>
+                            </xs:extension>
+                        </xs:complexContent>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="tSimpleResponse">
+        <xs:sequence>
+            <xs:element name="response1" type="xs:string"/>
+            <xs:element name="response2" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="SimpleResponse" type="tns:tSimpleResponse"/>
+
+    <xs:complexType name="BaseMessage" abstract="true">
+        <xs:sequence>
+            <xs:element name="message" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="Problem">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="tns:BaseMessage">
+                    <xs:sequence>
+                        <xs:element name="stacktrace" type="xs:string"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="Recursive">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="child" type="xs:string"/>
+                <xs:element ref="tns:Recursive" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="HasJAXBElement">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="optionalAndNillableString" type="xs:string" minOccurs="0" nillable="true"/>
+                <xs:element name="optionalAndNillableRequest" type="tns:tSimpleRequest" minOccurs="0" nillable="true"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="ChoiceElement">
+        <xs:complexType>
+            <xs:choice maxOccurs="unbounded">
+                <xs:element name="request" type="tns:tSimpleRequest" minOccurs="0" nillable="true"/>
+                <xs:element name="response" type="tns:tSimpleResponse" minOccurs="0" nillable="true"/>
+                <xs:element name="string" type="xs:string" minOccurs="0" nillable="true"/>
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

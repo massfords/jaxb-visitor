@@ -30,7 +30,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.massfords.jaxb.codegen.creators.CodeCreator.annotateGenerated;
+import static com.massfords.jaxb.codegen.creators.Utils.annotateGenerated;
+
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JAXBElementNameCallback {
@@ -39,14 +40,14 @@ public final class JAXBElementNameCallback {
     private static final String GETTER = "getJAXBElementName";
     private static final String FIELD = "jaxbElementName";
 
-    public static void create(InitialState codeGenState, CodeGenOptions options) {
-        Outline outline = codeGenState.getOutline();
+    public static void create(InitialState state, CodeGenOptions options) {
+        Outline outline = state.getOutline();
         JDefinedClass _class = outline.getClassFactory().createInterface(options.getPackageForVisitor(), "Named", null);
         annotateGenerated(_class, options);
         _class.method(JMod.PUBLIC, void.class, SETTER).param(QName.class, "name");
         _class.method(JMod.PUBLIC, QName.class, GETTER);
 
-        Set<ClassOutline> named = onlyNamed(outline, codeGenState.getSorted());
+        Set<ClassOutline> named = onlyNamed(outline, state.getSorted());
 
         JClass jaxbElementClass = outline.getCodeModel().ref(JAXBElement.class).narrow(outline.getCodeModel().ref(Object.class).wildcard());
 
@@ -115,6 +116,7 @@ public final class JAXBElementNameCallback {
                         String namespace = null;
                         String localPart = null;
                         for (JAnnotationUse au : method.annotations()) {
+                            // todo - need to check this and other spots for jakarta to see what the legacy behavior is
                             if (au.getAnnotationClass().fullName().equals(XmlElementDecl.class.getName())) {
                                 namespace = annotationValueToString(au.getAnnotationMembers().get("namespace"));
                                 localPart = annotationValueToString(au.getAnnotationMembers().get("name"));
