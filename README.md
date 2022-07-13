@@ -100,6 +100,7 @@ jaxb-visitor is now in Maven Central. You only need to configure the dependency 
 | -Xvisitor-includeType                   | Changes the default code generator for the visitor and traverse to avoid overloading and instead include the type name. This is in response to Issue #8 where very large schemas resulted in a large number of overloaded methods which can be a performance issue. | 
 | -Xvisitor-noClasses                     | Skips the generation of classes. The plugin will only generate interfaces and modify the beans to support the visitor pattern.                                                                                                                                      | 
 | -Xvisitor-noIdrefTraversal              | The DepthFirstTraverserImpl will only traverse the XML tree, and will not follow IDREFs                                                                                                                                                                             |
+| -Xvisitor-jaxb2                         | Changes the default imports from jakarta back to the 2.x java.xml.bind                                                                                                                                                                                              |
 
 ### maven-jaxb2-plugin Sample
 

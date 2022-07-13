@@ -149,6 +149,14 @@
             <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+            <version>1.18.16</version>
+            <optional>true</optional>
+        </dependency>
+
     </dependencies>
     <profiles>
         <profile>

@@ -1,5 +1,8 @@
-package com.massfords.jaxb;
+package com.massfords.jaxb.codegen.creators;
 
+import com.massfords.jaxb.codegen.AllInterfacesCreated;
+import com.massfords.jaxb.codegen.ClassDiscoverer;
+import com.massfords.jaxb.codegen.CodeGenOptions;
 import com.sun.codemodel.JAnnotationUse;
 import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JClass;
@@ -7,7 +10,6 @@ import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JFieldVar;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
-import com.sun.codemodel.JPackage;
 import com.sun.codemodel.JType;
 import com.sun.codemodel.JTypeVar;
 import com.sun.codemodel.JVar;
@@ -16,14 +18,15 @@ import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.FieldOutline;
 import com.sun.tools.xjc.outline.Outline;
 import jakarta.xml.bind.annotation.XmlIDREF;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
 
-import static com.massfords.jaxb.ClassDiscoverer.findAllDeclaredAndInheritedFields;
+import static com.massfords.jaxb.codegen.ClassDiscoverer.findAllDeclaredAndInheritedFields;
+import static com.massfords.jaxb.codegen.creators.CodeCreator.annotateGenerated;
 
 
 /**
@@ -34,60 +37,37 @@ import static com.massfords.jaxb.ClassDiscoverer.findAllDeclaredAndInheritedFiel
  * 
  * @author markford
  */
-class CreateDepthFirstTraverserClass extends CodeCreator {
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DepthFirstTraverserClass {
     
-    private final JDefinedClass visitor;
-    private final JDefinedClass traverser;
-    private final JDefinedClass visitable;
-    /**
-     * Function that accepts a type name and returns the name of the method to
-     * create. This encapsulates the behavior associated with the includeType
-     * flag.
-     */
-    private final Function<String,String> traverseMethodNamer;
-	private final boolean noIdrefTraversal;
+    public static void createClass(AllInterfacesCreated codeGenState, CodeGenOptions options) {
+    	Outline outline = codeGenState.getInitialState().getOutline();
 
-    CreateDepthFirstTraverserClass(JDefinedClass visitor, JDefinedClass traverser,
-                                   JDefinedClass visitable,
-                                   Outline outline,
-                                   JPackage jPackageackage,
-                                   Function<String, String> traverseMethodNamer, boolean noIdrefTraversal) {
-        super(outline, jPackageackage);
-        this.visitor = visitor;
-        this.traverser = traverser;
-        this.visitable = visitable;
-        this.traverseMethodNamer = traverseMethodNamer;
-		this.noIdrefTraversal = noIdrefTraversal;
-    }
-
-    @Override
-    protected void run(Set<ClassOutline> classes, Set<JClass> directClasses) {
-    	
     	// create the class
-        JDefinedClass defaultTraverser = getOutline().getClassFactory().createClass(getPackage(),
+        JDefinedClass defaultTraverser = outline.getClassFactory().createClass(options.getPackageForVisitor(),
                 "DepthFirstTraverserImpl", null);
-        JDefinedClass scratch = getOutline().getClassFactory().createInterface(getPackage(), "scratch", null);
+        JDefinedClass scratch = outline.getClassFactory().createInterface(options.getPackageForVisitor(), "scratch", null);
         try {
             final JTypeVar exceptionType = defaultTraverser.generify("E", Throwable.class);
 
-            JClass narrowedVisitor = visitor.narrow(scratch.generify("?")).narrow(exceptionType);
-            JClass narrowedTraverser = traverser.narrow(exceptionType);
+            JClass narrowedVisitor = codeGenState.getVisitor().narrow(scratch.generify("?")).narrow(exceptionType);
+            JClass narrowedTraverser = codeGenState.getTraverser().narrow(exceptionType);
             defaultTraverser._implements(narrowedTraverser);
 
-            setOutput(defaultTraverser);
+            annotateGenerated(defaultTraverser);
 
             Map<String, JClass> dcMap = new HashMap<>();
-            for (JClass dc : directClasses) {
+            for (JClass dc : codeGenState.getInitialState().getDirectClasses()) {
                 dcMap.put(dc.fullName(), dc);
             }
 
-            for (ClassOutline classOutline : classes) {
+            for (ClassOutline classOutline : codeGenState.getInitialState().getSorted()) {
                 if (classOutline.target.isAbstract()) {
                     continue;
                 }
                 // add the bean to the traverserImpl
                 JMethod traverseMethodImpl;
-                String traverseMethodName = traverseMethodNamer.apply(classOutline.implClass.name());
+                String traverseMethodName = options.getTraverseMethodNamer().apply(classOutline.implClass.name());
                 traverseMethodImpl = defaultTraverser.method(JMod.PUBLIC, void.class, traverseMethodName);
                 traverseMethodImpl._throws(exceptionType);
                 JVar beanParam = traverseMethodImpl.param(classOutline.implClass, "aBean");
@@ -99,32 +79,32 @@ class CreateDepthFirstTraverserClass extends CodeCreator {
                 for (FieldOutline fieldOutline : fields) {
                     JType rawType = fieldOutline.getRawType();
                     JMethod getter = ClassDiscoverer.getter(fieldOutline);
-                    if (getter != null &&  !(noIdrefTraversal && isIdrefField(fieldOutline))) {
+                    if (getter != null &&  !(options.isNoIdrefTraversal() && isIdrefField(fieldOutline))) {
                         boolean isJAXBElement = ClassDiscoverer.isJAXBElement(getter.type());
                         CPropertyInfo propertyInfo = fieldOutline.getPropertyInfo();
                         boolean isCollection = propertyInfo.isCollection();
                         if (isCollection) {
                             JClass collClazz = (JClass) rawType;
                             JClass collType = collClazz.getTypeParameters().get(0);
-                            TraversableCodeGenStrategy t = getTraversableStrategy(collType, dcMap);
+                            TraversableCodeGenStrategy t = getTraversableStrategy(collType, dcMap, codeGenState.getVisitable());
                             if (collType.name().startsWith("JAXBElement")) {
-                                t.jaxbElementCollection(traverseBlock, collType, beanParam, getter, vizParam, visitable);
+                                t.jaxbElementCollection(traverseBlock, collType, beanParam, getter, vizParam, codeGenState.getVisitable());
                             } else {
-                                t.collection(getOutline(), traverseBlock, (JClass) rawType, beanParam, getter, vizParam, visitable, directClasses);
+                                t.collection(outline, traverseBlock, (JClass) rawType, beanParam, getter, vizParam, codeGenState.getVisitable(), codeGenState.getInitialState().getDirectClasses());
                             }
                         } else {
-                            TraversableCodeGenStrategy t = getTraversableStrategy(rawType, dcMap);
+                            TraversableCodeGenStrategy t = getTraversableStrategy(rawType, dcMap, codeGenState.getVisitable());
                             if (isJAXBElement) {
-                                t.jaxbElement(traverseBlock, (JClass) rawType, beanParam, getter, vizParam, visitable);
+                                t.jaxbElement(traverseBlock, (JClass) rawType, beanParam, getter, vizParam, codeGenState.getVisitable());
                             } else {
-                                t.bean(traverseBlock, beanParam, getter, vizParam, visitable);
+                                t.bean(traverseBlock, beanParam, getter, vizParam, codeGenState.getVisitable());
                             }
                         }
                     }
                 }
             }
 
-            for (JClass dc : directClasses) {
+            for (JClass dc : codeGenState.getInitialState().getDirectClasses()) {
                 JMethod traverseMethodImpl = defaultTraverser.method(JMod.PUBLIC, void.class, "traverse");
                 traverseMethodImpl._throws(exceptionType);
                 traverseMethodImpl.param(dc, "aBean");
@@ -140,11 +120,11 @@ class CreateDepthFirstTraverserClass extends CodeCreator {
 
             }
         } finally {
-            getPackage().remove(scratch);
+            options.getPackageForVisitor().remove(scratch);
         }
     }
     
-    private boolean isIdrefField(FieldOutline fieldOutline) {
+    private static boolean isIdrefField(FieldOutline fieldOutline) {
     	JFieldVar field = ClassDiscoverer.field(fieldOutline);
     	if(field == null) {
     		return false;
@@ -168,7 +148,7 @@ class CreateDepthFirstTraverserClass extends CodeCreator {
 	 * @param rawType type to inspect
      * @param directClasses used to filter direct classes
 	 */
-	private TraversableCodeGenStrategy getTraversableStrategy(JType rawType, Map<String,JClass> directClasses) {
+	private static TraversableCodeGenStrategy getTraversableStrategy(JType rawType, Map<String,JClass> directClasses, JDefinedClass visitable) {
 
         if (rawType.isPrimitive()) {
             // primitive types are never traversable

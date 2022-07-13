@@ -1,9 +1,22 @@
 package com.massfords.jaxb;
 
+import com.massfords.jaxb.codegen.AllInterfacesCreated;
+import com.massfords.jaxb.codegen.ClassDiscoverer;
+import com.massfords.jaxb.codegen.CodeGenOptions;
+import com.massfords.jaxb.codegen.InitialState;
+import com.massfords.jaxb.codegen.VisitorCreated;
+import com.massfords.jaxb.codegen.creators.AddAcceptMethod;
+import com.massfords.jaxb.codegen.creators.BaseVisitorClass;
+import com.massfords.jaxb.codegen.creators.DepthFirstTraverserClass;
+import com.massfords.jaxb.codegen.creators.JAXBElementNameCallback;
+import com.massfords.jaxb.codegen.creators.TraverserInterface;
+import com.massfords.jaxb.codegen.creators.TraversingVisitorClass;
+import com.massfords.jaxb.codegen.creators.TraversingVisitorProgressMonitorInterface;
+import com.massfords.jaxb.codegen.creators.VisitableInterface;
+import com.massfords.jaxb.codegen.creators.VisitorInterface;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JPackage;
-import com.sun.tools.xjc.BadCommandLineException;
 import com.sun.tools.xjc.Options;
 import com.sun.tools.xjc.Plugin;
 import com.sun.tools.xjc.model.CClassInfoParent;
@@ -12,9 +25,7 @@ import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.Outline;
 import com.sun.tools.xjc.outline.PackageOutline;
 import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXException;
 
-import java.io.IOException;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
@@ -51,6 +62,11 @@ public class VisitorPlugin extends Plugin {
      */
     private boolean noIdrefTraversal = false;
 
+    /**
+     * If true, use legacy non-Jakarta imports
+     */
+    private boolean noJakarta = false;
+
     @Override
     public String getOptionName() {
         return "Xvisitor";
@@ -62,7 +78,7 @@ public class VisitorPlugin extends Plugin {
     }
     
     @Override
-    public int parseArgument(Options opt, String[] args, int index) throws BadCommandLineException, IOException {
+    public int parseArgument(Options opt, String[] args, int index) {
     	
     	// look for the visitor-package argument since we'll use this for package name for our generated code.
         String arg = args[index];
@@ -86,16 +102,19 @@ public class VisitorPlugin extends Plugin {
         	noIdrefTraversal = true;
             return 1;
         }
+        if (arg.equals("-Xvisitor-jaxb2")) {
+            noJakarta = true;
+            return 1;
+        }
         return 0;
     }
 
     @Override
-    public boolean run(Outline outline, Options options, ErrorHandler errorHandler)
-            throws SAXException {
+    public boolean run(Outline outline, Options options, ErrorHandler errorHandler) {
         try {
 
             /*
-               // create a set to hold all of the beans that need a qname
+               // create a set to hold all the beans that need a qname
                // add a qname field to each of these beans
                // add a getter/setter for the qname via an interface
                // add unmarshaller hook to each of these beans to pull the qname from their JAXBElement parent
@@ -109,10 +128,11 @@ public class VisitorPlugin extends Plugin {
 
             Set<JClass> directClasses = ClassDiscoverer.discoverDirectClasses(outline, sorted);
 
-            // create JAXBElement name support for holding JAXBElement names
-            CreateJAXBElementNameCallback cni =
-                    new CreateJAXBElementNameCallback(outline, vizPackage);
-            cni.run(sorted, directClasses);
+            InitialState initialState = InitialState.builder()
+                    .outline(outline)
+                    .sorted(sorted)
+                    .directClasses(directClasses)
+                    .build();
 
             /*
              * These functions are used to produce the name of a Visitor or
@@ -135,53 +155,38 @@ public class VisitorPlugin extends Plugin {
                 traverseMethodNamer = s -> "traverse";
             }
 
+            CodeGenOptions codeGenOptions = CodeGenOptions.builder()
+                    .useLegacyImports(this.noJakarta)
+                    .noIdrefTraversal(this.noIdrefTraversal)
+                    .packageForVisitor(vizPackage)
+                    .visitMethodNamer(visitMethodNamer)
+                    .traverseMethodNamer(traverseMethodNamer)
+                    .build();
 
-            // create visitor interface
-            CreateVisitorInterface createVisitorInterface =
-                    new CreateVisitorInterface(outline, vizPackage, visitMethodNamer);
-            createVisitorInterface.run(sorted, directClasses);
-            JDefinedClass visitor = createVisitorInterface.getOutput();
-            
-            // create visitable interface and have all the beans implement it
-            CreateVisitableInterface createVisitableInterface =
-                    new CreateVisitableInterface(visitor, outline, vizPackage);
-            createVisitableInterface.run(sorted, directClasses);
-            JDefinedClass visitable = createVisitableInterface.getOutput();
-            
-            // add accept method to beans
-            AddAcceptMethod addAcceptMethod = new AddAcceptMethod(visitMethodNamer);
-            addAcceptMethod.run(sorted, visitor);
-            
-            // create traverser interface
-            CreateTraverserInterface createTraverserInterface =
-                    new CreateTraverserInterface(visitor, outline, vizPackage, traverseMethodNamer);
-            createTraverserInterface.run(sorted, directClasses);
-            JDefinedClass traverser = createTraverserInterface.getOutput();
+            JAXBElementNameCallback.create(initialState, codeGenOptions);
+            JDefinedClass visitor = VisitorInterface.create(initialState, codeGenOptions);
 
-            // create progress monitor for traversing visitor
-            CreateTraversingVisitorProgressMonitorInterface progMon =
-                    new CreateTraversingVisitorProgressMonitorInterface(
-                            outline, vizPackage);
-            progMon.run(sorted, directClasses);
-            JDefinedClass progressMonitor = progMon.getOutput();
+            VisitorCreated state = VisitorCreated.builder()
+                    .initial(initialState)
+                    .visitor(visitor).build();
+
+            JDefinedClass visitable = VisitableInterface.create(state, codeGenOptions);
+            AddAcceptMethod.decorate(state, codeGenOptions);
+            JDefinedClass traverser = TraverserInterface.createInterface(state, codeGenOptions);
+            JDefinedClass progressMonitor = TraversingVisitorProgressMonitorInterface.createInterface(
+                    state, codeGenOptions);
 
             if (generateClasses) {
-                // create base visitor class
-                CreateBaseVisitorClass createBaseVisitorClass =
-                        new CreateBaseVisitorClass(visitor, outline, vizPackage, visitMethodNamer);
-                createBaseVisitorClass.run(sorted, directClasses);
-
-                // create default generic depth first traverser class
-                CreateDepthFirstTraverserClass createDepthFirstTraverserClass =
-                        new CreateDepthFirstTraverserClass(visitor, traverser,
-                                visitable, outline, vizPackage, traverseMethodNamer, noIdrefTraversal);
-                createDepthFirstTraverserClass.run(sorted, directClasses);
-
-                // create traversing visitor class
-                CreateTraversingVisitorClass createTraversingVisitorClass =
-                        new CreateTraversingVisitorClass(visitor, progressMonitor,
-                                traverser, outline, vizPackage, visitMethodNamer, traverseMethodNamer);
-                createTraversingVisitorClass.run(sorted, directClasses);
+                AllInterfacesCreated allState = AllInterfacesCreated.builder()
+                        .initialState(initialState)
+                        .visitor(visitor)
+                        .progressMonitor(progressMonitor)
+                        .traverser(traverser)
+                        .visitable(visitable)
+                        .build();
+                BaseVisitorClass.createClass(allState, codeGenOptions);
+                DepthFirstTraverserClass.createClass(allState, codeGenOptions);
+                TraversingVisitorClass.createClass(allState, codeGenOptions);
             }
         } catch (Throwable t) {
             t.printStackTrace();

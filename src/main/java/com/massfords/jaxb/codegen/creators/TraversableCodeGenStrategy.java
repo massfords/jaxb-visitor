@@ -1,4 +1,4 @@
-package com.massfords.jaxb;
+package com.massfords.jaxb.codegen.creators;
 
 import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JClass;
@@ -11,6 +11,8 @@ import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JVar;
 import com.sun.tools.xjc.outline.Outline;
 import jakarta.xml.bind.JAXBElement;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 
 import java.util.Set;
 
@@ -24,7 +26,8 @@ import java.util.Set;
  *          be on the Visitor interface but doesn't have an accept
  *          method.
  */
-enum TraversableCodeGenStrategy {
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public enum TraversableCodeGenStrategy {
     /**
      * VISITABLE means we just have to test for a null instance.
      * We don't need to do a cast because the type is definitely a Visitable
