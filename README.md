@@ -15,9 +15,10 @@ produced by the xjc compiler. The plugin produces the following changes in the b
 
 ## Changes in 3.0
 
-- **Upgrade to jakarta namespace for XJC**
-- use maven invoker for the tests
-- simplify the code and packaging
+- Upgrade to jakarta namespace for XJC
+- Added flag for legacy javax.xml.bind support
+- Support for Java 11 at build and runtime
+- Change tests to be based on the [Apache Maven Invoker](https://maven.apache.org/plugins/maven-invoker-plugin/)
 
 ## Changes in 2.0
 
