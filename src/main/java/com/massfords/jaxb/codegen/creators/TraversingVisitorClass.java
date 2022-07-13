@@ -1,5 +1,7 @@
-package com.massfords.jaxb;
+package com.massfords.jaxb.codegen.creators;
 
+import com.massfords.jaxb.codegen.AllInterfacesCreated;
+import com.massfords.jaxb.codegen.CodeGenOptions;
 import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JDefinedClass;
@@ -7,17 +9,15 @@ import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JFieldVar;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
-import com.sun.codemodel.JPackage;
 import com.sun.codemodel.JTypeVar;
 import com.sun.codemodel.JVar;
-import com.sun.tools.xjc.outline.ClassOutline;
-import com.sun.tools.xjc.outline.Outline;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 
 import java.util.Collections;
-import java.util.Set;
-import java.util.function.Function;
 
-import static com.massfords.jaxb.ClassDiscoverer.allConcreteClasses;
+import static com.massfords.jaxb.codegen.ClassDiscoverer.allConcreteClasses;
+import static com.massfords.jaxb.codegen.creators.CodeCreator.annotateGenerated;
 
 /**
  * Creates a traversing visitor. This visitor pairs a visitor and a traverser. The result is a visitor that
@@ -25,44 +25,15 @@ import static com.massfords.jaxb.ClassDiscoverer.allConcreteClasses;
  *
  * @author markford
  */
-class CreateTraversingVisitorClass extends CodeCreator {
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public final class TraversingVisitorClass {
+    public static void createClass(AllInterfacesCreated codeGenState, CodeGenOptions options) {
 
-    private final JDefinedClass progressMonitor;
-    private final JDefinedClass visitor;
-    private final JDefinedClass traverser;
-    /**
-     * Function that accepts a type name and returns the name of the method to
-     * create. This encapsulates the behavior associated with the includeType
-     * flag. This applies to the visitor methods.
-     */
-    private final Function<String,String> visitMethodNamer;
-    /**
-     * Function that accepts a type name and returns the name of the method to
-     * create. This encapsulates the behavior associated with the includeType
-     * flag. This applies to the traverser methods.
-     */
-    private final Function<String,String> traverseMethodNamer;
-
-    CreateTraversingVisitorClass(JDefinedClass visitor, JDefinedClass progressMonitor,
-                                 JDefinedClass traverser, Outline outline, JPackage jPackage,
-                                 Function<String, String> visitMethodNamer,
-                                 Function<String, String> traverseMethodNamer) {
-        super(outline, jPackage);
-        this.visitor = visitor;
-        this.traverser = traverser;
-        this.progressMonitor = progressMonitor;
-        this.visitMethodNamer = visitMethodNamer;
-        this.traverseMethodNamer = traverseMethodNamer;
-    }
-
-    @Override
-    protected void run(Set<ClassOutline> classes, Set<JClass> directClasses) {
-
-        JDefinedClass traversingVisitor = getOutline().getClassFactory().createClass(getPackage(), "TraversingVisitor", null);
+        JDefinedClass traversingVisitor = codeGenState.getInitialState().getOutline().getClassFactory().createClass(options.getPackageForVisitor(), "TraversingVisitor", null);
         final JTypeVar returnType = traversingVisitor.generify("R");
         final JTypeVar exceptionType = traversingVisitor.generify("E", Throwable.class);
-        final JClass narrowedVisitor = visitor.narrow(returnType).narrow(exceptionType);
-        final JClass narrowedTraverser = traverser.narrow(exceptionType);
+        final JClass narrowedVisitor = codeGenState.getVisitor().narrow(returnType).narrow(exceptionType);
+        final JClass narrowedTraverser = codeGenState.getTraverser().narrow(exceptionType);
         traversingVisitor._implements(narrowedVisitor);
         JMethod ctor = traversingVisitor.constructor(JMod.PUBLIC);
         ctor.param(narrowedTraverser, "aTraverser");
@@ -70,7 +41,7 @@ class CreateTraversingVisitorClass extends CodeCreator {
         JFieldVar fieldTraverseFirst = traversingVisitor.field(JMod.PRIVATE, Boolean.TYPE, "traverseFirst");
         JFieldVar fieldVisitor = traversingVisitor.field(JMod.PRIVATE, narrowedVisitor, "visitor");
         JFieldVar fieldTraverser = traversingVisitor.field(JMod.PRIVATE, narrowedTraverser, "traverser");
-        JFieldVar fieldMonitor = traversingVisitor.field(JMod.PRIVATE, progressMonitor, "progressMonitor");
+        JFieldVar fieldMonitor = traversingVisitor.field(JMod.PRIVATE, codeGenState.getProgressMonitor(), "progressMonitor");
         addGetterAndSetter(traversingVisitor, fieldTraverseFirst);
         addGetterAndSetter(traversingVisitor, fieldVisitor);
         addGetterAndSetter(traversingVisitor, fieldTraverser);
@@ -78,27 +49,23 @@ class CreateTraversingVisitorClass extends CodeCreator {
         ctor.body().assign(fieldTraverser, JExpr.ref("aTraverser"));
         ctor.body().assign(fieldVisitor, JExpr.ref("aVisitor"));
 
-        setOutput(traversingVisitor);
+        annotateGenerated(traversingVisitor, options);
 
-        for(JClass jc : allConcreteClasses(classes, Collections.emptySet())) {
-            generate(traversingVisitor, returnType, exceptionType, jc);
-        }
-        for(JClass jc : directClasses) {
-            generateForDirectClass(traversingVisitor, returnType, exceptionType, jc);
-        }
+        allConcreteClasses(codeGenState.getInitialState().getSorted(), Collections.emptySet()).forEach(jc -> generate(traversingVisitor, returnType, exceptionType, jc, options));
+        codeGenState.getInitialState().getDirectClasses().forEach(jc -> generateForDirectClass(traversingVisitor, returnType, exceptionType, jc, options));
     }
 
-    private void generateForDirectClass(JDefinedClass traversingVisitor, JTypeVar returnType, JTypeVar exceptionType, JClass implClass) {
+    private static void generateForDirectClass(JDefinedClass traversingVisitor, JTypeVar returnType, JTypeVar exceptionType, JClass implClass, CodeGenOptions options) {
         // add method impl to traversing visitor
         JMethod travViz;
-        String visitMethodName = visitMethodNamer.apply(implClass.name());
+        String visitMethodName = options.getVisitMethodNamer().apply(implClass.name());
         travViz = traversingVisitor.method(JMod.PUBLIC, returnType, visitMethodName);
         travViz._throws(exceptionType);
         JVar beanVar = travViz.param(implClass, "aBean");
         travViz.annotate(Override.class);
         JBlock travVizBloc = travViz.body();
 
-        addTraverseBlock(travViz, beanVar, true);
+        addTraverseBlock(travViz, beanVar, true, options);
 
         JVar retVal = travVizBloc.decl(returnType, "returnVal");
 
@@ -106,21 +73,21 @@ class CreateTraversingVisitorClass extends CodeCreator {
 
         travVizBloc._if(JExpr.ref("progressMonitor").ne(JExpr._null()))._then().invoke(JExpr.ref("progressMonitor"), "visited").arg(beanVar);
 
-        addTraverseBlock(travViz, beanVar, false);
+        addTraverseBlock(travViz, beanVar, false, options);
 
         travVizBloc._return(retVal);
     }
 
-    private void generate(JDefinedClass traversingVisitor, JTypeVar returnType, JTypeVar exceptionType, JClass implClass) {
+    private static void generate(JDefinedClass traversingVisitor, JTypeVar returnType, JTypeVar exceptionType, JClass implClass, CodeGenOptions options) {
         // add method impl to traversing visitor
         JMethod travViz;
-        travViz = traversingVisitor.method(JMod.PUBLIC, returnType, visitMethodNamer.apply(implClass.name()));
+        travViz = traversingVisitor.method(JMod.PUBLIC, returnType, options.getVisitMethodNamer().apply(implClass.name()));
         travViz._throws(exceptionType);
         JVar beanVar = travViz.param(implClass, "aBean");
         travViz.annotate(Override.class);
         JBlock travVizBloc = travViz.body();
 
-        addTraverseBlock(travViz, beanVar, true);
+        addTraverseBlock(travViz, beanVar, true, options);
 
         JVar retVal = travVizBloc.decl(returnType, "returnVal");
         travVizBloc.assign(retVal,
@@ -128,16 +95,16 @@ class CreateTraversingVisitorClass extends CodeCreator {
         travVizBloc._if(JExpr.ref("progressMonitor").ne(JExpr._null()))._then().invoke(JExpr.ref("progressMonitor"), "visited").arg(beanVar);
 
         // case to traverse after the visit
-        addTraverseBlock(travViz, beanVar, false);
+        addTraverseBlock(travViz, beanVar, false, options);
         travVizBloc._return(retVal);
     }
 
-    private void addTraverseBlock(JMethod travViz, JVar beanVar, boolean flag) {
+    private static void addTraverseBlock(JMethod travViz, JVar beanVar, boolean flag, CodeGenOptions options) {
         JBlock travVizBloc = travViz.body();
 
         // case to traverse before the visit
         JBlock block = travVizBloc._if(JExpr.ref("traverseFirst").eq(JExpr.lit(flag)))._then();
-        String traverseMethodName = traverseMethodNamer.apply(beanVar.type().name());
+        String traverseMethodName = options.getTraverseMethodNamer().apply(beanVar.type().name());
         block.invoke(JExpr.invoke("getTraverser"), traverseMethodName).arg(beanVar).arg(JExpr._this());
         block._if(JExpr.ref("progressMonitor").ne(JExpr._null()))._then().invoke(JExpr.ref("progressMonitor"), "traversed").arg(beanVar);
     }
@@ -148,7 +115,7 @@ class CreateTraversingVisitorClass extends CodeCreator {
      * @param traversingVisitor
      * @param field
      */
-    private void addGetterAndSetter(JDefinedClass traversingVisitor, JFieldVar field) {
+    private static void addGetterAndSetter(JDefinedClass traversingVisitor, JFieldVar field) {
         String propName = Character.toUpperCase(field.name().charAt(0)) + field.name().substring(1);
         traversingVisitor.method(JMod.PUBLIC, field.type(), "get" + propName).body()._return(field);
         JMethod setVisitor = traversingVisitor.method(JMod.PUBLIC, void.class, "set" + propName);

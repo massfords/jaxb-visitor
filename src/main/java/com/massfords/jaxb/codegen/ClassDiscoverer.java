@@ -1,4 +1,4 @@
-package com.massfords.jaxb;
+package com.massfords.jaxb.codegen;
 
 import com.sun.codemodel.JAnnotationArrayMember;
 import com.sun.codemodel.JAnnotationUse;
@@ -14,7 +14,6 @@ import com.sun.tools.xjc.model.CPropertyInfo;
 import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.FieldOutline;
 import com.sun.tools.xjc.outline.Outline;
-import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlElements;
 
 import java.io.PrintWriter;
@@ -31,7 +30,7 @@ import java.util.stream.Collectors;
 /**
  * @author mford
  */
-class ClassDiscoverer {
+public class ClassDiscoverer {
 
     /**
      * Finds all external class references
@@ -40,7 +39,7 @@ class ClassDiscoverer {
      * @return set of external classes
      * @throws IllegalAccessException throw if there's an error introspecting the annotations
      */
-    static Set<JClass> discoverDirectClasses(Outline outline, Set<ClassOutline> classes) throws IllegalAccessException {
+    public static Set<JClass> discoverDirectClasses(Outline outline, Set<ClassOutline> classes) throws IllegalAccessException {
 
         Set<String> directClassNames = new LinkedHashSet<>();
         for(ClassOutline classOutline : classes) {
@@ -61,12 +60,10 @@ class ClassDiscoverer {
             }
         }
 
-        Set<JClass> direct = directClassNames
+        return directClassNames
                 .stream()
                 .map(cn -> outline.getCodeModel().directClass(cn))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
-
-        return direct;
 
     }
 
@@ -131,7 +128,7 @@ class ClassDiscoverer {
         }
     }
 
-    static List<FieldOutline> findAllDeclaredAndInheritedFields(ClassOutline classOutline) {
+    public static List<FieldOutline> findAllDeclaredAndInheritedFields(ClassOutline classOutline) {
         List<FieldOutline> fields = new LinkedList<>();
         ClassOutline currentClassOutline = classOutline;
         while(currentClassOutline != null) {
@@ -149,24 +146,19 @@ class ClassDiscoverer {
      * @param fieldOutline reference to a field
      * @return Getter for the given field or null
      */
-    static JMethod getter(FieldOutline fieldOutline) {
+    public static JMethod getter(FieldOutline fieldOutline) {
         final JDefinedClass theClass = fieldOutline.parent().implClass;
         final String publicName = fieldOutline.getPropertyInfo().getName(true);
         final JMethod getgetter = theClass.getMethod("get" + publicName, NONE);
         if (getgetter != null) {
             return getgetter;
         } else {
-            final JMethod isgetter = theClass
+            return theClass
                     .getMethod("is" + publicName, NONE);
-            if (isgetter != null) {
-                return isgetter;
-            } else {
-                return null;
-            }
         }
     }
-    
-    static JFieldVar field(FieldOutline fieldOutline) {
+
+    public static JFieldVar field(FieldOutline fieldOutline) {
         final JDefinedClass theClass = fieldOutline.parent().implClass;
         final String privateName = fieldOutline.getPropertyInfo().getName(false);
         
@@ -174,25 +166,11 @@ class ClassDiscoverer {
     }
 
     /**
-     * Returns true if the type is a JAXBElement. In the case of JAXBElements, we want to traverse its
-     * underlying value as opposed to the JAXBElement.
-     * @param type element type to test to see if its a JAXBElement
-     * @return true if the type is a JAXBElement
-     */
-    static boolean isJAXBElement(JType type) {
-        //noinspection RedundantIfStatement
-        if (type.fullName().startsWith(JAXBElement.class.getName())) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * Returns all of the concrete classes in the system
      * @param classes collection of classes to examine
      * @return List of concrete classes
      */
-    static List<JClass> allConcreteClasses(Set<ClassOutline> classes) {
+    public static List<JClass> allConcreteClasses(Set<ClassOutline> classes) {
         return allConcreteClasses(classes, Collections.emptySet());
     }
 
@@ -202,7 +180,7 @@ class ClassDiscoverer {
      * @param directClasses set of classes to append to the list of concrete classes
      * @return list of concrete classes
      */
-    static List<JClass> allConcreteClasses(Set<ClassOutline> classes, Set<JClass> directClasses) {
+    public static List<JClass> allConcreteClasses(Set<ClassOutline> classes, Set<JClass> directClasses) {
         List<JClass> results = new ArrayList<>();
         classes.stream()
                 .filter(classOutline -> !classOutline.target.isAbstract())

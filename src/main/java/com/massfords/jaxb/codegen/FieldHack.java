@@ -1,4 +1,4 @@
-package com.massfords.jaxb;
+package com.massfords.jaxb.codegen;
 
 
 import java.lang.reflect.Field;
@@ -28,5 +28,4 @@ class FieldHack {
             throw new RuntimeException(e);
         }
     }
-
 }
