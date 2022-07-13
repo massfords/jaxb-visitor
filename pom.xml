@@ -103,6 +103,7 @@
                         <pomInclude>**/pom.xml</pomInclude>
                     </pomIncludes>
                     <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+                    <settingsFile>${basedir}/src/it/settings.xml</settingsFile>
                 </configuration>
                 <executions>
                     <execution>
