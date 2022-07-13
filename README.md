@@ -101,6 +101,7 @@ jaxb-visitor is now in Maven Central. You only need to configure the dependency 
 | -Xvisitor-noClasses                     | Skips the generation of classes. The plugin will only generate interfaces and modify the beans to support the visitor pattern.                                                                                                                                      | 
 | -Xvisitor-noIdrefTraversal              | The DepthFirstTraverserImpl will only traverse the XML tree, and will not follow IDREFs                                                                                                                                                                             |
 | -Xvisitor-legacy                        | Uses the legacy namespaces `java.xml.bind` and `javax.annotation` instead of jakarta                                                                                                                                                                                |
+| -Xvisitor-includeArg                    | Includes a generic argument on each visit and traverse function.                                                                                                                                                                                                    |
 
 ## Example Usage in POM
 

@@ -1,17 +1,20 @@
-package com.massfords.jaxb.codegen.creators;
+package com.massfords.jaxb.codegen.creators.decorators;
 
 import com.massfords.jaxb.codegen.CodeGenOptions;
-import com.massfords.jaxb.codegen.VisitorCreated;
+import com.massfords.jaxb.codegen.VisitorState;
+import com.massfords.jaxb.codegen.creators.Utils;
 import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JClass;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
 import com.sun.codemodel.JTypeVar;
 import com.sun.codemodel.JVar;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+
+import java.util.Optional;
 
 /**
  * Adds the accept method to the bean.
@@ -21,25 +24,28 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AddAcceptMethod {
 
-    public static void decorate(VisitorCreated state, CodeGenOptions options) {
+    public static void decorate(VisitorState state, CodeGenOptions options) {
         // skip over abstract classes
         // add the accept method to the bean
-        state.getInitial().getSorted()
+        state.getSorted()
                 .stream()
                 .filter(classOutline -> !classOutline.target.isAbstract())
                 .forEach(classOutline -> {
                     // add the accept method to the bean
                     JDefinedClass beanImpl = classOutline.implClass;
                     final JMethod acceptMethod = beanImpl.method(JMod.PUBLIC, void.class, "accept");
-                    final JTypeVar returnType = acceptMethod.generify("R");
-                    final JTypeVar exceptionType = acceptMethod.generify("E", Throwable.class);
-                    acceptMethod.type(returnType);
-                    acceptMethod._throws(exceptionType);
-                    final JClass narrowedVisitor = state.getVisitor().narrow(returnType, exceptionType);
-                    JVar vizParam = acceptMethod.param(narrowedVisitor, "aVisitor");
+                    final Utils.GenerifyResults genericTypes = Utils.generify(acceptMethod, options);
+                    acceptMethod.type(genericTypes.getReturnType());
+                    acceptMethod._throws(genericTypes.getExceptionType());
+
+                    JVar vizParam = acceptMethod.param(state.getNarrowedVisitor(), "aVisitor");
+                    Optional<JTypeVar> argType = Optional.ofNullable(genericTypes.getArgType());
+                    Optional<JVar> argParam = argType.map(jTypeVar -> acceptMethod.param(jTypeVar, "arg")) ;
                     JBlock block = acceptMethod.body();
                     String methodName = options.getVisitMethodNamer().apply(beanImpl.name());
-                    block._return(vizParam.invoke(methodName).arg(JExpr._this()));
+                    JInvocation invocation = vizParam.invoke(methodName).arg(JExpr._this());
+                    argParam.ifPresent(invocation::arg);
+                    block._return(invocation);
                 });
     }
 }

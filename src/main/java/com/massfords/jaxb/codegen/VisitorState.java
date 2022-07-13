@@ -12,7 +12,7 @@ import java.util.Set;
 
 @Value
 @Builder(toBuilder = true)
-public class AllInterfacesCreated {
+public class VisitorState {
     @NonNull
     Outline outline;
     @NonNull
@@ -23,10 +23,4 @@ public class AllInterfacesCreated {
     JDefinedClass visitor;
     @NonNull
     JClass narrowedVisitor;
-    @NonNull
-    JDefinedClass visitable;
-    @NonNull
-    JDefinedClass traverser;
-    @NonNull
-    JDefinedClass progressMonitor;
 }

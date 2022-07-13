@@ -17,6 +17,7 @@ public class CodeGenOptions {
     JPackage packageForVisitor;
     Function<String,String> visitMethodNamer;
     Function<String,String> traverseMethodNamer;
+    boolean includeArg;
 
     @SneakyThrows
     public Class<?> getJAXBElementClass() {
@@ -29,5 +30,4 @@ public class CodeGenOptions {
     public boolean isJAXBElement(JType type) {
         return type.fullName().startsWith(getJAXBElementClass().getName());
     }
-
 }

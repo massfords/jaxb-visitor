@@ -4,16 +4,16 @@ import com.massfords.jaxb.codegen.AllInterfacesCreated;
 import com.massfords.jaxb.codegen.ClassDiscoverer;
 import com.massfords.jaxb.codegen.CodeGenOptions;
 import com.massfords.jaxb.codegen.InitialState;
-import com.massfords.jaxb.codegen.VisitorCreated;
-import com.massfords.jaxb.codegen.creators.AddAcceptMethod;
-import com.massfords.jaxb.codegen.creators.BaseVisitorClass;
-import com.massfords.jaxb.codegen.creators.DepthFirstTraverserClass;
+import com.massfords.jaxb.codegen.VisitorState;
+import com.massfords.jaxb.codegen.creators.decorators.AddAcceptMethod;
+import com.massfords.jaxb.codegen.creators.classes.BaseVisitor;
+import com.massfords.jaxb.codegen.creators.classes.DepthFirstTraverser;
 import com.massfords.jaxb.codegen.creators.JAXBElementNameCallback;
-import com.massfords.jaxb.codegen.creators.TraverserInterface;
-import com.massfords.jaxb.codegen.creators.TraversingVisitorClass;
-import com.massfords.jaxb.codegen.creators.TraversingVisitorProgressMonitorInterface;
-import com.massfords.jaxb.codegen.creators.VisitableInterface;
-import com.massfords.jaxb.codegen.creators.VisitorInterface;
+import com.massfords.jaxb.codegen.creators.interfaces.Traverser;
+import com.massfords.jaxb.codegen.creators.classes.TraversingVisitor;
+import com.massfords.jaxb.codegen.creators.interfaces.TraversingVisitorProgressMonitor;
+import com.massfords.jaxb.codegen.creators.interfaces.Visitable;
+import com.massfords.jaxb.codegen.creators.interfaces.Visitor;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JPackage;
@@ -67,6 +67,11 @@ public class VisitorPlugin extends Plugin {
      */
     private boolean noJakarta = false;
 
+    /**
+     * If true, include a generic arg for the visit and traverse functions
+     */
+    private boolean includeArg = false;
+
     @Override
     public String getOptionName() {
         return "Xvisitor";
@@ -104,6 +109,10 @@ public class VisitorPlugin extends Plugin {
         }
         if (arg.equals("-Xvisitor-legacy")) {
             noJakarta = true;
+            return 1;
+        }
+        if (arg.equals("-Xvisitor-includeArg")) {
+            includeArg = true;
             return 1;
         }
         return 0;
@@ -161,32 +170,40 @@ public class VisitorPlugin extends Plugin {
                     .packageForVisitor(vizPackage)
                     .visitMethodNamer(visitMethodNamer)
                     .traverseMethodNamer(traverseMethodNamer)
+                    .includeArg(this.includeArg)
                     .build();
 
             JAXBElementNameCallback.create(initialState, codeGenOptions);
-            JDefinedClass visitor = VisitorInterface.create(initialState, codeGenOptions);
+            JDefinedClass visitor = Visitor.create(initialState, codeGenOptions);
 
-            VisitorCreated state = VisitorCreated.builder()
-                    .initial(initialState)
-                    .visitor(visitor).build();
+            VisitorState visitorCreated = VisitorState.builder()
+                    .outline(initialState.getOutline())
+                    .directClasses(initialState.getDirectClasses())
+                    .sorted(initialState.getSorted())
+                    .visitor(visitor)
+                    .narrowedVisitor(visitor.narrow(visitor.typeParams()))
+                    .build();
 
-            JDefinedClass visitable = VisitableInterface.create(state, codeGenOptions);
-            AddAcceptMethod.decorate(state, codeGenOptions);
-            JDefinedClass traverser = TraverserInterface.createInterface(state, codeGenOptions);
-            JDefinedClass progressMonitor = TraversingVisitorProgressMonitorInterface.createInterface(
-                    state, codeGenOptions);
+            JDefinedClass visitable = Visitable.create(visitorCreated, codeGenOptions);
+            AddAcceptMethod.decorate(visitorCreated, codeGenOptions);
+            JDefinedClass traverser = Traverser.createInterface(visitorCreated, codeGenOptions);
+            JDefinedClass progressMonitor = TraversingVisitorProgressMonitor.createInterface(
+                    visitorCreated, codeGenOptions);
 
             if (generateClasses) {
                 AllInterfacesCreated allState = AllInterfacesCreated.builder()
-                        .initialState(initialState)
-                        .visitor(visitor)
+                        .outline(initialState.getOutline())
+                        .directClasses(initialState.getDirectClasses())
+                        .sorted(initialState.getSorted())
+                        .visitor(visitorCreated.getVisitor())
+                        .narrowedVisitor(visitorCreated.getNarrowedVisitor())
                         .progressMonitor(progressMonitor)
                         .traverser(traverser)
                         .visitable(visitable)
                         .build();
-                BaseVisitorClass.createClass(allState, codeGenOptions);
-                DepthFirstTraverserClass.createClass(allState, codeGenOptions);
-                TraversingVisitorClass.createClass(allState, codeGenOptions);
+                BaseVisitor.createClass(allState, codeGenOptions);
+                DepthFirstTraverser.createClass(allState, codeGenOptions);
+                TraversingVisitor.createClass(allState, codeGenOptions);
             }
         } catch (Throwable t) {
             t.printStackTrace();
