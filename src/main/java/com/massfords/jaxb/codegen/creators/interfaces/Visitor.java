@@ -25,7 +25,7 @@ public final class Visitor {
         // define the generics for the visitor
         GenerifyResults results = Utils.generify(_interface, options);
 
-        allConcreteClasses(codeGenState.sorted(), codeGenState.directClasses())
+        allConcreteClasses(codeGenState.allClasses(), codeGenState.directClasses())
                 .forEach(jc -> {
                     String visitMethod = options.visitMethodNamer().apply(jc.name());
                     JMethod vizMethod = _interface.method(JMod.NONE, results.returnType(), visitMethod);

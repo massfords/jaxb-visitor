@@ -20,6 +20,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -180,7 +181,7 @@ public class ClassDiscoverer {
      * @param directClasses set of classes to append to the list of concrete classes
      * @return list of concrete classes
      */
-    public static List<JClass> allConcreteClasses(Set<ClassOutline> classes, Set<JClass> directClasses) {
+    public static List<JClass> allConcreteClasses(Collection<ClassOutline> classes, Set<JClass> directClasses) {
         List<JClass> results = new ArrayList<>();
         classes.stream()
                 .filter(classOutline -> !classOutline.target.isAbstract())

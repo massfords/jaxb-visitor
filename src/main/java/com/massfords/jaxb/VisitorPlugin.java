@@ -143,8 +143,7 @@ public class VisitorPlugin extends Plugin {
 
             InitialState initialState = ImmutableInitialState.builder()
                     .outline(outline)
-                    .sorted(sorted)
-                    .directClasses(directClasses)
+                    .addAllDirectClasses(directClasses)
                     .build();
 
             /*
@@ -169,8 +168,8 @@ public class VisitorPlugin extends Plugin {
             }
 
             CodeGenOptions codeGenOptions = ImmutableCodeGenOptions.builder()
-                    .useLegacyImports(this.noJakarta)
                     .noIdrefTraversal(this.noIdrefTraversal)
+                    .useLegacyImports(this.noJakarta)
                     .packageForVisitor(vizPackage)
                     .visitMethodNamer(visitMethodNamer)
                     .traverseMethodNamer(traverseMethodNamer)
@@ -181,11 +180,9 @@ public class VisitorPlugin extends Plugin {
             JDefinedClass visitor = Visitor.create(initialState, codeGenOptions);
 
             VisitorState visitorCreated = ImmutableVisitorState.builder()
-                    .outline(initialState.outline())
-                    .directClasses(initialState.directClasses())
-                    .sorted(initialState.sorted())
                     .visitor(visitor)
                     .narrowedVisitor(visitor.narrow(visitor.typeParams()))
+                    .initialState(initialState)
                     .build();
 
             JDefinedClass visitable = Visitable.create(visitorCreated, codeGenOptions);
@@ -196,14 +193,10 @@ public class VisitorPlugin extends Plugin {
 
             if (generateClasses) {
                 AllInterfacesCreated allState = ImmutableAllInterfacesCreated.builder()
-                        .outline(initialState.outline())
-                        .directClasses(initialState.directClasses())
-                        .sorted(initialState.sorted())
-                        .visitor(visitorCreated.visitor())
-                        .narrowedVisitor(visitorCreated.narrowedVisitor())
-                        .progressMonitor(progressMonitor)
-                        .traverser(traverser)
                         .visitable(visitable)
+                        .traverser(traverser)
+                        .progressMonitor(progressMonitor)
+                        .visitorState(visitorCreated)
                         .build();
                 BaseVisitor.createClass(allState, codeGenOptions);
                 DepthFirstTraverser.createClass(allState, codeGenOptions);

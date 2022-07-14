@@ -55,7 +55,7 @@ public final class TraversingVisitor {
 
         annotateGenerated(traversingVisitor, options);
 
-        allConcreteClasses(state.sorted(), Collections.emptySet()).forEach(jc -> generate(traversingVisitor, generics, jc, options));
+        allConcreteClasses(state.allClasses(), Collections.emptySet()).forEach(jc -> generate(traversingVisitor, generics, jc, options));
         state.directClasses().forEach(jc -> generateForDirectClass(traversingVisitor, generics, jc, options));
     }
 

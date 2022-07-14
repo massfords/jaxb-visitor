@@ -67,7 +67,7 @@ public final class DepthFirstTraverser {
                     .collect(Collectors.toMap(JType::fullName, Function.identity()));
 
 
-            codeGenState.sorted().stream()
+            codeGenState.allClasses().stream()
                     .filter(classOutline -> !classOutline.target.isAbstract())
                     .forEach(classOutline -> {
                         // add the bean to the traverserImpl

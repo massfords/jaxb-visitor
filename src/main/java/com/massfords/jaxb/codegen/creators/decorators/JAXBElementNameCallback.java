@@ -21,6 +21,7 @@ import jakarta.xml.bind.annotation.XmlTransient;
 import javax.xml.namespace.QName;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +45,7 @@ public final class JAXBElementNameCallback {
         _class.method(JMod.PUBLIC, void.class, SETTER).param(QName.class, "name");
         _class.method(JMod.PUBLIC, QName.class, GETTER);
 
-        Set<ClassOutline> named = onlyNamed(outline, state.sorted());
+        Set<ClassOutline> named = onlyNamed(outline, state.allClasses());
 
         JClass jaxbElementClass = outline.getCodeModel().ref(JAXBElement.class).narrow(outline.getCodeModel().ref(Object.class).wildcard());
 
@@ -132,7 +133,7 @@ public final class JAXBElementNameCallback {
         return candidates;
     }
 
-    private static Set<ClassOutline> filterSubclasses(Set<ClassOutline> all, Set<JDefinedClass> candidates) {
+    private static Set<ClassOutline> filterSubclasses(Collection<ClassOutline> all, Set<JDefinedClass> candidates) {
         // mapping the class to the outline
         Map<JDefinedClass, ClassOutline> classToOutline = all.stream()
                 .collect(Collectors.toMap(co -> co.implClass, Function.identity()));
@@ -156,7 +157,7 @@ public final class JAXBElementNameCallback {
     }
 
 
-    private static Set<ClassOutline> onlyNamed(Outline outline, Set<ClassOutline> sorted) {
+    private static Set<ClassOutline> onlyNamed(Outline outline, Collection<ClassOutline> sorted) {
         Set<JDefinedClass> candidates = identifyCandidates(outline);
         return filterSubclasses(sorted, candidates);
     }
