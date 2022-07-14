@@ -42,8 +42,135 @@
             <email>mark@massfords.com</email>
         </developer>
     </developers>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <!-- Set compiler to be more verbose (applies to maven-compiler-plugin) -->
+        <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
+        <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
+        <maven.compiler.failOnWarning>true</maven.compiler.failOnWarning>
+
+        <!-- Pedantic POM Enforcers consists of several Maven enforcer rules that help you keep your -->
+        <!-- project setup consistent and organized (https://github.com/ferstl/pedantic-pom-enforcers) -->
+        <config.enforcer.enforcers>POM_SECTION_ORDER,MODULE_ORDER,DEPENDENCY_MANAGEMENT_ORDER,DEPENDENCY_MANAGEMENT_LOCATION,DEPENDENCY_ORDER,DEPENDENCY_CONFIGURATION,DEPENDENCY_SCOPE,PLUGIN_MANAGEMENT_ORDER,PLUGIN_CONFIGURATION,PLUGIN_MANAGEMENT_LOCATION</config.enforcer.enforcers>
+
+        <!-- PedanticDependencyConfigurationEnforcer -->
+        <config.enforcer.allowUnmanagedProjectVersions>true</config.enforcer.allowUnmanagedProjectVersions>
+        <config.enforcer.manageDependencyExclusions>true</config.enforcer.manageDependencyExclusions>
+        <config.enforcer.manageDependencyVersions>true</config.enforcer.manageDependencyVersions>
+
+        <!-- PedanticDependencyManagementLocationEnforcer -->
+        <config.enforcer.dependencyManagingPoms/>
+
+        <!-- PedanticDependencyManagementOrderEnforcer -->
+        <config.enforcer.dependencyManagementArtifactIdPriorities/>
+        <config.enforcer.dependencyManagementGroupIdPriorities/>
+        <config.enforcer.dependencyManagementOrderBy>scope,groupId,artifactId</config.enforcer.dependencyManagementOrderBy>
+        <config.enforcer.dependencyManagementScopePriorities>compile,runtime,provided</config.enforcer.dependencyManagementScopePriorities>
+
+        <!-- PedanticDependencyOrderEnforcer -->
+        <config.enforcer.dependenciesArtifactIdPriorities/>
+        <config.enforcer.dependenciesGroupIdPriorities/>
+        <config.enforcer.dependenciesOrderBy>scope,groupId,artifactId</config.enforcer.dependenciesOrderBy>
+        <config.enforcer.dependenciesScopePriorities>compile,runtime,provided</config.enforcer.dependenciesScopePriorities>
+
+        <!-- PedanticDependencyScopeEnforcer -->
+        <config.enforcer.compileDependencies/>
+        <config.enforcer.importDependencies/>
+        <config.enforcer.providedDependencies/>
+        <config.enforcer.runtimeDependencies/>
+        <config.enforcer.systemDependencies/>
+        <config.enforcer.testDependencies/>
+
+        <!-- PedanticModuleOrderEnforcer -->
+        <config.enforcer.moduleOrderIgnores/>
+
+        <!-- PedanticPluginConfigurationEnforcer -->
+        <config.enforcer.managePluginConfigurations>true</config.enforcer.managePluginConfigurations>
+        <config.enforcer.managePluginDependencies>true</config.enforcer.managePluginDependencies>
+        <config.enforcer.managePluginVersions>true</config.enforcer.managePluginVersions>
+
+        <!-- PedanticPluginManagementLocationEnforcer -->
+        <config.enforcer.pluginManagingPoms/>
+
+        <!-- PedanticPluginManagementOrderEnforcer -->
+        <config.enforcer.pluginManagementArtifactIdPriorities/>
+        <config.enforcer.pluginManagementGroupIdPriorities/>
+        <config.enforcer.pluginManagementOrderBy>groupId,artifactId</config.enforcer.pluginManagementOrderBy>
+
+        <!-- PedanticPomSectionOrderEnforcer -->
+        <config.enforcer.pomSectionPriorities>modelVersion,parent,groupId,artifactId,version,packaging,name,description,url,inceptionYear,organization,licenses,developers,contributors,mailingLists,prerequisites,modules,scm,issueManagement,ciManagement,distributionManagement,properties,dependencyManagement,dependencies,repositories,pluginRepositories,build,reports,reporting,profiles</config.enforcer.pomSectionPriorities>
+
+    </properties>
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>1.4.1</version>
+            </plugin>
+            <plugin>
+                <!-- Generate a Checkstyle report (also build) -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.1.2</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.puppycrawl.tools</groupId>
+                        <artifactId>checkstyle</artifactId>
+                        <version>8.45.1</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <sourceDirectories>
+                        <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+                    </sourceDirectories>
+                    <configLocation>${basedir}/checkstyle-configuration.xml</configLocation>
+                    <suppressionsLocation>${basedir}/checkstyle-suppressions.xml</suppressionsLocation>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>default</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>3.0.5</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.11.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.basepom.maven</groupId>
+                <artifactId>duplicate-finder-maven-plugin</artifactId>
+                <version>1.3.0</version>
+            </plugin>
+            <plugin>
+                <groupId>com.ning.maven.plugins</groupId>
+                <artifactId>maven-dependency-versions-check-plugin</artifactId>
+                <version>2.0.4</version>
+            </plugin>
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>4.0.2</version>
+            </plugin>
+
+
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>

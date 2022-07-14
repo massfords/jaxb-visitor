@@ -15,18 +15,21 @@ import static com.massfords.jaxb.codegen.creators.Utils.annotateGenerated;
  * an accept method as part of the double dispatch Visitor pattern
  */
 public final class Visitable {
+    private Visitable() {
+    }
 
     public static JDefinedClass create(VisitorState state, CodeGenOptions options) {
-        final JDefinedClass _interface = state.outline().getClassFactory().createInterface(options.packageForVisitor(), "Visitable", null);
-        annotateGenerated(_interface, options);
-        final JMethod _method = _interface.method(JMod.NONE, void.class, "accept");
-        final GenerifyResults genericTypes = Utils.generify(_method, options);
-        _method.type(genericTypes.returnType());
-        _method._throws(genericTypes.exceptionType());
-        _method.param(state.narrowedVisitor(), "aVisitor");
-        genericTypes.argType().ifPresent(jTypeVar -> _method.param(jTypeVar, "arg"));
+        final JDefinedClass visitableModel = state.initial().outline().getClassFactory().createInterface(
+                options.packageForVisitor(), "Visitable", null);
+        annotateGenerated(visitableModel, options);
+        final JMethod acceptMethod = visitableModel.method(JMod.NONE, void.class, "accept");
+        final GenerifyResults genericTypes = Utils.generify(acceptMethod, options);
+        acceptMethod.type(genericTypes.returnType());
+        acceptMethod._throws(genericTypes.exceptionType());
+        acceptMethod.param(state.narrowedVisitor(), "aVisitor");
+        genericTypes.argType().ifPresent(jTypeVar -> acceptMethod.param(jTypeVar, "arg"));
 
-        state.allClasses().forEach(classOutline -> classOutline.implClass._implements(_interface));
-        return _interface;
+        state.initial().allClasses().forEach(classOutline -> classOutline.implClass._implements(visitableModel));
+        return visitableModel;
     }
 }

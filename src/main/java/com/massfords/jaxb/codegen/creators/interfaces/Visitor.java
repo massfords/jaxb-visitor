@@ -17,23 +17,26 @@ import static com.massfords.jaxb.codegen.creators.Utils.annotateGenerated;
  * @author markford
  */
 public final class Visitor {
+    private Visitor() {
+    }
     public static JDefinedClass create(InitialState codeGenState, CodeGenOptions options) {
 
-        final JDefinedClass _interface = codeGenState.outline().getClassFactory().createInterface(options.packageForVisitor(), "Visitor", null);
-        annotateGenerated(_interface, options);
+        final JDefinedClass visitorModel = codeGenState.outline().getClassFactory().createInterface(
+                options.packageForVisitor(), "Visitor", null);
+        annotateGenerated(visitorModel, options);
 
         // define the generics for the visitor
-        GenerifyResults results = Utils.generify(_interface, options);
+        GenerifyResults results = Utils.generify(visitorModel, options);
 
         allConcreteClasses(codeGenState.allClasses(), codeGenState.directClasses())
                 .forEach(jc -> {
                     String visitMethod = options.visitMethodNamer().apply(jc.name());
-                    JMethod vizMethod = _interface.method(JMod.NONE, results.returnType(), visitMethod);
+                    JMethod vizMethod = visitorModel.method(JMod.NONE, results.returnType(), visitMethod);
                     vizMethod._throws(results.exceptionType());
                     vizMethod.param(jc, "aBean");
                     results.argType().ifPresent(jTypeVar -> vizMethod.param(jTypeVar, "arg"));
                 });
 
-        return _interface;
+        return visitorModel;
     }
 }

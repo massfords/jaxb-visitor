@@ -19,22 +19,25 @@ import static com.massfords.jaxb.codegen.creators.Utils.annotateGenerated;
  * @author markford
  */
 public final class BaseVisitor {
-    public static void createClass(AllInterfacesCreated state, CodeGenOptions options) {
-        JDefinedClass _class = state.outline().getClassFactory().createClass(options.packageForVisitor(), "BaseVisitor", null);
-        annotateGenerated(_class, options);
-        GenerifyResults results = Utils.generify(_class, options);
-        _class._implements(state.narrowedVisitor());
+    private BaseVisitor() {
+    }
 
-        allConcreteClasses(state.allClasses(), state.directClasses())
+    public static void createClass(AllInterfacesCreated state, CodeGenOptions options) {
+        JDefinedClass clazz = state.initial().outline().getClassFactory().createClass(
+                options.packageForVisitor(), "BaseVisitor", null);
+        annotateGenerated(clazz, options);
+        GenerifyResults results = Utils.generify(clazz, options);
+        clazz._implements(state.narrowedVisitor());
+
+        allConcreteClasses(state.initial().allClasses(), state.initial().directClasses())
                 .forEach(jc -> {
-                    JMethod _method;
                     String methodName = options.visitMethodNamer().apply(jc.name());
-                    _method = _class.method(JMod.PUBLIC, results.returnType(), methodName);
-                    _method._throws(results.exceptionType());
-                    _method.param(jc, "aBean");
-                    results.argType().ifPresent(jTypeVar -> _method.param(jTypeVar, "arg"));
-                    _method.body()._return(JExpr._null());
-                    _method.annotate(Override.class);
+                    JMethod method = clazz.method(JMod.PUBLIC, results.returnType(), methodName);
+                    method._throws(results.exceptionType());
+                    method.param(jc, "aBean");
+                    results.argType().ifPresent(jTypeVar -> method.param(jTypeVar, "arg"));
+                    method.body()._return(JExpr._null());
+                    method.annotate(Override.class);
                 });
     }
 }

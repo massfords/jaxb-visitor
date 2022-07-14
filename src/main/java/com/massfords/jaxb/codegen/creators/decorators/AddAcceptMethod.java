@@ -21,10 +21,13 @@ import java.util.Optional;
  */
 public final class AddAcceptMethod {
 
+    private AddAcceptMethod() {
+    }
+
     public static void decorate(VisitorState state, CodeGenOptions options) {
         // skip over abstract classes
         // add the accept method to the bean
-        state.allClasses()
+        state.initial().allClasses()
                 .stream()
                 .filter(classOutline -> !classOutline.target.isAbstract())
                 .forEach(classOutline -> {
@@ -36,7 +39,8 @@ public final class AddAcceptMethod {
                     acceptMethod._throws(genericTypes.exceptionType());
 
                     JVar vizParam = acceptMethod.param(state.narrowedVisitor(), "aVisitor");
-                    Optional<JVar> argParam = genericTypes.argType().map(jTypeVar -> acceptMethod.param(jTypeVar, "arg")) ;
+                    Optional<JVar> argParam = genericTypes.argType()
+                            .map(jTypeVar -> acceptMethod.param(jTypeVar, "arg"));
                     JBlock block = acceptMethod.body();
                     String methodName = options.visitMethodNamer().apply(beanImpl.name());
                     JInvocation invocation = vizParam.invoke(methodName).arg(JExpr._this());

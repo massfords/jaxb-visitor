@@ -28,7 +28,8 @@ supporting classes that have a return type and an Exception on each visit method
 ## Integration Tests
 The [Apache Maven Invoker](https://maven.apache.org/plugins/maven-invoker-plugin/) verifies the plugin behavior via a number of different test projects. The table below identifies each project and what is special about its configuration. 
 
-> All of the folders in the table below are found under `src/it`
+> All folders in the table below are found under `src/it`
+> Run a single test from the command line with the folder name: `mvn verify -Dinvoker.test=basic`
 
 |                             **folder**                              |      **jaxb plugin**       | **JAXB Version**<br>bindings file<br>or namespace | **extra args**                                          | **assertions**                                                     |
 |:-------------------------------------------------------------------:|:--------------------------:|:-------------------------------------------------:|:--------------------------------------------------------|--------------------------------------------------------------------|

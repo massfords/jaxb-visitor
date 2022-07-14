@@ -36,20 +36,20 @@ import java.util.function.Function;
 
 /**
  * Plugin generates the following code:
- * 
+ *
  * <ul>
  * <li>Visitor: interface with visit methods for each of the beans</li>
- * <li>Traverser: interface with traverse methods for each of the beans. The traverser traverses each of the bean's children and visits them.
+ * <li>Traverser: interface with traverse methods for each of the beans.
  * <li>BaseVisitor: no-op impl of the Visitor interface</li>
  * <li>DepthFirstTraverserImpl: depth first implementation of the traverser interface</li>
  * <li>TraversingVisitor: class that pairs the visitor and traverser to visit the whole graph</li>
  * <li>accept(Visitor): added to each of the generated JAXB classes</li>
  * </ul>
- * 
+ *
  * @author markford
  */
-public class VisitorPlugin extends Plugin {
-    
+public final class VisitorPlugin extends Plugin {
+
     /**
      * name of the package for our generated visitor classes. If not set, we'll pick the first package from the outline.
      */
@@ -60,7 +60,7 @@ public class VisitorPlugin extends Plugin {
      * If true, we generate default implementations for some of the generated interfaces
      */
     private boolean generateClasses = true;
-    
+
     /**
      * If true, do not traverse idrefs
      */
@@ -85,11 +85,11 @@ public class VisitorPlugin extends Plugin {
     public String getUsage() {
         return null;
     }
-    
+
     @Override
     public int parseArgument(Options opt, String[] args, int index) {
-    	
-    	// look for the visitor-package argument since we'll use this for package name for our generated code.
+
+        // look for the visitor-package argument since we'll use this for package name for our generated code.
         String arg = args[index];
         if (arg.startsWith("-Xvisitor-package:")) {
             packageName = arg.split(":")[1];
@@ -108,7 +108,7 @@ public class VisitorPlugin extends Plugin {
             return 1;
         }
         if (arg.equals("-Xvisitor-noIdrefTraversal")) {
-        	noIdrefTraversal = true;
+            noIdrefTraversal = true;
             return 1;
         }
         if (arg.equals("-Xvisitor-legacy")) {
@@ -126,14 +126,13 @@ public class VisitorPlugin extends Plugin {
     public boolean run(Outline outline, Options options, ErrorHandler errorHandler) {
         try {
 
-            /*
-               // create a set to hold all the beans that need a qname
-               // add a qname field to each of these beans
-               // add a getter/setter for the qname via an interface
-               // add unmarshaller hook to each of these beans to pull the qname from their JAXBElement parent
-               // update the traverser code for JAXBElement to see if the bean is an instance of this interface and invoke the setter
-               // done and done
-            */
+            // create a set to hold all the beans that need a qname
+            // add a qname field to each of these beans
+            // add a getter/setter for the qname via an interface
+            // add unmarshaller hook to each of these beans to pull the qname from their JAXBElement parent
+            // update the traverser code for JAXBElement to see if the bean is an instance of
+            //      this interface and invoke the setter
+            // done and done
 
             JPackage vizPackage = getOrCreatePackageForVisitors(outline);
 
@@ -157,8 +156,8 @@ public class VisitorPlugin extends Plugin {
              * may have some overloaded methods due to inner types but this should
              * cut down on overloading significantly.
              */
-            Function<String,String> visitMethodNamer;
-            Function<String,String> traverseMethodNamer;
+            Function<String, String> visitMethodNamer;
+            Function<String, String> traverseMethodNamer;
             if (includeType) {
                 visitMethodNamer = s -> "visit" + s;
                 traverseMethodNamer = s -> "traverse" + s;
@@ -182,7 +181,7 @@ public class VisitorPlugin extends Plugin {
             VisitorState visitorCreated = ImmutableVisitorState.builder()
                     .visitor(visitor)
                     .narrowedVisitor(visitor.narrow(visitor.typeParams()))
-                    .initialState(initialState)
+                    .initial(initialState)
                     .build();
 
             JDefinedClass visitable = Visitable.create(visitorCreated, codeGenOptions);
@@ -196,7 +195,9 @@ public class VisitorPlugin extends Plugin {
                         .visitable(visitable)
                         .traverser(traverser)
                         .progressMonitor(progressMonitor)
-                        .visitorState(visitorCreated)
+                        .visitor(visitorCreated.visitor())
+                        .narrowedVisitor(visitorCreated.narrowedVisitor())
+                        .initial(visitorCreated.initial())
                         .build();
                 BaseVisitor.createClass(allState, codeGenOptions);
                 DepthFirstTraverser.createClass(allState, codeGenOptions);
@@ -211,9 +212,9 @@ public class VisitorPlugin extends Plugin {
 
 
     /**
-     * The classes are sorted for test purposes only. This gives us a predictable order for our 
+     * The classes are sorted for test purposes only. This gives us a predictable order for our
      * assertions on the generated code.
-     * 
+     *
      * @param outline
      */
     private Set<ClassOutline> sortClasses(Outline outline) {
@@ -228,11 +229,11 @@ public class VisitorPlugin extends Plugin {
 
     private JPackage getOrCreatePackageForVisitors(Outline outline) {
         JPackage vizPackage = null;
-        if (getPackageName() != null) {
+        if (packageName != null) {
             JPackage root = outline.getCodeModel().rootPackage();
-            String[] packages = getPackageName().split("\\.");
+            String[] packages = packageName.split("\\.");
             JPackage current = root;
-            for(String p : packages) {
+            for (String p : packages) {
                 current = current.subPackage(p);
             }
             vizPackage = current;
@@ -244,15 +245,4 @@ public class VisitorPlugin extends Plugin {
         }
         return vizPackage;
     }
-    
-    @SuppressWarnings("WeakerAccess")
-    public String getPackageName() {
-        return packageName;
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public void setPackageName(String packageName) {
-        this.packageName = packageName;
-    }
-
 }

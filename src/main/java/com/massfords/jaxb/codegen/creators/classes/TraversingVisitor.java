@@ -13,6 +13,7 @@ import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
 import com.sun.codemodel.JVar;
+import org.immutables.value.Value;
 
 import java.util.Collections;
 import java.util.Objects;
@@ -30,14 +31,35 @@ import static com.massfords.jaxb.codegen.creators.Utils.annotateGenerated;
  * @author markford
  */
 public final class TraversingVisitor {
+    private TraversingVisitor() {
+    }
+
+    @Value.Immutable
+    public interface TraversingVisitorContext {
+        JDefinedClass traversingVisitor();
+
+        GenerifyResults generics();
+
+        CodeGenOptions options();
+    }
+
     public static void createClass(AllInterfacesCreated state, CodeGenOptions options) {
 
-        JDefinedClass traversingVisitor = state.outline().getClassFactory().createClass(options.packageForVisitor(), "TraversingVisitor", null);
+        JDefinedClass traversingVisitor = state.initial().outline().getClassFactory().createClass(
+                options.packageForVisitor(), "TraversingVisitor", null);
         final GenerifyResults generics = Utils.generify(traversingVisitor, options);
-        final JClass narrowedTraverser =  state.traverser().narrow(
+        final JClass narrowedTraverser = state.traverser().narrow(
                 Stream.of(generics.exceptionType(), generics.argType().orElse(null))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList()));
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList()));
+
+        TraversingVisitorContext context = ImmutableTraversingVisitorContext.builder()
+                .traversingVisitor(traversingVisitor)
+                .generics(generics)
+                .options(options)
+                .build();
+
+
         traversingVisitor._implements(state.narrowedVisitor());
         JMethod ctor = traversingVisitor.constructor(JMod.PUBLIC);
         ctor.param(narrowedTraverser, "aTraverser");
@@ -46,24 +68,23 @@ public final class TraversingVisitor {
         JFieldVar fieldVisitor = traversingVisitor.field(JMod.PRIVATE, state.narrowedVisitor(), "visitor");
         JFieldVar fieldTraverser = traversingVisitor.field(JMod.PRIVATE, narrowedTraverser, "traverser");
         JFieldVar fieldMonitor = traversingVisitor.field(JMod.PRIVATE, state.progressMonitor(), "progressMonitor");
-        addGetterAndSetter(traversingVisitor, fieldTraverseFirst);
-        addGetterAndSetter(traversingVisitor, fieldVisitor);
-        addGetterAndSetter(traversingVisitor, fieldTraverser);
-        addGetterAndSetter(traversingVisitor, fieldMonitor);
+        addGetterAndSetter(context, fieldTraverseFirst);
+        addGetterAndSetter(context, fieldVisitor);
+        addGetterAndSetter(context, fieldTraverser);
+        addGetterAndSetter(context, fieldMonitor);
         ctor.body().assign(fieldTraverser, JExpr.ref("aTraverser"));
         ctor.body().assign(fieldVisitor, JExpr.ref("aVisitor"));
 
         annotateGenerated(traversingVisitor, options);
 
-        allConcreteClasses(state.allClasses(), Collections.emptySet()).forEach(jc -> generate(traversingVisitor, generics, jc, options));
-        state.directClasses().forEach(jc -> generateForDirectClass(traversingVisitor, generics, jc, options));
+        allConcreteClasses(state.initial().allClasses(), Collections.emptySet()).forEach(jc -> generate(context, jc));
+        state.initial().directClasses().forEach(jc -> generateForDirectClass(context, jc));
     }
 
-    private static void generateForDirectClass(JDefinedClass traversingVisitor, GenerifyResults generics, JClass implClass, CodeGenOptions options) {
-        // add method impl to traversing visitor
-        JMethod travViz;
-        String visitMethodName = options.visitMethodNamer().apply(implClass.name());
-        travViz = traversingVisitor.method(JMod.PUBLIC, generics.returnType(), visitMethodName);
+    private static void generateForDirectClass(TraversingVisitorContext context, JClass implClass) {
+        String visitMethodName = context.options().visitMethodNamer().apply(implClass.name());
+        GenerifyResults generics = context.generics();
+        JMethod travViz = context.traversingVisitor().method(JMod.PUBLIC, generics.returnType(), visitMethodName);
         travViz._throws(generics.exceptionType());
         JVar beanVar = travViz.param(implClass, "aBean");
         travViz.annotate(Override.class);
@@ -71,65 +92,72 @@ public final class TraversingVisitor {
 
         JVar argVar = generics.argType().map(jTypeVar -> travViz.param(jTypeVar, "arg")).orElse(null);
 
-        addTraverseBlock(travViz, beanVar, argVar,true, options);
+        addTraverseBlock(context, travViz, beanVar, argVar, true);
 
         JVar retVal = travVizBloc.decl(generics.returnType(), "returnVal");
 
         travVizBloc.assign(retVal, JExpr.invoke(JExpr.invoke("getVisitor"), visitMethodName).arg(beanVar));
 
-        travVizBloc._if(JExpr.ref("progressMonitor").ne(JExpr._null()))._then().invoke(JExpr.ref("progressMonitor"), "visited").arg(beanVar);
+        travVizBloc._if(JExpr.ref("progressMonitor").ne(JExpr._null()))
+                ._then()
+                .invoke(JExpr.ref("progressMonitor"), "visited").arg(beanVar);
 
-        addTraverseBlock(travViz, beanVar, argVar,false, options);
+        addTraverseBlock(context, travViz, beanVar, argVar, false);
 
         travVizBloc._return(retVal);
     }
 
-    private static void generate(JDefinedClass traversingVisitor, GenerifyResults generics, JClass implClass, CodeGenOptions options) {
+    private static void generate(TraversingVisitorContext context, JClass implClass) {
         // add method impl to traversing visitor
-        JMethod travViz;
-        travViz = traversingVisitor.method(JMod.PUBLIC, generics.returnType(), options.visitMethodNamer().apply(implClass.name()));
+        GenerifyResults generics = context.generics();
+        JMethod travViz = context.traversingVisitor().method(JMod.PUBLIC, generics.returnType(),
+                context.options().visitMethodNamer().apply(implClass.name()));
         travViz._throws(generics.exceptionType());
         JVar beanVar = travViz.param(implClass, "aBean");
         JVar argVar = generics.argType().map(jTypeVar -> travViz.param(jTypeVar, "arg")).orElse(null);
         travViz.annotate(Override.class);
         JBlock travVizBloc = travViz.body();
 
-        addTraverseBlock(travViz, beanVar, argVar, true, options);
+        addTraverseBlock(context, travViz, beanVar, argVar, true);
 
         JVar retVal = travVizBloc.decl(generics.returnType(), "returnVal");
         JInvocation invocation = JExpr.invoke(beanVar, "accept").arg(JExpr.invoke("getVisitor"));
         JInvocation callAccept = Optional.ofNullable(argVar).map(invocation::arg).orElse(invocation);
         travVizBloc.assign(retVal, callAccept);
-        travVizBloc._if(JExpr.ref("progressMonitor").ne(JExpr._null()))._then().invoke(JExpr.ref("progressMonitor"), "visited").arg(beanVar);
+        travVizBloc._if(JExpr.ref("progressMonitor").ne(JExpr._null()))
+                ._then()
+                .invoke(JExpr.ref("progressMonitor"), "visited").arg(beanVar);
 
         // case to traverse after the visit
-        addTraverseBlock(travViz, beanVar, argVar, false, options);
+        addTraverseBlock(context, travViz, beanVar, argVar, false);
         travVizBloc._return(retVal);
     }
 
-    private static void addTraverseBlock(JMethod travViz, JVar beanVar, JVar argVar, boolean flag, CodeGenOptions options) {
+    private static void addTraverseBlock(TraversingVisitorContext context,
+                                         JMethod travViz, JVar beanVar, JVar argVar, boolean flag) {
         JBlock travVizBloc = travViz.body();
 
         // case to traverse before the visit
         JBlock block = travVizBloc._if(JExpr.ref("traverseFirst").eq(JExpr.lit(flag)))._then();
-        String traverseMethodName = options.traverseMethodNamer().apply(beanVar.type().name());
-        JInvocation invoke = block.invoke(JExpr.invoke("getTraverser"), traverseMethodName).arg(beanVar).arg(JExpr._this());
+        String traverseMethodName = context.options().traverseMethodNamer().apply(beanVar.type().name());
+        JInvocation invoke = block.invoke(JExpr.invoke("getTraverser"), traverseMethodName)
+                .arg(beanVar)
+                .arg(JExpr._this());
         if (argVar != null) {
             invoke.arg(argVar);
         }
-        block._if(JExpr.ref("progressMonitor").ne(JExpr._null()))._then().invoke(JExpr.ref("progressMonitor"), "traversed").arg(beanVar);
+        block._if(JExpr.ref("progressMonitor").ne(JExpr._null())).
+                _then()
+                .invoke(JExpr.ref("progressMonitor"), "traversed").arg(beanVar);
     }
 
     /**
      * Convenience method to add a getter and setter method for the given field.
-     *
-     * @param traversingVisitor
-     * @param field
      */
-    private static void addGetterAndSetter(JDefinedClass traversingVisitor, JFieldVar field) {
+    private static void addGetterAndSetter(TraversingVisitorContext context, JFieldVar field) {
         String propName = Character.toUpperCase(field.name().charAt(0)) + field.name().substring(1);
-        traversingVisitor.method(JMod.PUBLIC, field.type(), "get" + propName).body()._return(field);
-        JMethod setVisitor = traversingVisitor.method(JMod.PUBLIC, void.class, "set" + propName);
+        context.traversingVisitor().method(JMod.PUBLIC, field.type(), "get" + propName).body()._return(field);
+        JMethod setVisitor = context.traversingVisitor().method(JMod.PUBLIC, void.class, "set" + propName);
         JVar visParam = setVisitor.param(field.type(), "aVisitor");
         setVisitor.body().assign(field, visParam);
     }
