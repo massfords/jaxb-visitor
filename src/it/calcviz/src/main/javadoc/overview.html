@@ -1,0 +1,76 @@
+<html>
+<body>
+<h1>Sample Project for jaxb-visitor</h1>
+
+<p>
+    This project provides an example of how to use the jaxb-visitor plugin to add the Visitor pattern to your JAXB
+    generated code. The schema used for the code generation provides a model for some simple math operations like add, 
+    subtract, multiply, etc. A simple math equation can be represented as a graph on which we can perform different
+    operations. These Visitor pattern provides a good means of extracting the operations to their own class.
+</p>
+
+<p>
+    The following visitors are included to demonstrate the basic functionality of the pattern.
+</p>
+
+<table>
+    <tr>
+        <th>Sample Graph</th>
+        <th width="25%">Visitors</th>
+        <th>Result</th>
+    </tr>
+    <tr>
+        <td valign="top" rowspan="4">
+            <img src="resources/calc-graph.png"/>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top">
+            <b>CalculatorVisitor</b><br/>
+            Evaluates the expression by traversing the graph and evaluating each of the nodes until all are evaluated
+            and an answer is calculated. This class leverages the generated TraversingVisitor interface that pairs
+            a tree traverser with a Visitor.
+        </td>
+        <td valign="top">
+            <code>13.0</code>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top">
+            <b>ExpressionSerializerVisitor</b><br/>
+            Serializes the graph as a String.
+        </td>
+        <td valign="top">
+            <code>((4.0 * 2.0) + (10.0 / (4.0 - 2.0)))</code>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top">
+            <b>PartialEvaluatorVisitor</b><br/>
+            Rewrites the graph to evaluate any unary or binary operations that have literals as their arguments.
+            This provides a step by step evaluation of an expression.
+        </td>
+        <td valign="top">
+            <div>
+                <code>First visit</code><br/>
+                <img src="resources/calc-graph-1.png"/>
+            </div>
+            <div>
+                <code>Second visit</code><br/>
+                <img src="resources/calc-graph-2.png"/>
+            </div>
+            <div>
+                <code>Third visit</code><br/>
+                <img src="resources/calc-graph-3.png"/>
+            </div>
+
+        </td>
+    </tr>
+</table>
+
+<h1>Sample Graph</h1>
+
+
+
+</body>
+</html>

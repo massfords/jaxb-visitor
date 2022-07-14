@@ -3,14 +3,18 @@ package com.massfords.jaxb;
 import com.massfords.jaxb.codegen.AllInterfacesCreated;
 import com.massfords.jaxb.codegen.ClassDiscoverer;
 import com.massfords.jaxb.codegen.CodeGenOptions;
+import com.massfords.jaxb.codegen.ImmutableAllInterfacesCreated;
+import com.massfords.jaxb.codegen.ImmutableCodeGenOptions;
+import com.massfords.jaxb.codegen.ImmutableInitialState;
+import com.massfords.jaxb.codegen.ImmutableVisitorState;
 import com.massfords.jaxb.codegen.InitialState;
 import com.massfords.jaxb.codegen.VisitorState;
-import com.massfords.jaxb.codegen.creators.decorators.AddAcceptMethod;
 import com.massfords.jaxb.codegen.creators.classes.BaseVisitor;
 import com.massfords.jaxb.codegen.creators.classes.DepthFirstTraverser;
-import com.massfords.jaxb.codegen.creators.JAXBElementNameCallback;
-import com.massfords.jaxb.codegen.creators.interfaces.Traverser;
 import com.massfords.jaxb.codegen.creators.classes.TraversingVisitor;
+import com.massfords.jaxb.codegen.creators.decorators.AddAcceptMethod;
+import com.massfords.jaxb.codegen.creators.decorators.JAXBElementNameCallback;
+import com.massfords.jaxb.codegen.creators.interfaces.Traverser;
 import com.massfords.jaxb.codegen.creators.interfaces.TraversingVisitorProgressMonitor;
 import com.massfords.jaxb.codegen.creators.interfaces.Visitable;
 import com.massfords.jaxb.codegen.creators.interfaces.Visitor;
@@ -137,7 +141,7 @@ public class VisitorPlugin extends Plugin {
 
             Set<JClass> directClasses = ClassDiscoverer.discoverDirectClasses(outline, sorted);
 
-            InitialState initialState = InitialState.builder()
+            InitialState initialState = ImmutableInitialState.builder()
                     .outline(outline)
                     .sorted(sorted)
                     .directClasses(directClasses)
@@ -164,7 +168,7 @@ public class VisitorPlugin extends Plugin {
                 traverseMethodNamer = s -> "traverse";
             }
 
-            CodeGenOptions codeGenOptions = CodeGenOptions.builder()
+            CodeGenOptions codeGenOptions = ImmutableCodeGenOptions.builder()
                     .useLegacyImports(this.noJakarta)
                     .noIdrefTraversal(this.noIdrefTraversal)
                     .packageForVisitor(vizPackage)
@@ -176,10 +180,10 @@ public class VisitorPlugin extends Plugin {
             JAXBElementNameCallback.create(initialState, codeGenOptions);
             JDefinedClass visitor = Visitor.create(initialState, codeGenOptions);
 
-            VisitorState visitorCreated = VisitorState.builder()
-                    .outline(initialState.getOutline())
-                    .directClasses(initialState.getDirectClasses())
-                    .sorted(initialState.getSorted())
+            VisitorState visitorCreated = ImmutableVisitorState.builder()
+                    .outline(initialState.outline())
+                    .directClasses(initialState.directClasses())
+                    .sorted(initialState.sorted())
                     .visitor(visitor)
                     .narrowedVisitor(visitor.narrow(visitor.typeParams()))
                     .build();
@@ -191,12 +195,12 @@ public class VisitorPlugin extends Plugin {
                     visitorCreated, codeGenOptions);
 
             if (generateClasses) {
-                AllInterfacesCreated allState = AllInterfacesCreated.builder()
-                        .outline(initialState.getOutline())
-                        .directClasses(initialState.getDirectClasses())
-                        .sorted(initialState.getSorted())
-                        .visitor(visitorCreated.getVisitor())
-                        .narrowedVisitor(visitorCreated.getNarrowedVisitor())
+                AllInterfacesCreated allState = ImmutableAllInterfacesCreated.builder()
+                        .outline(initialState.outline())
+                        .directClasses(initialState.directClasses())
+                        .sorted(initialState.sorted())
+                        .visitor(visitorCreated.visitor())
+                        .narrowedVisitor(visitorCreated.narrowedVisitor())
                         .progressMonitor(progressMonitor)
                         .traverser(traverser)
                         .visitable(visitable)

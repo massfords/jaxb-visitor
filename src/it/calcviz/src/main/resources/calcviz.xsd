@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://massfords.com/calcviz"
+           xmlns="http://massfords.com/calcviz"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+           elementFormDefault="qualified"
+           xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+           jaxb:extensionBindingPrefixes="xjc"
+           jaxb:version="2.1">
+
+    <xs:annotation>
+        <xs:appinfo>
+            <jaxb:globalBindings>
+                <xjc:simple />
+            </jaxb:globalBindings>
+        </xs:appinfo>
+    </xs:annotation>
+
+    <xs:element name="eval">
+        <xs:annotation>
+            <xs:appinfo>
+                <jaxb:class>
+                    <jaxb:javadoc>
+                        <![CDATA[
+Top level element for an expression that we'll evaluate.
+                        ]]>
+                    </jaxb:javadoc>
+                </jaxb:class>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="expression" type="exp"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="exp" abstract="true">
+        <xs:annotation>
+            <xs:appinfo>
+                <jaxb:class>
+                    <jaxb:javadoc>
+                        <![CDATA[
+Abstract class for all expression types.
+                        ]]>
+                    </jaxb:javadoc>
+                </jaxb:class>
+            </xs:appinfo>
+        </xs:annotation>
+    </xs:complexType>
+
+    <xs:complexType name="binaryOp" abstract="true">
+        <xs:annotation>
+            <xs:appinfo>
+                <jaxb:class>
+                    <jaxb:javadoc>
+                        <![CDATA[
+Base class for binary operations. These are operations that
+require two values to operate on.
+                        ]]>
+                    </jaxb:javadoc>
+                </jaxb:class>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="exp">
+                <xs:sequence>
+                    <xs:element name="left" type="exp"/>
+                    <xs:element name="right" type="exp"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="unaryOp" abstract="true">
+        <xs:annotation>
+            <xs:appinfo>
+                <jaxb:class>
+                    <jaxb:javadoc>
+                        <![CDATA[
+Base class for unary operations. These are operations that
+only require a single value to operate on.
+                        ]]>
+                    </jaxb:javadoc>
+                </jaxb:class>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="exp">
+                <xs:sequence>
+                    <xs:element name="exp" type="exp"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:element name="literal">
+        <xs:annotation>
+            <xs:appinfo>
+                <jaxb:class>
+                    <jaxb:javadoc>
+                        <![CDATA[
+A literal number.
+                        ]]>
+                    </jaxb:javadoc>
+                </jaxb:class>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="exp">
+                    <xs:sequence>
+                        <xs:element name="value" type="xs:double"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="variable">
+        <xs:annotation>
+            <xs:appinfo>
+                <jaxb:class>
+                    <jaxb:javadoc>
+                        <![CDATA[
+A placeholder for a variable. The variable must be provided
+during the evaluation.
+                        ]]>
+                    </jaxb:javadoc>
+                </jaxb:class>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="exp">
+                    <xs:sequence>
+                        <xs:element name="name" type="xs:string"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="add">
+        <xs:annotation>
+            <xs:appinfo>
+                <jaxb:class>
+                    <jaxb:javadoc>
+                        <![CDATA[
+Add the two args
+                        ]]>
+                    </jaxb:javadoc>
+                </jaxb:class>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="binaryOp">
+                    <xs:sequence/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="subtract">
+        <xs:annotation>
+            <xs:appinfo>
+                <jaxb:class>
+                    <jaxb:javadoc>
+                        <![CDATA[
+Subtract the right arg from the left arg.
+                        ]]>
+                    </jaxb:javadoc>
+                </jaxb:class>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="binaryOp">
+                    <xs:sequence/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="multiply">
+        <xs:annotation>
+            <xs:appinfo>
+                <jaxb:class>
+                    <jaxb:javadoc>
+                        <![CDATA[
+Multiply the left arg by the right arg.
+                        ]]>
+                    </jaxb:javadoc>
+                </jaxb:class>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="binaryOp">
+                    <xs:sequence/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="divide">
+        <xs:annotation>
+            <xs:appinfo>
+                <jaxb:class>
+                    <jaxb:javadoc>
+                        <![CDATA[
+Divide the left arg by the right arg.
+                        ]]>
+                    </jaxb:javadoc>
+                </jaxb:class>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="binaryOp">
+                    <xs:sequence/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="pow">
+        <xs:annotation>
+            <xs:appinfo>
+                <jaxb:class>
+                    <jaxb:javadoc>
+                        <![CDATA[
+Raise the left arg to the right arg.
+                        ]]>
+                    </jaxb:javadoc>
+                </jaxb:class>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="binaryOp">
+                    <xs:sequence/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="tetra">
+        <xs:annotation>
+            <xs:appinfo>
+                <jaxb:class>
+                    <jaxb:javadoc>
+                        <![CDATA[
+A tetration whereby the left value is the number of times
+to raise the right value to itself.
+For example: 4,2 represents:
+<code>
+2^(2^(2^2))
+</code>
+
+                        ]]>
+                    </jaxb:javadoc>
+                </jaxb:class>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="binaryOp">
+                    <xs:sequence/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="nroot">
+        <xs:annotation>
+            <xs:appinfo>
+                <jaxb:class>
+                    <jaxb:javadoc>
+                        <![CDATA[
+Calculate the nth root of the argument. Passing 2 gets the
+square root, 3 the cube root, etc.
+                        ]]>
+                    </jaxb:javadoc>
+                </jaxb:class>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="binaryOp">
+                    <xs:sequence/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="negation">
+        <xs:annotation>
+            <xs:appinfo>
+                <jaxb:class>
+                    <jaxb:javadoc>
+                        <![CDATA[
+Negates the argument (i.e. value * -1)
+                        ]]>
+                    </jaxb:javadoc>
+                </jaxb:class>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="unaryOp">
+                    <xs:sequence/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="sin">
+        <xs:annotation>
+            <xs:appinfo>
+                <jaxb:class>
+                    <jaxb:javadoc>
+                        <![CDATA[
+Calculate the sine of the argument.
+                        ]]>
+                    </jaxb:javadoc>
+                </jaxb:class>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="unaryOp">
+                    <xs:sequence/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="cos">
+        <xs:annotation>
+            <xs:appinfo>
+                <jaxb:class>
+                    <jaxb:javadoc>
+                        <![CDATA[
+Calculate the cosine of the argument.
+                        ]]>
+                    </jaxb:javadoc>
+                </jaxb:class>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="unaryOp">
+                    <xs:sequence/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="tan">
+        <xs:annotation>
+            <xs:appinfo>
+                <jaxb:class>
+                    <jaxb:javadoc>
+                        <![CDATA[
+Calculate the tangent of the argument.
+                        ]]>
+                    </jaxb:javadoc>
+                </jaxb:class>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="unaryOp">
+                    <xs:sequence/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="sqrt">
+        <xs:annotation>
+            <xs:appinfo>
+                <jaxb:class>
+                    <jaxb:javadoc>
+                        <![CDATA[
+Calculate the square root of the value given.
+                        ]]>
+                    </jaxb:javadoc>
+                </jaxb:class>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="unaryOp">
+                    <xs:sequence/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

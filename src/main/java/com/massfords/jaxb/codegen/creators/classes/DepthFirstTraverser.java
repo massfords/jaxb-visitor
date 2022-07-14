@@ -16,8 +16,6 @@ import com.sun.tools.xjc.model.CPropertyInfo;
 import com.sun.tools.xjc.outline.FieldOutline;
 import com.sun.tools.xjc.outline.Outline;
 import jakarta.xml.bind.annotation.XmlIDREF;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -28,6 +26,7 @@ import java.util.stream.Stream;
 
 import static com.massfords.jaxb.codegen.ClassDiscoverer.findAllDeclaredAndInheritedFields;
 import static com.massfords.jaxb.codegen.creators.Utils.annotateGenerated;
+import static com.massfords.jaxb.codegen.creators.Utils.isJAXBElement;
 
 
 /**
@@ -38,25 +37,24 @@ import static com.massfords.jaxb.codegen.creators.Utils.annotateGenerated;
  *
  * @author markford
  */
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DepthFirstTraverser {
 
     public static void createClass(AllInterfacesCreated codeGenState, CodeGenOptions options) {
-        Outline outline = codeGenState.getOutline();
+        Outline outline = codeGenState.outline();
 
         // create the class
-        JDefinedClass defaultTraverser = outline.getClassFactory().createClass(options.getPackageForVisitor(),
+        JDefinedClass defaultTraverser = outline.getClassFactory().createClass(options.packageForVisitor(),
                 "DepthFirstTraverserImpl", null);
-        JDefinedClass scratch = outline.getClassFactory().createInterface(options.getPackageForVisitor(), "scratch", null);
+        JDefinedClass scratch = outline.getClassFactory().createInterface(options.packageForVisitor(), "scratch", null);
         try {
             final JTypeVar exceptionType = defaultTraverser.generify("E", Throwable.class);
-            final JTypeVar argType = options.isIncludeArg() ? defaultTraverser.generify("A") : null;
+            final JTypeVar argType = options.includeArg() ? defaultTraverser.generify("A") : null;
 
-            JClass narrowedVisitor = codeGenState.getVisitor()
+            JClass narrowedVisitor = codeGenState.visitor()
                     .narrow(Stream.of(scratch.generify("?"), exceptionType, argType)
                             .filter(Objects::nonNull)
                             .collect(Collectors.toList()));
-            JClass narrowedTraverser = codeGenState.getTraverser().narrow(
+            JClass narrowedTraverser = codeGenState.traverser().narrow(
                     Stream.of(exceptionType, argType)
                             .filter(Objects::nonNull)
                             .collect(Collectors.toList()));
@@ -64,17 +62,17 @@ public final class DepthFirstTraverser {
 
             annotateGenerated(defaultTraverser, options);
 
-            Map<String, JClass> dcMap = codeGenState.getDirectClasses()
+            Map<String, JClass> dcMap = codeGenState.directClasses()
                     .stream()
                     .collect(Collectors.toMap(JType::fullName, Function.identity()));
 
 
-            codeGenState.getSorted().stream()
+            codeGenState.sorted().stream()
                     .filter(classOutline -> !classOutline.target.isAbstract())
                     .forEach(classOutline -> {
                         // add the bean to the traverserImpl
                         JMethod traverseMethodImpl;
-                        String traverseMethodName = options.getTraverseMethodNamer().apply(classOutline.implClass.name());
+                        String traverseMethodName = options.traverseMethodNamer().apply(classOutline.implClass.name());
                         traverseMethodImpl = defaultTraverser.method(JMod.PUBLIC, void.class, traverseMethodName);
                         traverseMethodImpl._throws(exceptionType);
                         JVar beanParam = traverseMethodImpl.param(classOutline.implClass, "aBean");
@@ -86,8 +84,8 @@ public final class DepthFirstTraverser {
                         findAllDeclaredAndInheritedFields(classOutline).forEach(fieldOutline -> {
                             JType rawType = fieldOutline.getRawType();
                             JMethod getter = ClassDiscoverer.getter(fieldOutline);
-                            if (getter != null && !(options.isNoIdrefTraversal() && isIdrefField(fieldOutline))) {
-                                boolean isJAXBElement = options.isJAXBElement(getter.type());
+                            if (getter != null && !(options.noIdrefTraversal() && isIdrefField(fieldOutline))) {
+                                boolean isJAXBElement = isJAXBElement(getter.type(), options);
                                 CPropertyInfo propertyInfo = fieldOutline.getPropertyInfo();
                                 boolean isCollection = propertyInfo.isCollection();
                                 if (isCollection) {
@@ -110,7 +108,7 @@ public final class DepthFirstTraverser {
                             }
                         });
                     });
-            codeGenState.getDirectClasses().forEach(dc -> {
+            codeGenState.directClasses().forEach(dc -> {
                 JMethod traverseMethodImpl = defaultTraverser.method(JMod.PUBLIC, void.class, "traverse");
                 traverseMethodImpl._throws(exceptionType);
                 traverseMethodImpl.param(dc, "aBean");
@@ -126,7 +124,7 @@ public final class DepthFirstTraverser {
                 Arrays.stream(source).forEach(s -> traverseBlock.directStatement(String.format(s, dc.fullName())));
             });
         } finally {
-            options.getPackageForVisitor().remove(scratch);
+            options.packageForVisitor().remove(scratch);
         }
     }
 
@@ -173,7 +171,7 @@ public final class DepthFirstTraverser {
             // if it is an interface (like Serializable) it could also be anything
             // handle it like java.lang.Object
             return TraversableCodeGenStrategy.MAYBE;
-        } else if (state.getVisitable().isAssignableFrom(clazz)) {
+        } else if (state.visitable().isAssignableFrom(clazz)) {
             // it's a real type. if it's one of ours, then it'll be assignable from Visitable
             return TraversableCodeGenStrategy.VISITABLE;
         } else if (directClasses.containsKey(name)) {

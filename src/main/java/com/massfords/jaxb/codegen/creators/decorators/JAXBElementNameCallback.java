@@ -1,4 +1,4 @@
-package com.massfords.jaxb.codegen.creators;
+package com.massfords.jaxb.codegen.creators.decorators;
 
 import com.massfords.jaxb.codegen.CodeGenOptions;
 import com.massfords.jaxb.codegen.InitialState;
@@ -17,8 +17,6 @@ import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.Unmarshaller;
 import jakarta.xml.bind.annotation.XmlElementDecl;
 import jakarta.xml.bind.annotation.XmlTransient;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 
 import javax.xml.namespace.QName;
 import java.io.PrintWriter;
@@ -33,7 +31,6 @@ import java.util.stream.Collectors;
 import static com.massfords.jaxb.codegen.creators.Utils.annotateGenerated;
 
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JAXBElementNameCallback {
 
     private static final String SETTER = "setJAXBElementName";
@@ -41,17 +38,17 @@ public final class JAXBElementNameCallback {
     private static final String FIELD = "jaxbElementName";
 
     public static void create(InitialState state, CodeGenOptions options) {
-        Outline outline = state.getOutline();
-        JDefinedClass _class = outline.getClassFactory().createInterface(options.getPackageForVisitor(), "Named", null);
+        Outline outline = state.outline();
+        JDefinedClass _class = outline.getClassFactory().createInterface(options.packageForVisitor(), "Named", null);
         annotateGenerated(_class, options);
         _class.method(JMod.PUBLIC, void.class, SETTER).param(QName.class, "name");
         _class.method(JMod.PUBLIC, QName.class, GETTER);
 
-        Set<ClassOutline> named = onlyNamed(outline, state.getSorted());
+        Set<ClassOutline> named = onlyNamed(outline, state.sorted());
 
         JClass jaxbElementClass = outline.getCodeModel().ref(JAXBElement.class).narrow(outline.getCodeModel().ref(Object.class).wildcard());
 
-        for (ClassOutline classOutline : named) {
+        named.forEach(classOutline -> {
             JDefinedClass implClass = classOutline.implClass;
             // implement the interface
             implClass._implements(_class);
@@ -89,7 +86,7 @@ public final class JAXBElementNameCallback {
             after.body()._if(JExpr.ref("parent")._instanceof(jaxbElementClass))
                     ._then().assign(JExpr._this().ref(FIELD),
                             JExpr.invoke(JExpr.cast(jaxbElementClass, JExpr.ref("parent")), "getName"));
-        }
+        });
     }
 
     private static Set<JDefinedClass> identifyCandidates(Outline outline) {

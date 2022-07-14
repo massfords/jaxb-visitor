@@ -12,8 +12,6 @@ import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JVar;
 import com.sun.tools.xjc.outline.Outline;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 
 /**
  * enum that reports whether a bean property is traversable.
@@ -25,7 +23,6 @@ import lombok.AllArgsConstructor;
  * be on the Visitor interface but doesn't have an accept
  * method.
  */
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum TraversableCodeGenStrategy {
     /**
      * VISITABLE means we just have to test for a null instance.
@@ -91,7 +88,7 @@ public enum TraversableCodeGenStrategy {
         @Override
         public void jaxbElementCollection(JBlock traverseBlock, JClass collType, JVar beanParam, JMethod getter, JVar vizParam, JVar argParam, AllInterfacesCreated state, CodeGenOptions options) {
             JForEach forEach = traverseBlock.forEach(collType, "obj", JExpr.invoke(beanParam, getter));
-            forEach.body()._if(JExpr.ref("obj").invoke("getValue")._instanceof(state.getVisitable()))._then().invoke(JExpr.cast(state.getVisitable(), JExpr.ref("obj").invoke("getValue")), "accept").arg(vizParam);
+            forEach.body()._if(JExpr.ref("obj").invoke("getValue")._instanceof(state.visitable()))._then().invoke(JExpr.cast(state.visitable(), JExpr.ref("obj").invoke("getValue")), "accept").arg(vizParam);
         }
 
         @Override
@@ -99,8 +96,8 @@ public enum TraversableCodeGenStrategy {
             addParams(traverseBlock._if(
                             JExpr.invoke(beanParam, getter).ne(JExpr._null())
                                     .cand(
-                                            JExpr.invoke(beanParam, getter).invoke("getValue")._instanceof(state.getVisitable())))._then()
-                    .invoke(JExpr.cast(state.getVisitable(), JExpr.invoke(beanParam, getter).invoke("getValue")), "accept"), vizParam, argParam);
+                                            JExpr.invoke(beanParam, getter).invoke("getValue")._instanceof(state.visitable())))._then()
+                    .invoke(JExpr.cast(state.visitable(), JExpr.invoke(beanParam, getter).invoke("getValue")), "accept"), vizParam, argParam);
         }
 
         @Override
@@ -111,16 +108,16 @@ public enum TraversableCodeGenStrategy {
             JForEach forEach = traverseBlock.forEach(rawType.getTypeParameters().get(0), "bean", JExpr.invoke(beanParam, getter));
             JBlock body = forEach.body();
             JFieldRef bean = JExpr.ref("bean");
-            JConditional conditional = body._if(bean._instanceof(state.getVisitable()));
-            addParams(conditional._then().invoke(JExpr.cast(state.getVisitable(), bean), "accept"), vizParam, argParam);
+            JConditional conditional = body._if(bean._instanceof(state.visitable()));
+            addParams(conditional._then().invoke(JExpr.cast(state.visitable(), bean), "accept"), vizParam, argParam);
 
             // if it's a mixed type schema, then it could be returning JAXBElement's here
             // add some code to check to see if the element has a value that is visitable
             // and if so, visit it.
             conditional = conditional._elseif(bean._instanceof(jaxbElementClass));
-            addParams(conditional._then()._if(JExpr.invoke(JExpr.cast(jaxbElementClass, bean), "getValue")._instanceof(state.getVisitable()))._then()
-                    .invoke(JExpr.cast(state.getVisitable(), JExpr.invoke(JExpr.cast(jaxbElementClass, bean), "getValue")), "accept"), vizParam, argParam);
-            for (JClass jc : state.getDirectClasses()) {
+            addParams(conditional._then()._if(JExpr.invoke(JExpr.cast(jaxbElementClass, bean), "getValue")._instanceof(state.visitable()))._then()
+                    .invoke(JExpr.cast(state.visitable(), JExpr.invoke(JExpr.cast(jaxbElementClass, bean), "getValue")), "accept"), vizParam, argParam);
+            for (JClass jc : state.directClasses()) {
                 // Despite the name below, _elseif doesn't actually produce
                 // an else if. Instead, it produces an else with an if
                 // in the body. This is syntax issue only, it's semantically
@@ -132,7 +129,7 @@ public enum TraversableCodeGenStrategy {
 
         @Override
         public void bean(JBlock traverseBlock, JVar beanParam, JMethod getter, JVar vizParam, JVar argParam, AllInterfacesCreated state, CodeGenOptions options) {
-            traverseBlock._if(JExpr.invoke(beanParam, getter)._instanceof(state.getVisitable()))._then().invoke(JExpr.cast(state.getVisitable(), JExpr.invoke(beanParam, getter)), "accept").arg(vizParam);
+            traverseBlock._if(JExpr.invoke(beanParam, getter)._instanceof(state.visitable()))._then().invoke(JExpr.cast(state.visitable(), JExpr.invoke(beanParam, getter)), "accept").arg(vizParam);
         }
 
     },
