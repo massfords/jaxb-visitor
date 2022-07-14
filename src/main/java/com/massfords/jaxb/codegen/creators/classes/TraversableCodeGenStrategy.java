@@ -9,7 +9,6 @@ import com.sun.codemodel.JFieldRef;
 import com.sun.codemodel.JForEach;
 import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
-import com.sun.codemodel.JVar;
 import com.sun.tools.xjc.outline.Outline;
 
 /**
@@ -29,34 +28,33 @@ public enum TraversableCodeGenStrategy {
      */
     VISITABLE {
         @Override
-        public void jaxbElementCollection(TraversalContext context,
-                                          JClass collType, JVar beanParam, JMethod getter) {
-            JForEach forEach = context.traverseBlock().forEach(collType, "obj", JExpr.invoke(beanParam, getter));
+        public void jaxbElementCollection(TraversalContext context, JClass collType, JMethod getter) {
+            JForEach forEach = context.traverseBlock()
+                    .forEach(collType, "obj", JExpr.invoke(context.beanParam(), getter));
             forEach.body()._if(JExpr.ref("obj").invoke("getValue").ne(JExpr._null()))
                     ._then()
                     .invoke(JExpr.ref("obj").invoke("getValue"), "accept").arg(context.vizParam());
         }
 
         @Override
-        public void collection(TraversalContext context, Outline outline,
-                               JClass rawType, JVar beanParam, JMethod getter) {
+        public void collection(TraversalContext context,
+                               JClass rawType, JMethod getter) {
             JForEach forEach = context.traverseBlock().forEach(rawType.getTypeParameters().get(0), "bean",
-                    JExpr.invoke(beanParam, getter));
+                    JExpr.invoke(context.beanParam(), getter));
             addParams(context, forEach.body().invoke(JExpr.ref("bean"), "accept"));
         }
 
         @Override
-        public void bean(TraversalContext context, JVar beanParam, JMethod getter) {
-            addParams(context, context.traverseBlock()._if(JExpr.invoke(beanParam, getter).ne(JExpr._null()))
-                    ._then().invoke(JExpr.invoke(beanParam, getter), "accept"));
+        public void bean(TraversalContext context, JMethod getter) {
+            addParams(context, context.traverseBlock()._if(JExpr.invoke(context.beanParam(), getter).ne(JExpr._null()))
+                    ._then().invoke(JExpr.invoke(context.beanParam(), getter), "accept"));
         }
 
         @Override
-        public void jaxbElement(TraversalContext context,
-                                JClass rawType, JVar beanParam, JMethod getter) {
+        public void jaxbElement(TraversalContext context, JClass rawType, JMethod getter) {
             addParams(context, context.traverseBlock()._if(
-                            JExpr.invoke(beanParam, getter).ne(JExpr._null()))._then()
-                    .invoke(JExpr.invoke(beanParam, getter).invoke("getValue"), "accept"));
+                            JExpr.invoke(context.beanParam(), getter).ne(JExpr._null()))._then()
+                    .invoke(JExpr.invoke(context.beanParam(), getter).invoke("getValue"), "accept"));
         }
     },
     /**
@@ -65,25 +63,22 @@ public enum TraversableCodeGenStrategy {
      */
     NO {
         @Override
-        public void jaxbElementCollection(TraversalContext context,
-                                          JClass collType, JVar beanParam, JMethod getter) {
+        public void jaxbElementCollection(TraversalContext context, JClass collType, JMethod getter) {
 
         }
 
         @Override
-        public void jaxbElement(TraversalContext context,
-                                JClass rawType, JVar beanParam, JMethod getter) {
+        public void jaxbElement(TraversalContext context, JClass rawType, JMethod getter) {
 
         }
 
         @Override
-        public void collection(TraversalContext context, Outline outline,
-                               JClass rawType, JVar beanParam, JMethod getter) {
+        public void collection(TraversalContext context, JClass rawType, JMethod getter) {
 
         }
 
         @Override
-        public void bean(TraversalContext context, JVar beanParam, JMethod getter) {
+        public void bean(TraversalContext context, JMethod getter) {
 
         }
     },
@@ -95,10 +90,10 @@ public enum TraversableCodeGenStrategy {
      */
     MAYBE {
         @Override
-        public void jaxbElementCollection(TraversalContext context,
-                                          JClass collType, JVar beanParam, JMethod getter) {
-            JForEach forEach = context.traverseBlock().forEach(collType, "obj", JExpr.invoke(beanParam, getter));
-            AllInterfacesCreated state = context.state();
+        public void jaxbElementCollection(TraversalContext context, JClass collType, JMethod getter) {
+            JForEach forEach = context.traverseBlock()
+                    .forEach(collType, "obj", JExpr.invoke(context.beanParam(), getter));
+            AllInterfacesCreated state = context.shared().state();
             forEach.body()._if(JExpr.ref("obj").invoke("getValue")
                             ._instanceof(state.visitable()))
                     ._then()
@@ -107,32 +102,31 @@ public enum TraversableCodeGenStrategy {
         }
 
         @Override
-        public void jaxbElement(TraversalContext context, JClass rawType,
-                                JVar beanParam, JMethod getter) {
-            AllInterfacesCreated state = context.state();
+        public void jaxbElement(TraversalContext context, JClass rawType, JMethod getter) {
+            AllInterfacesCreated state = context.shared().state();
             addParams(context, context.traverseBlock()._if(
-                            JExpr.invoke(beanParam, getter).ne(JExpr._null())
+                            JExpr.invoke(context.beanParam(), getter).ne(JExpr._null())
                                     .cand(
-                                            JExpr.invoke(beanParam, getter).invoke("getValue")
+                                            JExpr.invoke(context.beanParam(), getter).invoke("getValue")
                                                     ._instanceof(state.visitable()))).
                     _then()
-                    .invoke(JExpr.cast(state.visitable(), JExpr.invoke(beanParam, getter)
+                    .invoke(JExpr.cast(state.visitable(), JExpr.invoke(context.beanParam(), getter)
                             .invoke("getValue")), "accept"));
         }
 
         @Override
-        public void collection(TraversalContext context, Outline outline,
-                               JClass rawType, JVar beanParam, JMethod getter) {
+        public void collection(TraversalContext context, JClass rawType, JMethod getter) {
 
-            JClass jaxbElementClass = outline.getCodeModel().ref(context.options().getJAXBElementClass())
+            Outline outline = context.shared().state().initial().outline();
+            JClass jaxbElementClass = outline.getCodeModel().ref(context.shared().options().getJAXBElementClass())
                     .narrow(outline.getCodeModel()
                             .ref(Object.class).wildcard());
 
             JForEach forEach = context.traverseBlock().forEach(rawType.getTypeParameters().get(0), "bean",
-                    JExpr.invoke(beanParam, getter));
+                    JExpr.invoke(context.beanParam(), getter));
             JBlock body = forEach.body();
             JFieldRef bean = JExpr.ref("bean");
-            AllInterfacesCreated state = context.state();
+            AllInterfacesCreated state = context.shared().state();
             JConditional conditional = body._if(bean._instanceof(state.visitable()));
             addParams(context, conditional._then().invoke(JExpr.cast(state.visitable(), bean), "accept"));
 
@@ -157,59 +151,52 @@ public enum TraversableCodeGenStrategy {
         }
 
         @Override
-        public void bean(TraversalContext context, JVar beanParam, JMethod getter) {
-            context.traverseBlock()._if(JExpr.invoke(beanParam, getter)
-                            ._instanceof(context.state().visitable()))
+        public void bean(TraversalContext context, JMethod getter) {
+            context.traverseBlock()._if(JExpr.invoke(context.beanParam(), getter)
+                            ._instanceof(context.shared().state().visitable()))
                     ._then()
-                    .invoke(JExpr.cast(context.state().visitable(), JExpr.invoke(beanParam, getter)), "accept")
+                    .invoke(JExpr.cast(context.shared().state().visitable(),
+                            JExpr.invoke(context.beanParam(), getter)), "accept")
                     .arg(context.vizParam());
         }
 
     },
     DIRECT {
         @Override
-        public void jaxbElementCollection(TraversalContext context,
-                                          JClass collType, JVar beanParam, JMethod getter) {
+        public void jaxbElementCollection(TraversalContext context, JClass collType, JMethod getter) {
             // should prob throw an error here. I don't think we should ever have
             // a jaxb element w/ an external class
         }
 
         @Override
-        public void jaxbElement(TraversalContext context,
-                                JClass rawType, JVar beanParam, JMethod getter) {
+        public void jaxbElement(TraversalContext context, JClass rawType, JMethod getter) {
             // should prob throw an error here. I don't think we should ever have
             // a jaxb element w/ an external class
         }
 
         @Override
-        public void collection(TraversalContext context, Outline outline,
-                               JClass rawType, JVar beanParam, JMethod getter) {
+        public void collection(TraversalContext context, JClass rawType, JMethod getter) {
             JForEach forEach = context.traverseBlock().forEach(rawType.getTypeParameters().get(0), "bean",
-                    JExpr.invoke(beanParam, getter));
+                    JExpr.invoke(context.beanParam(), getter));
             JBlock body = forEach.body();
             body.invoke(context.vizParam(), "visit").arg(forEach.var());
         }
 
         @Override
-        public void bean(TraversalContext context,
-                         JVar beanParam, JMethod getter) {
+        public void bean(TraversalContext context, JMethod getter) {
             context.traverseBlock()._if(
-                            JExpr.invoke(beanParam, getter).ne(JExpr._null()))._then()
-                    .invoke(context.vizParam(), "visit").arg(JExpr.invoke(beanParam, getter));
+                            JExpr.invoke(context.beanParam(), getter).ne(JExpr._null()))._then()
+                    .invoke(context.vizParam(), "visit").arg(JExpr.invoke(context.beanParam(), getter));
         }
-
     };
 
-    public abstract void jaxbElementCollection(TraversalContext context, JClass collType,
-                                               JVar beanParam, JMethod getter);
+    public abstract void jaxbElementCollection(TraversalContext context, JClass collType, JMethod getter);
 
-    public abstract void jaxbElement(TraversalContext context, JClass rawType, JVar beanParam,
-                                     JMethod getter);
+    public abstract void jaxbElement(TraversalContext context, JClass rawType, JMethod getter);
 
-    public abstract void collection(TraversalContext context, Outline outline, JClass rawType,
-                                    JVar beanParam, JMethod getter);
+    public abstract void collection(TraversalContext context, JClass rawType, JMethod getter);
 
-    public abstract void bean(TraversalContext context, JVar beanParam, JMethod getter);
+    public abstract void bean(TraversalContext context, JMethod getter);
 
     private static void addParams(TraversalContext context, JInvocation invocation) {
         invocation.arg(context.vizParam());

@@ -1,7 +1,5 @@
 package com.massfords.jaxb.codegen.creators.classes;
 
-import com.massfords.jaxb.codegen.AllInterfacesCreated;
-import com.massfords.jaxb.codegen.CodeGenOptions;
 import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JVar;
 import org.immutables.value.Value;
@@ -14,9 +12,9 @@ interface TraversalContext {
 
     Optional<JVar> argParam();
 
-    AllInterfacesCreated state();
-
-    CodeGenOptions options();
-
     JBlock traverseBlock();
+
+    SharedDepthFirstTraversalContext shared();
+
+    JVar beanParam();
 }
