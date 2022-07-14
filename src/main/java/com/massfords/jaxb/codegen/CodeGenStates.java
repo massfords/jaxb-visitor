@@ -2,12 +2,17 @@ package com.massfords.jaxb.codegen;
 
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JType;
 import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.Outline;
+import org.immutables.value.Value;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public interface CodeGenStates {
     interface InitialState {
@@ -24,6 +29,14 @@ public interface CodeGenStates {
         }
 
         Set<JClass> directClasses();
+
+        @Value.Lazy
+        default Map<String, JClass> directClassesByName() {
+            return directClasses()
+                    .stream()
+                    .collect(Collectors.toMap(JType::fullName, Function.identity()));
+        }
+
     }
 
     interface VisitorState {
