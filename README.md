@@ -2,7 +2,7 @@
 
 ## What it does
 
-This plugin adds the visitor pattern that includes all of the JAXB objects
+This plugin adds the visitor pattern that includes all JAXB objects
 produced by the xjc compiler. The plugin produces the following changes in the beans:
 
 * add accept(Visitor) to each bean that invokes appropriate method on Visitor interface
@@ -25,10 +25,86 @@ produced by the xjc compiler. The plugin produces the following changes in the b
 Version 2.0 of the plugin changed the code generator to produce a Visitor and
 supporting classes that have a return type and an Exception on each visit method.
 
+## Integration Tests
+The [Apache Maven Invoker](https://maven.apache.org/plugins/maven-invoker-plugin/) verifies the plugin behavior via a number of different test projects. The table below identifies each project and what is special about its configuration. 
+
+> All of the folders in the table below are found under `src/it`
+
+|                             **folder**                              |      **jaxb plugin**       | **JAXB Version**<br>bindings file<br>or namespace | **extra args**                                          | **assertions**                                                     |
+|:-------------------------------------------------------------------:|:--------------------------:|:-------------------------------------------------:|:--------------------------------------------------------|--------------------------------------------------------------------|
+|                                basic                                | jaxb30-maven-plugin:0.15.0 |                                                   |                                                         | visitor interfaces and classes                                     |
+|                              basic-arg                              | jaxb30-maven-plugin:0.15.0 |                                                   | -Xvisitor-includeArg                                    | visitor interfaces and classes                                     |
+|                               calcviz                               | maven-jaxb2-plugin:0.14.0  |                        2.1                        | -Xvisitor-legacy<br>-Xfluent-api<br>-Xvalue-constructor | unit tests show traverser and visitor working                      |
+|                           direct-classes                            | jaxb30-maven-plugin:0.15.0 |                        3.0                        |                                                         | visitor interfaces and classes                                     |
+|      [dupe](https://github.com/massfords/jaxb-visitor/pull/9)       | jaxb30-maven-plugin:0.15.0 |                                                   |                                                         | visitor interfaces and classes                                     |
+| [exclude-id-ref](https://github.com/massfords/jaxb-visitor/pull/13) | jaxb30-maven-plugin:0.15.0 |                        3.0                        | -Xvisitor-noIdrefTraversal                              | visitor interfaces and classes                                     |
+|                               legacy                                | maven-jaxb2-plugin:0.14.0  |                                                   | -Xvisitor-legacy                                        | visitor interfaces and classes                                     |
+|                              noClasses                              | maven-jaxb2-plugin:0.15.0  |                                                   | -Xvisitor-noClasses                                     | visitor interfaces                                                 |
+|                             noOverload                              | maven-jaxb2-plugin:0.15.0  |                                                   | -Xvisitor-includeType                                   | visitor interfaces and classes                                     |
+|                                 ogc                                 | maven-jaxb2-plugin:0.15.0  |                                                   |                                                         | only DepthFirstTraverserImpl and one type with a subsitution group |
+|                            serializable                             | maven-jaxb2-plugin:0.15.0  |                        3.0                        |                                                         | only DepthFirstTraverserImpl                                       |
+
+## Configuration
+
+jaxb-visitor is now in Maven Central. You only need to configure the dependency below in your pom:
+
+```xml
+
+<dependency>
+    <groupId>com.massfords</groupId>
+    <artifactId>jaxb-visitor</artifactId>
+    <version>3.0.0</version>
+</dependency>
+```
+
+| Command Line Argument                   | Description                                                                                                                                                                                                                                                         |
+|-----------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| -Xvisitor                               | Main option name that triggers the plugin's behavior                                                                                                                                                                                                                | 
+| -Xvisitor-package:com.your.package.name | Tells the plugin which package to use for the generated code. If not specified, defaults to first package encountered during codegen                                                                                                                                | 
+| -Xvisitor-includeType                   | Changes the default code generator for the visitor and traverse to avoid overloading and instead include the type name. This is in response to Issue #8 where very large schemas resulted in a large number of overloaded methods which can be a performance issue. | 
+| -Xvisitor-noClasses                     | Skips the generation of classes. The plugin will only generate interfaces and modify the beans to support the visitor pattern.                                                                                                                                      | 
+| -Xvisitor-noIdrefTraversal              | The DepthFirstTraverserImpl will only traverse the XML tree, and will not follow IDREFs                                                                                                                                                                             |
+| -Xvisitor-legacy                        | Uses the legacy namespaces `java.xml.bind` and `javax.annotation` instead of jakarta                                                                                                                                                                                |
+| -Xvisitor-includeArg                    | Includes a generic argument on each visit and traverse function.                                                                                                                                                                                                    |
+
+### Example Usage in POM
+
+```xml
+
+<plugin>
+    <groupId>com.evolvedbinary.maven.jvnet</groupId>
+    <artifactId>jaxb30-maven-plugin</artifactId>
+    <version>0.15.0</version>
+    <configuration>
+        <schemaDirectory>
+            ${basedir}/src/main/resources
+        </schemaDirectory>
+        <args>
+            <arg>-Xvisitor</arg>
+            <arg>-Xvisitor-package:org.example.visitor</arg>
+        </args>
+        <plugins>
+            <plugin>
+                <groupId>com.massfords</groupId>
+                <artifactId>jaxb-visitor</artifactId>
+                <version>3.0.0</version>
+            </plugin>
+        </plugins>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>generate</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+```
+
 ## Visitor Pattern
 
-The standard [Visitor Pattern](http://en.wikipedia.org/wiki/Visitor_pattern) provides a way to perform an operation on 
-the elements of an object structure without changing the code for the object on which it operates 
+The standard [Visitor Pattern](http://en.wikipedia.org/wiki/Visitor_pattern) provides a way to perform an operation on
+the elements of an object structure without changing the code for the object on which it operates
 (see [Gang of Four](http://en.wikipedia.org/wiki/Design_Patterns)).
 
 ### Traversal
@@ -80,62 +156,6 @@ beans, then each of those beans would be visited during the traversal.
 
 ![sequence diagram](src/docs/TraversingVisitorSequence.png)
 
-# Configuration
-
-jaxb-visitor is now in Maven Central. You only need to configure the dependency below in your pom:
-
-```xml
-
-<dependency>
-    <groupId>com.massfords</groupId>
-    <artifactId>jaxb-visitor</artifactId>
-    <version>3.0.0</version>
-</dependency>
-```
-
-| Command Line Argument                   | Description                                                                                                                                                                                                                                                         |
-|-----------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| -Xvisitor                               | Main option name that triggers the plugin's behavior                                                                                                                                                                                                                | 
-| -Xvisitor-package:com.your.package.name | Tells the plugin which package to use for the generated code. If not specified, defaults to first package encountered during codegen                                                                                                                                | 
-| -Xvisitor-includeType                   | Changes the default code generator for the visitor and traverse to avoid overloading and instead include the type name. This is in response to Issue #8 where very large schemas resulted in a large number of overloaded methods which can be a performance issue. | 
-| -Xvisitor-noClasses                     | Skips the generation of classes. The plugin will only generate interfaces and modify the beans to support the visitor pattern.                                                                                                                                      | 
-| -Xvisitor-noIdrefTraversal              | The DepthFirstTraverserImpl will only traverse the XML tree, and will not follow IDREFs                                                                                                                                                                             |
-| -Xvisitor-legacy                        | Uses the legacy namespaces `java.xml.bind` and `javax.annotation` instead of jakarta                                                                                                                                                                                |
-| -Xvisitor-includeArg                    | Includes a generic argument on each visit and traverse function.                                                                                                                                                                                                    |
-
-## Example Usage in POM
-
-```xml
-<plugin>
-    <groupId>com.evolvedbinary.maven.jvnet</groupId>
-    <artifactId>jaxb30-maven-plugin</artifactId>
-    <version>0.15.0</version>
-    <configuration>
-        <schemaDirectory>
-            ${basedir}/src/main/resources
-        </schemaDirectory>
-        <args>
-            <arg>-Xvisitor</arg>
-            <arg>-Xvisitor-package:org.example.visitor</arg>
-        </args>
-        <plugins>
-            <plugin>
-                <groupId>com.massfords</groupId>
-                <artifactId>jaxb-visitor</artifactId>
-                <version>3.0.0</version>
-            </plugin>
-        </plugins>
-    </configuration>
-    <executions>
-        <execution>
-            <goals>
-                <goal>generate</goal>
-            </goals>
-        </execution>
-    </executions>
-</plugin>
-```
-
 # JAXBElement Behavior
 
 The JAXB tutorial suggests modifying your schema to avoid having JAXBElement<?> types.
@@ -146,31 +166,36 @@ for the top level type which makes visiting and traversing difficult.
 
 The simple binding may help reduce some JAXBElement generation.
 Example Schema with JAXBElements
-```
-<xsd:element name="comparisonOps"
-            type="fes:ComparisonOpsType"
-            abstract="true"/>
-<xsd:complexType name="ComparisonOpsType" abstract="true"/>
 
-<xsd:element name="PropertyIsEqualTo"
-            type="fes:BinaryComparisonOpType"
-            substitutionGroup="fes:comparisonOps"/>
-<xsd:element name="PropertyIsNotEqualTo"
-            type="fes:BinaryComparisonOpType"
-            substitutionGroup="fes:comparisonOps"/>
+```xml
 
-<xsd:element name="PropertyIsLike"
-            type="fes:PropertyIsLikeType"
-            substitutionGroup="fes:comparisonOps"/>
-<xsd:element name="PropertyIsNull"
-            type="fes:PropertyIsNullType"
-            substitutionGroup="fes:comparisonOps"/>
-<xsd:element name="PropertyIsNil"
-            type="fes:PropertyIsNilType"
-            substitutionGroup="fes:comparisonOps"/>
-<xsd:element name="PropertyIsBetween"
-            type="fes:PropertyIsBetweenType"
-            substitutionGroup="fes:comparisonOps"/>
+<xsd:schema>
+    <!--- snip -->
+    <xsd:element name="comparisonOps"
+                 type="fes:ComparisonOpsType"
+                 abstract="true"/>
+    <xsd:complexType name="ComparisonOpsType" abstract="true"/>
+
+    <xsd:element name="PropertyIsEqualTo"
+                 type="fes:BinaryComparisonOpType"
+                 substitutionGroup="fes:comparisonOps"/>
+    <xsd:element name="PropertyIsNotEqualTo"
+                 type="fes:BinaryComparisonOpType"
+                 substitutionGroup="fes:comparisonOps"/>
+
+    <xsd:element name="PropertyIsLike"
+                 type="fes:PropertyIsLikeType"
+                 substitutionGroup="fes:comparisonOps"/>
+    <xsd:element name="PropertyIsNull"
+                 type="fes:PropertyIsNullType"
+                 substitutionGroup="fes:comparisonOps"/>
+    <xsd:element name="PropertyIsNil"
+                 type="fes:PropertyIsNilType"
+                 substitutionGroup="fes:comparisonOps"/>
+    <xsd:element name="PropertyIsBetween"
+                 type="fes:PropertyIsBetweenType"
+                 substitutionGroup="fes:comparisonOps"/>
+</xsd:schema>
 ```
 
 The schema snippet above is from the OGC schema. You can provide a filter where
@@ -183,19 +208,22 @@ have custom types, while the other operators all derive from BinaryComparisonOpT
 
 The result is that the JAXB for the comparison type looks like this:
 
-```
+```java
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ComparisonOpsType")
 @XmlSeeAlso({
-    BinaryComparisonOpType.class,
-    PropertyIsNilType.class,
-    PropertyIsBetweenType.class,
-    PropertyIsNullType.class,
-    PropertyIsLikeType.class
+        BinaryComparisonOpType.class,
+        PropertyIsNilType.class,
+        PropertyIsBetweenType.class,
+        PropertyIsNullType.class,
+        PropertyIsLikeType.class
 })
+public abstract class ComparisonOpsType implements Named, Visitable { /*snipped*/
+}
 ```
 
-Note that we don't get top level classes for PropertyIsEqual, etc since they are
+Note that we don't get top level classes for PropertyIsEqual, and others since they are
 all folded into BinaryComparisonOpType.
 
 If you owned the schema, you would create custom types as the tutorial link at
@@ -230,8 +258,6 @@ The decision for whether to traverse a any element is made by examining its type
 | JAXBElement of SomeGeneratedBean | check element for not null and traverse its value if available                                   | 
 | JAXBElement of ? extends Object  | check element for not null and its value for instanceof Visitable and traverse if it is          | 
 
-
-
 ## 1.13+ handling
 
 An additional step in the VisitorPlugin? adds a QName to beans that are wrapped
@@ -244,17 +270,20 @@ wrapped bean. Note that this assumes that the bean has been unmarshalled. There
 currently isn't a mechanism in place to set the QName apart from the Unmarshaller
 Listener.
 
+```java
+public class VisitorExample implements Visitor {
+    // ... snip ...
+    @Override
+    public void visit(BinaryComparisonOpType bean) {
+        // shows how to check JAXBElement names when visiting
+        if ("PropertyIsEqualTo".equals(
+                bean.getJAXBElementName().getLocalPart())) {
+            // behavior for equals
+        }
+    }
+}
 ```
-TraversingVisitor tv = new TraversingVisitor(new DepthFirstTraverserImpl(), new BaseVisitor() {
-            @Override
-            public void visit(BinaryComparisonOpType bean) {
-                if ("PropertyIsEqualTo".equals(
-                       bean.getJAXBElementName().getLocalPart())) {
-                   // behavior for equals
-                }
-            }
-        });
-```
+
 ## 1.12 handling
 
 The generated visitor and traversal classes do not address this issue. One
