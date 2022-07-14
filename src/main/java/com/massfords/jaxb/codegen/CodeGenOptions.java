@@ -7,6 +7,7 @@ import org.immutables.value.Value;
 import java.util.function.Function;
 
 @Value.Immutable
+@Value.Style(strictBuilder = true)
 public interface CodeGenOptions {
     boolean noIdrefTraversal();
 

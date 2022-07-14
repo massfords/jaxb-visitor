@@ -24,7 +24,7 @@ public final class AddAcceptMethod {
     public static void decorate(VisitorState state, CodeGenOptions options) {
         // skip over abstract classes
         // add the accept method to the bean
-        state.sorted()
+        state.allClasses()
                 .stream()
                 .filter(classOutline -> !classOutline.target.isAbstract())
                 .forEach(classOutline -> {

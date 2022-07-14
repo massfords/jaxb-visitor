@@ -26,7 +26,7 @@ public final class Visitable {
         _method.param(state.narrowedVisitor(), "aVisitor");
         genericTypes.argType().ifPresent(jTypeVar -> _method.param(jTypeVar, "arg"));
 
-        state.sorted().forEach(classOutline -> classOutline.implClass._implements(_interface));
+        state.allClasses().forEach(classOutline -> classOutline.implClass._implements(_interface));
         return _interface;
     }
 }

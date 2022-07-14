@@ -44,7 +44,7 @@ public final class Traverser {
                             .filter(Objects::nonNull)
                             .toArray(JTypeVar[]::new));
 
-            allConcreteClasses(state.sorted(), state.directClasses())
+            allConcreteClasses(state.allClasses(), state.directClasses())
                     .forEach((jc -> {
                         String methodName = options.traverseMethodNamer().apply(jc.name());
                         JMethod traverseMethod = _interface.method(JMod.NONE, void.class, methodName);

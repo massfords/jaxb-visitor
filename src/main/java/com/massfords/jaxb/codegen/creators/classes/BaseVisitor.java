@@ -25,7 +25,7 @@ public final class BaseVisitor {
         GenerifyResults results = Utils.generify(_class, options);
         _class._implements(state.narrowedVisitor());
 
-        allConcreteClasses(state.sorted(), state.directClasses())
+        allConcreteClasses(state.allClasses(), state.directClasses())
                 .forEach(jc -> {
                     JMethod _method;
                     String methodName = options.visitMethodNamer().apply(jc.name());
