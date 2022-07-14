@@ -24,30 +24,35 @@ import static com.massfords.jaxb.codegen.creators.Utils.annotateGenerated;
  * @author markford
  */
 public final class Traverser {
+    private Traverser() {
+    }
     public static JDefinedClass createInterface(VisitorState state, CodeGenOptions options) {
-        Outline outline = state.outline();
+        Outline outline = state.initial().outline();
         JPackage jpackage = options.packageForVisitor();
         JDefinedClass scratch = outline.getClassFactory().createInterface(jpackage, "_scratch", null);
         try {
-            JDefinedClass _interface = outline.getClassFactory().createInterface(jpackage, "Traverser", null);
-            annotateGenerated(_interface, options);
+            JDefinedClass traverserModel = outline.getClassFactory()
+                    .createInterface(jpackage, "Traverser", null);
+            annotateGenerated(traverserModel, options);
 
             final JTypeVar returnType = scratch.generify("?");
-            final JTypeVar exceptionType = _interface.generify("E", Throwable.class);
-            final JTypeVar argType = options.includeArg() ? _interface.generify("A") : null;
+            final JTypeVar exceptionType = traverserModel.generify("E", Throwable.class);
+            final JTypeVar argType = options.includeArg() ? traverserModel.generify("A") : null;
 
-            final List<JTypeVar> generics = Stream.of(returnType, exceptionType, argType).filter(Objects::nonNull).collect(Collectors.toList());
+            final List<JTypeVar> generics = Stream.of(returnType, exceptionType, argType)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
 
             final JClass narrowedVisitorWithWildcard = state.visitor().narrow(generics);
-            _interface
+            traverserModel
                     .narrow(Stream.of(returnType, exceptionType, argType)
                             .filter(Objects::nonNull)
                             .toArray(JTypeVar[]::new));
 
-            allConcreteClasses(state.allClasses(), state.directClasses())
+            allConcreteClasses(state.initial().allClasses(), state.initial().directClasses())
                     .forEach((jc -> {
                         String methodName = options.traverseMethodNamer().apply(jc.name());
-                        JMethod traverseMethod = _interface.method(JMod.NONE, void.class, methodName);
+                        JMethod traverseMethod = traverserModel.method(JMod.NONE, void.class, methodName);
                         traverseMethod._throws(exceptionType);
                         traverseMethod.param(jc, "aBean");
                         traverseMethod.param(narrowedVisitorWithWildcard, "aVisitor");
@@ -55,7 +60,7 @@ public final class Traverser {
                             traverseMethod.param(argType, "arg");
                         }
                     }));
-            return _interface;
+            return traverserModel;
         } finally {
             options.packageForVisitor().remove(scratch);
         }

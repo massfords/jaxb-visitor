@@ -34,53 +34,52 @@ import static com.massfords.jaxb.codegen.creators.Utils.annotateGenerated;
 
 public final class JAXBElementNameCallback {
 
+    private JAXBElementNameCallback() {
+    }
+
     private static final String SETTER = "setJAXBElementName";
     private static final String GETTER = "getJAXBElementName";
     private static final String FIELD = "jaxbElementName";
 
     public static void create(InitialState state, CodeGenOptions options) {
         Outline outline = state.outline();
-        JDefinedClass _class = outline.getClassFactory().createInterface(options.packageForVisitor(), "Named", null);
-        annotateGenerated(_class, options);
-        _class.method(JMod.PUBLIC, void.class, SETTER).param(QName.class, "name");
-        _class.method(JMod.PUBLIC, QName.class, GETTER);
+        JDefinedClass clazz = outline.getClassFactory().createInterface(options.packageForVisitor(), "Named", null);
+        annotateGenerated(clazz, options);
+        clazz.method(JMod.PUBLIC, void.class, SETTER).param(QName.class, "name");
+        clazz.method(JMod.PUBLIC, QName.class, GETTER);
 
         Set<ClassOutline> named = onlyNamed(outline, state.allClasses());
 
-        JClass jaxbElementClass = outline.getCodeModel().ref(JAXBElement.class).narrow(outline.getCodeModel().ref(Object.class).wildcard());
+        JClass jaxbElementClass = outline.getCodeModel().ref(JAXBElement.class)
+                .narrow(outline.getCodeModel().ref(Object.class).wildcard());
 
         named.forEach(classOutline -> {
             JDefinedClass implClass = classOutline.implClass;
             // implement the interface
-            implClass._implements(_class);
-            /*
-                @XmlTransient
-                private QName jaxbElementName;
-             */
+            implClass._implements(clazz);
+
+            // code: @XmlTransient
+            // code: private QName jaxbElementName;
+            // todo this is another spot to better support jaxb2
             implClass.field(JMod.PRIVATE, QName.class, FIELD).annotate(XmlTransient.class);
-            /*
-               public void setJAXBElementName(QName name) {
-                   this.jaxbElementName = name;
-               }
-            */
+
+            // code:  public void setJAXBElementName(QName name) {
+            // code:      this.jaxbElementName = name;
+            // code:  }
             JMethod setter = implClass.method(JMod.PUBLIC, void.class, SETTER);
             setter.param(QName.class, "name");
             setter.body().assign(JExpr._this().ref(FIELD), JExpr.ref("name"));
-            /*
-               public QName getJAXBElementName() {
-                   return this.jaxbElementName;
-               }
-            */
+            // code: public QName getJAXBElementName() {
+            // code:    return this.jaxbElementName;
+            // code: }
             JMethod getter = implClass.method(JMod.PUBLIC, QName.class, GETTER);
             getter.body()._return(JExpr._this().ref(FIELD));
 
-            /*
-                public void afterUnmarshal(Unmarshaller u, Object parent) {
-                    if (parent instanceof JAXBElement) {
-                        this.jaxbElementName = ((JAXBElement)parent).getName()
-                    }
-                }
-             */
+            // code: public void afterUnmarshal(Unmarshaller u, Object parent) {
+            // code:    if (parent instanceof JAXBElement) {
+            // code:       this.jaxbElementName = ((JAXBElement)parent).getName()
+            // code:    }
+            // code: }
             JMethod after = implClass.method(JMod.PUBLIC, void.class, "afterUnmarshal");
             after.param(Unmarshaller.class, "u");
             after.param(Object.class, "parent");

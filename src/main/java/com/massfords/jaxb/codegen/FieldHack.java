@@ -8,7 +8,7 @@ import java.lang.reflect.Field;
  * generated bean to see if it has annotations on it that point to external
  * classes. This is one of the ways I discover externally mapped classes in the
  * codegen process.
- *
+ * <p>
  * Unfortunately, there is no public getter on the field that contains these
  * annotations and even worse the AbstractListField class is not public so I can't have a
  * ref to it at compile time. Instead, I use the Class.forName trickery below in
@@ -16,16 +16,24 @@ import java.lang.reflect.Field;
  *
  * @author mford
  */
-class FieldHack {
-    static Field listField;
+final class FieldHack {
+    private FieldHack() {
+    }
+
+    private static final Field LIST_FIELD;
+
     static {
         try {
             Class<?> defaultAccessClass = Class.forName(
                     "com.sun.tools.xjc.generator.bean.field.AbstractListField");
-            listField = defaultAccessClass.getDeclaredField("field");
-            listField.setAccessible(true);
+            LIST_FIELD = defaultAccessClass.getDeclaredField("field");
+            LIST_FIELD.setAccessible(true);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    static Field getField() {
+        return LIST_FIELD;
     }
 }
