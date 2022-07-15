@@ -1,6 +1,6 @@
 package com.massfords.jaxb.codegen.creators.classes;
 
-import com.massfords.jaxb.codegen.AllInterfacesCreated;
+import com.massfords.jaxb.VisitorPlugin;
 import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JConditional;
@@ -93,7 +93,7 @@ public enum TraversableCodeGenStrategy {
         public void jaxbElementCollection(TraversalContext context, JClass collType, JMethod getter) {
             JForEach forEach = context.traverseBlock()
                     .forEach(collType, "obj", JExpr.invoke(context.beanParam(), getter));
-            AllInterfacesCreated state = context.shared().state();
+            VisitorPlugin.AllInterfacesCreatedState state = context.shared().state();
             forEach.body()._if(JExpr.ref("obj").invoke("getValue")
                             ._instanceof(state.visitable()))
                     ._then()
@@ -103,7 +103,7 @@ public enum TraversableCodeGenStrategy {
 
         @Override
         public void jaxbElement(TraversalContext context, JClass rawType, JMethod getter) {
-            AllInterfacesCreated state = context.shared().state();
+            VisitorPlugin.AllInterfacesCreatedState state = context.shared().state();
             addParams(context, context.traverseBlock()._if(
                             JExpr.invoke(context.beanParam(), getter).ne(JExpr._null())
                                     .cand(
@@ -126,7 +126,7 @@ public enum TraversableCodeGenStrategy {
                     JExpr.invoke(context.beanParam(), getter));
             JBlock body = forEach.body();
             JFieldRef bean = JExpr.ref("bean");
-            AllInterfacesCreated state = context.shared().state();
+            VisitorPlugin.AllInterfacesCreatedState state = context.shared().state();
             JConditional conditional = body._if(bean._instanceof(state.visitable()));
             addParams(context, conditional._then().invoke(JExpr.cast(state.visitable(), bean), "accept"));
 

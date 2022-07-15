@@ -1,6 +1,6 @@
 package com.massfords.jaxb.codegen.creators.classes;
 
-import com.massfords.jaxb.codegen.AllInterfacesCreated;
+import com.massfords.jaxb.VisitorPlugin;
 import com.massfords.jaxb.codegen.CodeGenOptions;
 import com.massfords.jaxb.codegen.creators.GenerifyResults;
 import com.massfords.jaxb.codegen.creators.Utils;
@@ -43,7 +43,7 @@ public final class TraversingVisitor {
         CodeGenOptions options();
     }
 
-    public static void createClass(AllInterfacesCreated state, CodeGenOptions options) {
+    public static void createClass(VisitorPlugin.AllInterfacesCreatedState state, CodeGenOptions options) {
 
         JDefinedClass traversingVisitor = state.initial().outline().getClassFactory().createClass(
                 options.packageForVisitor(), "TraversingVisitor", null);

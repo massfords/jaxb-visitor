@@ -1,7 +1,7 @@
 package com.massfords.jaxb.codegen.creators.decorators;
 
+import com.massfords.jaxb.VisitorPlugin;
 import com.massfords.jaxb.codegen.CodeGenOptions;
-import com.massfords.jaxb.codegen.InitialState;
 import com.sun.codemodel.JAnnotationValue;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JDefinedClass;
@@ -36,7 +36,7 @@ public final class JAXBElementNameCallback {
     private static final String GETTER = "getJAXBElementName";
     private static final String FIELD = "jaxbElementName";
 
-    public static void create(InitialState state, CodeGenOptions options) {
+    public static void create(VisitorPlugin.InitialState state, CodeGenOptions options) {
         Outline outline = state.outline();
         JDefinedClass clazz = outline.getClassFactory().createInterface(options.packageForVisitor(), "Named", null);
         annotateGenerated(clazz, options);

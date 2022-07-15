@@ -1,14 +1,8 @@
 package com.massfords.jaxb;
 
-import com.massfords.jaxb.codegen.AllInterfacesCreated;
 import com.massfords.jaxb.codegen.ClassDiscoverer;
 import com.massfords.jaxb.codegen.CodeGenOptions;
-import com.massfords.jaxb.codegen.ImmutableAllInterfacesCreated;
 import com.massfords.jaxb.codegen.ImmutableCodeGenOptions;
-import com.massfords.jaxb.codegen.ImmutableInitialState;
-import com.massfords.jaxb.codegen.ImmutableVisitorState;
-import com.massfords.jaxb.codegen.InitialState;
-import com.massfords.jaxb.codegen.VisitorState;
 import com.massfords.jaxb.codegen.creators.classes.BaseVisitor;
 import com.massfords.jaxb.codegen.creators.classes.DepthFirstTraverser;
 import com.massfords.jaxb.codegen.creators.classes.TraversingVisitor;
@@ -18,6 +12,9 @@ import com.massfords.jaxb.codegen.creators.interfaces.Traverser;
 import com.massfords.jaxb.codegen.creators.interfaces.TraversingVisitorProgressMonitor;
 import com.massfords.jaxb.codegen.creators.interfaces.Visitable;
 import com.massfords.jaxb.codegen.creators.interfaces.Visitor;
+import com.massfords.jaxb.codegen.states.ImmutableAllInterfacesCreated;
+import com.massfords.jaxb.codegen.states.ImmutableInitialState;
+import com.massfords.jaxb.codegen.states.ImmutableVisitorState;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JPackage;
@@ -25,10 +22,13 @@ import com.sun.tools.xjc.Options;
 import com.sun.tools.xjc.Plugin;
 import com.sun.tools.xjc.model.CClassInfoParent;
 import com.sun.tools.xjc.outline.Aspect;
+import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.Outline;
 import com.sun.tools.xjc.outline.PackageOutline;
 import org.xml.sax.ErrorHandler;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -187,7 +187,7 @@ public final class VisitorPlugin extends Plugin {
                     visitorCreated, codeGenOptions);
 
             if (generateClasses) {
-                AllInterfacesCreated allState = ImmutableAllInterfacesCreated.builder()
+                VisitorPlugin.AllInterfacesCreatedState allState = ImmutableAllInterfacesCreated.builder()
                         .visitable(visitable)
                         .traverser(traverser)
                         .progressMonitor(progressMonitor)
@@ -224,5 +224,48 @@ public final class VisitorPlugin extends Plugin {
             vizPackage = (JPackage) outline.getContainer(pkage, Aspect.IMPLEMENTATION);
         }
         return vizPackage;
+    }
+
+    /**
+     * Models the initial state for code generation before we've created the primary Visitor interface
+     */
+    public interface InitialState {
+        Outline outline();
+
+        /**
+         * Exposed to provide a stable sorting simply for tests
+         */
+        Collection<ClassOutline> allClasses();
+
+        /**
+         * direct classes are thoses referenced by a generated bean but not part of the generation
+         */
+        Set<JClass> directClasses();
+
+        /**
+         * organizes the direct classes by their fully qualified name
+         */
+        Map<String, JClass> directClassesByName();
+    }
+
+    /**
+     * Provides the avaialble state after the primary Visitor interface was generated.
+     *
+     * There are other code generators that need these values as well as some of the initial values.
+     */
+    public interface VisitorState {
+        JDefinedClass visitor();
+        JClass narrowedVisitor();
+        com.massfords.jaxb.VisitorPlugin.InitialState initial();
+    }
+
+    /**
+     * All of the interfaces are created at this point and available to the
+     * remaining code generators that emit classes that implement these interfaces
+     */
+    public interface AllInterfacesCreatedState extends com.massfords.jaxb.VisitorPlugin.VisitorState {
+        JDefinedClass visitable();
+        JDefinedClass traverser();
+        JDefinedClass progressMonitor();
     }
 }

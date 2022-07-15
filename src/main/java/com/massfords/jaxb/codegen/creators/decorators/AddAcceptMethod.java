@@ -1,7 +1,7 @@
 package com.massfords.jaxb.codegen.creators.decorators;
 
+import com.massfords.jaxb.VisitorPlugin;
 import com.massfords.jaxb.codegen.CodeGenOptions;
-import com.massfords.jaxb.codegen.VisitorState;
 import com.massfords.jaxb.codegen.creators.GenerifyResults;
 import com.massfords.jaxb.codegen.creators.Utils;
 import com.sun.codemodel.JBlock;
@@ -24,7 +24,7 @@ public final class AddAcceptMethod {
     private AddAcceptMethod() {
     }
 
-    public static void decorate(VisitorState state, CodeGenOptions options) {
+    public static void decorate(VisitorPlugin.VisitorState state, CodeGenOptions options) {
         // skip over abstract classes
         // add the accept method to the bean
         state.initial().allClasses()

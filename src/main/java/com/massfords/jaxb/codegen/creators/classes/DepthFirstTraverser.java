@@ -1,6 +1,6 @@
 package com.massfords.jaxb.codegen.creators.classes;
 
-import com.massfords.jaxb.codegen.AllInterfacesCreated;
+import com.massfords.jaxb.VisitorPlugin;
 import com.massfords.jaxb.codegen.ClassDiscoverer;
 import com.massfords.jaxb.codegen.CodeGenOptions;
 import com.sun.codemodel.JBlock;
@@ -41,7 +41,7 @@ public final class DepthFirstTraverser {
     private DepthFirstTraverser() {
     }
 
-    public static void createClass(AllInterfacesCreated state, CodeGenOptions options) {
+    public static void createClass(VisitorPlugin.AllInterfacesCreatedState state, CodeGenOptions options) {
         Outline outline = state.initial().outline();
 
         // create the class
@@ -122,30 +122,31 @@ public final class DepthFirstTraverser {
                 .build();
         // for each field, if it's a bean, then visit it
         findAllDeclaredAndInheritedFields(classOutline)
+                .stream()
+                .filter(fieldOutline -> ClassDiscoverer.getter(fieldOutline) != null)
+                .filter(fieldOutline -> !isIdrefField(fieldOutline) || !shared.options().noIdrefTraversal())
                 .forEach(fieldOutline -> {
                     JType rawType = fieldOutline.getRawType();
                     JMethod getter = ClassDiscoverer.getter(fieldOutline);
-                    if (getter != null && !(shared.options().noIdrefTraversal() && isIdrefField(fieldOutline))) {
-                        boolean isJAXBElement = isJAXBElement(getter.type(), shared.options());
-                        CPropertyInfo propertyInfo = fieldOutline.getPropertyInfo();
-                        boolean isCollection = propertyInfo.isCollection();
-                        if (isCollection) {
-                            JClass collClazz = (JClass) rawType;
-                            JClass collType = collClazz.getTypeParameters().get(0);
-                            TraversableCodeGenStrategy t = getTraversableStrategy(tContext, collType);
-                            if (collType.name().startsWith("JAXBElement")) {
-                                t.jaxbElementCollection(tContext, collType, getter);
-                            } else {
-                                t.collection(tContext, (JClass) rawType, getter);
-                            }
+                    boolean isJAXBElement = isJAXBElement(getter.type(), shared.options());
+                    CPropertyInfo propertyInfo = fieldOutline.getPropertyInfo();
+                    boolean isCollection = propertyInfo.isCollection();
+                    if (isCollection) {
+                        JClass collClazz = (JClass) rawType;
+                        JClass collType = collClazz.getTypeParameters().get(0);
+                        TraversableCodeGenStrategy t = getTraversableStrategy(tContext, collType);
+                        if (collType.name().startsWith("JAXBElement")) {
+                            t.jaxbElementCollection(tContext, collType, getter);
                         } else {
-                            TraversableCodeGenStrategy t = getTraversableStrategy(
-                                    tContext, rawType);
-                            if (isJAXBElement) {
-                                t.jaxbElement(tContext, (JClass) rawType, getter);
-                            } else {
-                                t.bean(tContext, getter);
-                            }
+                            t.collection(tContext, (JClass) rawType, getter);
+                        }
+                    } else {
+                        TraversableCodeGenStrategy t = getTraversableStrategy(
+                                tContext, rawType);
+                        if (isJAXBElement) {
+                            t.jaxbElement(tContext, (JClass) rawType, getter);
+                        } else {
+                            t.bean(tContext, getter);
                         }
                     }
                 });
