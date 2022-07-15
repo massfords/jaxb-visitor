@@ -2,7 +2,6 @@ package com.massfords.jaxb.codegen.creators.decorators;
 
 import com.massfords.jaxb.codegen.CodeGenOptions;
 import com.massfords.jaxb.codegen.InitialState;
-import com.sun.codemodel.JAnnotationUse;
 import com.sun.codemodel.JAnnotationValue;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JDefinedClass;
@@ -105,20 +104,20 @@ public final class JAXBElementNameCallback {
                         JType retType = method.type();
                         JClass clazz = (JClass) retType;
                         List<JClass> typeParameters = clazz.getTypeParameters();
-                        String namespace = null;
-                        String localPart = null;
-                        for (JAnnotationUse au : method.annotations()) {
-                            if (au.getAnnotationClass().fullName().equals(options.getXmlElementDecl().getName())) {
-                                namespace = annotationValueToString(au.getAnnotationMembers().get("namespace"));
-                                localPart = annotationValueToString(au.getAnnotationMembers().get("name"));
-                                break;
-                            }
-                        }
-                        if (namespace != null) {
-                            method.body().pos(0);
-                            method.body().invoke(method.params().get(0), SETTER)
-                                    .arg(JExpr._new(qNameClass).arg(namespace).arg(localPart));
-                        }
+                        Class<?> xmlElementDecl = options.getXmlElementDecl();
+                        method.annotations().stream()
+                                .filter(au -> au.getAnnotationClass().fullName().equals(xmlElementDecl.getName()))
+                                .map(au -> new QName(
+                                        annotationValueToString(au.getAnnotationMembers().get("namespace")),
+                                        annotationValueToString(au.getAnnotationMembers().get("name"))))
+                                .findFirst()
+                                .ifPresent(qn -> {
+                                    method.body().pos(0);
+                                    method.body().invoke(method.params().get(0), SETTER)
+                                            .arg(JExpr._new(qNameClass)
+                                                    .arg(qn.getNamespaceURI())
+                                                    .arg(qn.getLocalPart()));
+                                });
                         JDefinedClass dc = (JDefinedClass) typeParameters.get(0);
                         candidates.add(dc);
                     });
