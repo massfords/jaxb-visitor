@@ -1,6 +1,6 @@
 # jaxb-visitor
 
-<img align="right" src="src/docs/logos-jaxb-visitor.drawio.png" alt="A visitor pass featuring duke, the Java mascot" width="480"/>
+<img align="right" src="src/docs/logos-jaxb-visitor.png" alt="A visitor pass featuring duke, the Java mascot" width="480"/>
 
 ## What it does
 
