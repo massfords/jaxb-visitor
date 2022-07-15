@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+		xmlns="http://xxx.yyy.zzz/schema.xsd"
+		xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		targetNamespace="http://xxx.yyy.zzz/schema.xsd"
+		elementFormDefault="qualified"
+		attributeFormDefault="unqualified">
+
+	<xs:element name="Base">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Parameter" type="Parameter" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="Choice">
+		<xs:complexType>
+			<xs:choice maxOccurs="unbounded">
+				<xs:element name="Parameter" type="Parameter"/>
+				<xs:element name="Parameter2" type="Parameter2"/>
+				<xs:element ref="ParamElem"/>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="Single">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="SingleElem" type="Parameter"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="Parameter"/>
+
+	<xs:complexType name="Parameter2"/>
+
+	<xs:element name="ParamElem">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="name" type="xs:string"/>
+				<xs:element name="value" type="xs:string"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+</xs:schema>

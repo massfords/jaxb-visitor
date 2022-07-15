@@ -25,13 +25,11 @@ import com.sun.tools.xjc.Options;
 import com.sun.tools.xjc.Plugin;
 import com.sun.tools.xjc.model.CClassInfoParent;
 import com.sun.tools.xjc.outline.Aspect;
-import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.Outline;
 import com.sun.tools.xjc.outline.PackageOutline;
 import org.xml.sax.ErrorHandler;
 
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.function.Function;
 
 /**
@@ -136,9 +134,7 @@ public final class VisitorPlugin extends Plugin {
 
             JPackage vizPackage = getOrCreatePackageForVisitors(outline);
 
-            Set<ClassOutline> sorted = sortClasses(outline);
-
-            Set<JClass> directClasses = ClassDiscoverer.discoverDirectClasses(outline, sorted);
+            Set<JClass> directClasses = ClassDiscoverer.discoverDirectClasses(outline, outline.getClasses());
 
             InitialState initialState = ImmutableInitialState.builder()
                     .outline(outline)
@@ -210,22 +206,6 @@ public final class VisitorPlugin extends Plugin {
         return true;
     }
 
-
-    /**
-     * The classes are sorted for test purposes only. This gives us a predictable order for our
-     * assertions on the generated code.
-     *
-     * @param outline
-     */
-    private Set<ClassOutline> sortClasses(Outline outline) {
-        Set<ClassOutline> sorted = new TreeSet<>((aOne, aTwo) -> {
-            String one = aOne.implClass.fullName();
-            String two = aTwo.implClass.fullName();
-            return one.compareTo(two);
-        });
-        sorted.addAll(outline.getClasses());
-        return sorted;
-    }
 
     private JPackage getOrCreatePackageForVisitors(Outline outline) {
         JPackage vizPackage = null;

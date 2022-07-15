@@ -2,7 +2,6 @@ package com.massfords.jaxb.codegen.creators.decorators;
 
 import com.massfords.jaxb.codegen.CodeGenOptions;
 import com.massfords.jaxb.codegen.InitialState;
-import com.sun.codemodel.JAnnotationUse;
 import com.sun.codemodel.JAnnotationValue;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JDefinedClass;
@@ -13,10 +12,6 @@ import com.sun.codemodel.JMod;
 import com.sun.codemodel.JType;
 import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.Outline;
-import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.Unmarshaller;
-import jakarta.xml.bind.annotation.XmlElementDecl;
-import jakarta.xml.bind.annotation.XmlTransient;
 
 import javax.xml.namespace.QName;
 import java.io.PrintWriter;
@@ -48,9 +43,9 @@ public final class JAXBElementNameCallback {
         clazz.method(JMod.PUBLIC, void.class, SETTER).param(QName.class, "name");
         clazz.method(JMod.PUBLIC, QName.class, GETTER);
 
-        Set<ClassOutline> named = onlyNamed(outline, state.allClasses());
+        Set<ClassOutline> named = onlyNamed(outline, state.allClasses(), options);
 
-        JClass jaxbElementClass = outline.getCodeModel().ref(JAXBElement.class)
+        JClass jaxbElementClass = outline.getCodeModel().ref(options.getJAXBElementClass())
                 .narrow(outline.getCodeModel().ref(Object.class).wildcard());
 
         named.forEach(classOutline -> {
@@ -60,8 +55,7 @@ public final class JAXBElementNameCallback {
 
             // code: @XmlTransient
             // code: private QName jaxbElementName;
-            // todo this is another spot to better support jaxb2
-            implClass.field(JMod.PRIVATE, QName.class, FIELD).annotate(XmlTransient.class);
+            implClass.field(JMod.PRIVATE, QName.class, FIELD).annotate(options.getXmlTransient());
 
             // code:  public void setJAXBElementName(QName name) {
             // code:      this.jaxbElementName = name;
@@ -81,7 +75,7 @@ public final class JAXBElementNameCallback {
             // code:    }
             // code: }
             JMethod after = implClass.method(JMod.PUBLIC, void.class, "afterUnmarshal");
-            after.param(Unmarshaller.class, "u");
+            after.param(options.getUnmarshallerClass(), "u");
             after.param(Object.class, "parent");
             after.body()._if(JExpr.ref("parent")._instanceof(jaxbElementClass))
                     ._then().assign(JExpr._this().ref(FIELD),
@@ -89,7 +83,7 @@ public final class JAXBElementNameCallback {
         });
     }
 
-    private static Set<JDefinedClass> identifyCandidates(Outline outline) {
+    private static Set<JDefinedClass> identifyCandidates(Outline outline, CodeGenOptions options) {
 
         // phase one: identify all the candidates and update the ObjectFactories with the setter call
         // phase two: only include instances that don't have a JDefinedClass as their super
@@ -102,7 +96,7 @@ public final class JAXBElementNameCallback {
             JDefinedClass of = outline.getPackageContext(po._package()).objectFactory();
             of.methods()
                     .stream()
-                    .filter(method -> method.type().binaryName().startsWith(JAXBElement.class.getName()))
+                    .filter(method -> method.type().binaryName().startsWith(options.getJAXBElementClass().getName()))
                     .filter(method -> ((JClass) method.type()).getTypeParameters().size() == 1)
                     .filter(method -> ((JClass) method.type()).getTypeParameters().get(0) instanceof JDefinedClass)
                     .filter(method -> !((JClass) method.type()).getTypeParameters().get(0).isAbstract())
@@ -110,21 +104,20 @@ public final class JAXBElementNameCallback {
                         JType retType = method.type();
                         JClass clazz = (JClass) retType;
                         List<JClass> typeParameters = clazz.getTypeParameters();
-                        String namespace = null;
-                        String localPart = null;
-                        for (JAnnotationUse au : method.annotations()) {
-                            // todo - need to check this and other spots for jakarta to see what the legacy behavior is
-                            if (au.getAnnotationClass().fullName().equals(XmlElementDecl.class.getName())) {
-                                namespace = annotationValueToString(au.getAnnotationMembers().get("namespace"));
-                                localPart = annotationValueToString(au.getAnnotationMembers().get("name"));
-                                break;
-                            }
-                        }
-                        if (namespace != null) {
-                            method.body().pos(0);
-                            method.body().invoke(method.params().get(0), SETTER)
-                                    .arg(JExpr._new(qNameClass).arg(namespace).arg(localPart));
-                        }
+                        Class<?> xmlElementDecl = options.getXmlElementDecl();
+                        method.annotations().stream()
+                                .filter(au -> au.getAnnotationClass().fullName().equals(xmlElementDecl.getName()))
+                                .map(au -> new QName(
+                                        annotationValueToString(au.getAnnotationMembers().get("namespace")),
+                                        annotationValueToString(au.getAnnotationMembers().get("name"))))
+                                .findFirst()
+                                .ifPresent(qn -> {
+                                    method.body().pos(0);
+                                    method.body().invoke(method.params().get(0), SETTER)
+                                            .arg(JExpr._new(qNameClass)
+                                                    .arg(qn.getNamespaceURI())
+                                                    .arg(qn.getLocalPart()));
+                                });
                         JDefinedClass dc = (JDefinedClass) typeParameters.get(0);
                         candidates.add(dc);
                     });
@@ -156,8 +149,9 @@ public final class JAXBElementNameCallback {
     }
 
 
-    private static Set<ClassOutline> onlyNamed(Outline outline, Collection<ClassOutline> sorted) {
-        Set<JDefinedClass> candidates = identifyCandidates(outline);
+    private static Set<ClassOutline> onlyNamed(Outline outline, Collection<ClassOutline> sorted,
+                                               CodeGenOptions options) {
+        Set<JDefinedClass> candidates = identifyCandidates(outline, options);
         return filterSubclasses(sorted, candidates);
     }
 

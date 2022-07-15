@@ -12,7 +12,10 @@ import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
 
-public class Fixture {
+public final class Fixture {
+    private Fixture() {
+    }
+    @SuppressWarnings("checkstyle:ConstantName")
     public static final String[] StandardClassNamesToTest = {
             "BaseVisitor",
             "DepthFirstTraverserImpl",
@@ -32,7 +35,7 @@ public class Fixture {
     }
 
     public static boolean runSingleTest(String className, File actualDir, File expectedDir, String packageAsPath) {
-        System.out.println("running test: " + className);
+        System.out.print("running test: " + className + " :");
         File actual = new File(actualDir, MessageFormat.format("{0}/{1}.java", packageAsPath, className));
         File expected = new File(expectedDir, MessageFormat.format("{0}.java", className));
         return Fixture.actualEqualsExpected(actual, expected);
@@ -44,12 +47,12 @@ public class Fixture {
             String expectedValue = noComments(expectedReader);
             String actualValue = noComments(actualReader);
             if (!expectedValue.equals(actualValue)) {
+                System.out.println("error with " + expectedFile.getName());
                 System.err.println("actual:" + actualValue);
                 System.err.println("expect:" + expectedValue);
-            } else {
-                System.err.println("matched:" + actualValue);
             }
             assertEquals(expectedValue, actualValue);
+            System.out.println("ok");
             return true;
         } catch (IOException e) {
             e.printStackTrace();

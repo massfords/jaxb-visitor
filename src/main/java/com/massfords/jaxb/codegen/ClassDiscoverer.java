@@ -1,7 +1,7 @@
 package com.massfords.jaxb.codegen;
 
+import com.massfords.jaxb.codegen.creators.Utils;
 import com.sun.codemodel.JAnnotationArrayMember;
-import com.sun.codemodel.JAnnotationUse;
 import com.sun.codemodel.JAnnotationValue;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JDefinedClass;
@@ -14,7 +14,6 @@ import com.sun.tools.xjc.model.CPropertyInfo;
 import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.FieldOutline;
 import com.sun.tools.xjc.outline.Outline;
-import jakarta.xml.bind.annotation.XmlElements;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -42,16 +41,14 @@ public final class ClassDiscoverer {
      * @param outline root of the generated code
      * @param classes set of generated classes
      * @return set of external classes
-     * @throws IllegalAccessException throw if there's an error introspecting the annotations
      */
-    public static Set<JClass> discoverDirectClasses(Outline outline, Set<ClassOutline> classes)
-            throws IllegalAccessException {
+    public static Set<JClass> discoverDirectClasses(Outline outline, Collection<? extends ClassOutline> classes) {
 
         Set<String> directClassNames = new LinkedHashSet<>();
-        for (ClassOutline classOutline : classes) {
+        classes.forEach(classOutline -> {
             // for each field, if it's a bean, then visit it
             List<FieldOutline> fields = findAllDeclaredAndInheritedFields(classOutline);
-            for (FieldOutline fieldOutline : fields) {
+            fields.forEach(fieldOutline -> {
                 JType rawType = fieldOutline.getRawType();
                 CPropertyInfo propertyInfo = fieldOutline.getPropertyInfo();
                 boolean isCollection = propertyInfo.isCollection();
@@ -63,8 +60,8 @@ public final class ClassDiscoverer {
                     addIfDirectClass(directClassNames, rawType);
                 }
                 parseXmlAnnotations(outline, fieldOutline, directClassNames);
-            }
-        }
+            });
+        });
 
         return directClassNames
                 .stream()
@@ -82,21 +79,20 @@ public final class ClassDiscoverer {
      * @param outline       root of the generated code
      * @param field         parses the xml annotations looking for an external class
      * @param directClasses set of direct classes to append to
-     * @throws IllegalAccessException throw if there's an error introspecting the annotations
      */
-    private static void parseXmlAnnotations(Outline outline, FieldOutline field, Set<String> directClasses)
-            throws IllegalAccessException {
+    private static void parseXmlAnnotations(Outline outline, FieldOutline field, Set<String> directClasses) {
         if (field instanceof UntypedListField) {
-            JFieldVar jfv = (JFieldVar) FieldHack.getField().get(field);
-            for (JAnnotationUse jau : jfv.annotations()) {
-                JClass jc = jau.getAnnotationClass();
-                if (jc.fullName().equals(XmlElements.class.getName())) {
-                    JAnnotationArrayMember value = (JAnnotationArrayMember) jau.getAnnotationMembers().get("value");
-                    for (JAnnotationUse anno : value.annotations()) {
-                        handleXmlElement(outline, directClasses, anno.getAnnotationMembers().get("type"));
-                    }
-                }
+            JFieldVar jfv;
+            try {
+                jfv = (JFieldVar) FieldHack.getField().get(field);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
             }
+            jfv.annotations().stream()
+                    .filter(jau -> Utils.isXmlElements(jau.getAnnotationClass()))
+                    .map(jau -> (JAnnotationArrayMember) jau.getAnnotationMembers().get("value"))
+                    .flatMap(value -> value.annotations().stream())
+                    .forEach(anno -> handleXmlElement(outline, directClasses, anno.getAnnotationMembers().get("type")));
         }
     }
 
