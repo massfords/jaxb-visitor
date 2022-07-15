@@ -36,6 +36,6 @@ public final class Utils {
     public static boolean isXmlElements(JClass jc) {
         String fullName = jc.fullName();
         return fullName.equals(XmlElements.class.getName())
-                || fullName.equals(javax.xml.bind.annotation.XmlElements.class.getName());
+                || fullName.equals("javax.xml.bind.annotation.XmlElements");
     }
 }
