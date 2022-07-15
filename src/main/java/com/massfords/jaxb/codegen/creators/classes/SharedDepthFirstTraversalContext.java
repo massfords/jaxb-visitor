@@ -1,6 +1,6 @@
 package com.massfords.jaxb.codegen.creators.classes;
 
-import com.massfords.jaxb.codegen.AllInterfacesCreated;
+import com.massfords.jaxb.VisitorPlugin;
 import com.massfords.jaxb.codegen.CodeGenOptions;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JDefinedClass;
@@ -20,6 +20,6 @@ public interface SharedDepthFirstTraversalContext {
 
     CodeGenOptions options();
 
-    AllInterfacesCreated state();
+    VisitorPlugin.AllInterfacesCreatedState state();
 
 }

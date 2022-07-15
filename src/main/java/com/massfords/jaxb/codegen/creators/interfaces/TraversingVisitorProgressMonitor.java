@@ -1,7 +1,7 @@
 package com.massfords.jaxb.codegen.creators.interfaces;
 
+import com.massfords.jaxb.VisitorPlugin;
 import com.massfords.jaxb.codegen.CodeGenOptions;
-import com.massfords.jaxb.codegen.VisitorState;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMod;
 
@@ -18,7 +18,7 @@ public final class TraversingVisitorProgressMonitor {
 
     private TraversingVisitorProgressMonitor() {
     }
-    public static JDefinedClass createInterface(VisitorState state, CodeGenOptions options) {
+    public static JDefinedClass createInterface(VisitorPlugin.VisitorState state, CodeGenOptions options) {
         JDefinedClass interfaceModel = state.initial().outline().getClassFactory().createInterface(
                 options.packageForVisitor(), "TraversingVisitorProgressMonitor", null);
         annotateGenerated(interfaceModel, options);

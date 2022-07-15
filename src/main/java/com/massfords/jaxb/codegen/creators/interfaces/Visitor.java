@@ -1,7 +1,7 @@
 package com.massfords.jaxb.codegen.creators.interfaces;
 
+import com.massfords.jaxb.VisitorPlugin;
 import com.massfords.jaxb.codegen.CodeGenOptions;
-import com.massfords.jaxb.codegen.InitialState;
 import com.massfords.jaxb.codegen.creators.GenerifyResults;
 import com.massfords.jaxb.codegen.creators.Utils;
 import com.sun.codemodel.JDefinedClass;
@@ -19,7 +19,7 @@ import static com.massfords.jaxb.codegen.creators.Utils.annotateGenerated;
 public final class Visitor {
     private Visitor() {
     }
-    public static JDefinedClass create(InitialState codeGenState, CodeGenOptions options) {
+    public static JDefinedClass create(VisitorPlugin.InitialState codeGenState, CodeGenOptions options) {
 
         final JDefinedClass visitorModel = codeGenState.outline().getClassFactory().createInterface(
                 options.packageForVisitor(), "Visitor", null);

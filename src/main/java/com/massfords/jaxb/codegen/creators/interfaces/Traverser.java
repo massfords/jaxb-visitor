@@ -1,7 +1,7 @@
 package com.massfords.jaxb.codegen.creators.interfaces;
 
+import com.massfords.jaxb.VisitorPlugin;
 import com.massfords.jaxb.codegen.CodeGenOptions;
-import com.massfords.jaxb.codegen.VisitorState;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
@@ -26,7 +26,7 @@ import static com.massfords.jaxb.codegen.creators.Utils.annotateGenerated;
 public final class Traverser {
     private Traverser() {
     }
-    public static JDefinedClass createInterface(VisitorState state, CodeGenOptions options) {
+    public static JDefinedClass createInterface(VisitorPlugin.VisitorState state, CodeGenOptions options) {
         Outline outline = state.initial().outline();
         JPackage jpackage = options.packageForVisitor();
         JDefinedClass scratch = outline.getClassFactory().createInterface(jpackage, "_scratch", null);

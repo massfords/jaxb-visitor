@@ -1,7 +1,7 @@
 package com.massfords.jaxb.codegen.creators.interfaces;
 
+import com.massfords.jaxb.VisitorPlugin;
 import com.massfords.jaxb.codegen.CodeGenOptions;
-import com.massfords.jaxb.codegen.VisitorState;
 import com.massfords.jaxb.codegen.creators.GenerifyResults;
 import com.massfords.jaxb.codegen.creators.Utils;
 import com.sun.codemodel.JDefinedClass;
@@ -18,7 +18,7 @@ public final class Visitable {
     private Visitable() {
     }
 
-    public static JDefinedClass create(VisitorState state, CodeGenOptions options) {
+    public static JDefinedClass create(VisitorPlugin.VisitorState state, CodeGenOptions options) {
         final JDefinedClass visitableModel = state.initial().outline().getClassFactory().createInterface(
                 options.packageForVisitor(), "Visitable", null);
         annotateGenerated(visitableModel, options);
