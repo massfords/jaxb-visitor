@@ -2,10 +2,12 @@ package com.massfords.jaxb.codegen.creators;
 
 import com.massfords.jaxb.codegen.CodeGenOptions;
 import com.sun.codemodel.JAnnotationUse;
+import com.sun.codemodel.JClass;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JGenerifiable;
 import com.sun.codemodel.JType;
 import jakarta.annotation.Generated;
+import jakarta.xml.bind.annotation.XmlElements;
 
 public final class Utils {
     private Utils() {
@@ -31,4 +33,9 @@ public final class Utils {
         return type.fullName().startsWith(options.getJAXBElementClass().getName());
     }
 
+    public static boolean isXmlElements(JClass jc) {
+        String fullName = jc.fullName();
+        return fullName.equals(XmlElements.class.getName())
+                || fullName.equals(javax.xml.bind.annotation.XmlElements.class.getName());
+    }
 }
