@@ -4,6 +4,6 @@ import com.massfords.jaxb.VisitorPlugin;
 import org.immutables.value.Value;
 
 @Value.Immutable
-@Value.Style(strictBuilder = true)
+@Value.Style(stagedBuilder = true)
 public interface VisitorState extends VisitorPlugin.VisitorState {
 }

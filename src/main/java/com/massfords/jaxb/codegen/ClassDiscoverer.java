@@ -187,7 +187,7 @@ public final class ClassDiscoverer {
      * @param directClasses set of classes to append to the list of concrete classes
      * @return list of concrete classes
      */
-    public static List<JClass> allConcreteClasses(Collection<ClassOutline> classes, Set<JClass> directClasses) {
+    public static List<JClass> allConcreteClasses(Collection<ClassOutline> classes, Collection<JClass> directClasses) {
         List<JClass> results = new ArrayList<>();
         classes.stream()
                 .filter(classOutline -> !classOutline.target.isAbstract())

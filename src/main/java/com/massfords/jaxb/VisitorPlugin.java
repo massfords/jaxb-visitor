@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Plugin generates the following code:
@@ -138,7 +139,8 @@ public final class VisitorPlugin extends Plugin {
 
             InitialState initialState = ImmutableInitialState.builder()
                     .outline(outline)
-                    .addAllDirectClasses(directClasses)
+                    .putAllDirectClassesByName(directClasses.stream()
+                            .collect(Collectors.toMap(JClass::fullName, Function.identity())))
                     .build();
 
             /*
@@ -175,9 +177,9 @@ public final class VisitorPlugin extends Plugin {
             JDefinedClass visitor = Visitor.create(initialState, codeGenOptions);
 
             VisitorState visitorCreated = ImmutableVisitorState.builder()
+                    .initial(initialState)
                     .visitor(visitor)
                     .narrowedVisitor(visitor.narrow(visitor.typeParams()))
-                    .initial(initialState)
                     .build();
 
             JDefinedClass visitable = Visitable.create(visitorCreated, codeGenOptions);
@@ -188,12 +190,12 @@ public final class VisitorPlugin extends Plugin {
 
             if (generateClasses) {
                 VisitorPlugin.AllInterfacesCreatedState allState = ImmutableAllInterfacesCreated.builder()
+                        .initial(visitorCreated.initial())
+                        .visitor(visitorCreated.visitor())
+                        .narrowedVisitor(visitorCreated.narrowedVisitor())
                         .visitable(visitable)
                         .traverser(traverser)
                         .progressMonitor(progressMonitor)
-                        .visitor(visitorCreated.visitor())
-                        .narrowedVisitor(visitorCreated.narrowedVisitor())
-                        .initial(visitorCreated.initial())
                         .build();
                 BaseVisitor.createClass(allState, codeGenOptions);
                 DepthFirstTraverser.createClass(allState, codeGenOptions);
@@ -238,25 +240,27 @@ public final class VisitorPlugin extends Plugin {
         Collection<ClassOutline> allClasses();
 
         /**
-         * direct classes are thoses referenced by a generated bean but not part of the generation
-         */
-        Set<JClass> directClasses();
-
-        /**
          * organizes the direct classes by their fully qualified name
          */
         Map<String, JClass> directClassesByName();
+
+        default Collection<JClass> directClasses() {
+            return directClassesByName().values();
+        }
     }
 
     /**
      * Provides the avaialble state after the primary Visitor interface was generated.
-     *
+     * <p>
      * There are other code generators that need these values as well as some of the initial values.
      */
     public interface VisitorState {
-        JDefinedClass visitor();
-        JClass narrowedVisitor();
         com.massfords.jaxb.VisitorPlugin.InitialState initial();
+
+        JDefinedClass visitor();
+
+        JClass narrowedVisitor();
+
     }
 
     /**
@@ -265,7 +269,9 @@ public final class VisitorPlugin extends Plugin {
      */
     public interface AllInterfacesCreatedState extends com.massfords.jaxb.VisitorPlugin.VisitorState {
         JDefinedClass visitable();
+
         JDefinedClass traverser();
+
         JDefinedClass progressMonitor();
     }
 }
