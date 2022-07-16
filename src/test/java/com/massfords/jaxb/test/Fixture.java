@@ -5,8 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.text.MessageFormat;
-import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,30 +14,15 @@ import static org.junit.Assert.assertEquals;
 public final class Fixture {
     private Fixture() {
     }
-    @SuppressWarnings("checkstyle:ConstantName")
-    public static final String[] StandardClassNamesToTest = {
-            "BaseVisitor",
-            "DepthFirstTraverserImpl",
-            "Traverser",
-            "TraversingVisitor",
-            "TraversingVisitorProgressMonitor",
-            "Visitable",
-            "Visitor"
-    };
 
-    public static boolean runStandardTests(File actualDir, File expectedDir, String packageAsPath) {
-        return runTests(Fixture.StandardClassNamesToTest, actualDir, expectedDir, packageAsPath);
-    }
-
-    public static boolean runTests(String[] names, File actualDir, File expectedDir, String packageAsPath) {
-        return Arrays.stream(names).allMatch(className -> runSingleTest(className, actualDir, expectedDir, packageAsPath));
-    }
-
-    public static boolean runSingleTest(String className, File actualDir, File expectedDir, String packageAsPath) {
-        System.out.print("running test: " + className + " :");
-        File actual = new File(actualDir, MessageFormat.format("{0}/{1}.java", packageAsPath, className));
-        File expected = new File(expectedDir, MessageFormat.format("{0}.java", className));
-        return Fixture.actualEqualsExpected(actual, expected);
+    public static boolean assertAll(File expectedDir, List<FileAssertion> assertionList) {
+        assertionList.forEach(fileAssertion -> {
+            String filename = fileAssertion.getExpected() + ".java";
+            assert Fixture.actualEqualsExpected(
+                    new File(fileAssertion.getActualDir(), filename),
+                    new File(expectedDir, filename));
+        });
+        return true;
     }
 
     public static boolean actualEqualsExpected(File actualFile, File expectedFile) {
@@ -52,7 +36,7 @@ public final class Fixture {
                 System.err.println("expect:" + expectedValue);
             }
             assertEquals(expectedValue, actualValue);
-            System.out.println("ok");
+            System.out.println("ok: " + expectedFile.getName());
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -87,4 +71,5 @@ public final class Fixture {
                 .replaceAll("(>)([^ ])", "$1 $2")
                 .replaceAll(" +", " ").trim();
     }
+
 }

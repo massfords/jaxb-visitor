@@ -4,7 +4,17 @@ File actualDir = new File(basedir, "target/generated-sources/xjc")
 File expectedDir = new File(basedir, "expected")
 String packageAsPath = "org/example/visitor"
 
-assert Fixture.runSingleTest("Traverser", actualDir, expectedDir, packageAsPath);
-assert Fixture.runSingleTest("TraversingVisitorProgressMonitor", actualDir, expectedDir, packageAsPath);
-assert Fixture.runSingleTest("Visitor", actualDir, expectedDir, packageAsPath);
-assert Fixture.runSingleTest("Visitable", actualDir, expectedDir, packageAsPath);
+files = [
+        "Traverser",
+        "TraversingVisitorProgressMonitor",
+        "Visitable",
+        "Visitor"
+]
+
+files.each { f ->
+    String filename = f + ".java"
+    assert Fixture.actualEqualsExpected(
+            new File(new File(actualDir, packageAsPath), filename),
+            new File(expectedDir, filename));
+}
+return true
