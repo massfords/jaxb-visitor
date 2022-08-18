@@ -6,9 +6,9 @@ public final class FileAssertion {
     private final String expected;
     private final File actualDir;
 
-    public FileAssertion(String expected, File actualDir) {
-        this.expected = expected;
-        this.actualDir = actualDir;
+    public FileAssertion(String s, File file) {
+        this.expected = s;
+        this.actualDir = file;
     }
 
     public String getExpected() {

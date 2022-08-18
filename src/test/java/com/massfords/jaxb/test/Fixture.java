@@ -9,12 +9,14 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public final class Fixture {
     private Fixture() {
     }
 
+    // called from the groovy scripts
+    @SuppressWarnings("unused")
     public static boolean assertAll(File expectedDir, List<FileAssertion> assertionList) {
         assertionList.forEach(fileAssertion -> {
             String filename = fileAssertion.getExpected() + ".java";
