@@ -135,8 +135,8 @@ public final class JAXBElementNameCallback {
             if (candidates.contains(co.implClass)) {
                 JDefinedClass jdc = co.implClass;
                 JDefinedClass base = jdc._extends() instanceof JDefinedClass ? (JDefinedClass) jdc._extends() : null;
-                if (base != null) {
-                    while (base._extends() instanceof JDefinedClass) {
+                if (base != null && classToOutline.containsKey(base)) {
+                    while (base._extends() instanceof JDefinedClass && classToOutline.containsKey(base._extends())) {
                         base = (JDefinedClass) base._extends();
                     }
                     filtered.add(classToOutline.get(base));
