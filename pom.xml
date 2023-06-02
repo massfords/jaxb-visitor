@@ -1,10 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.massfords</groupId>
     <artifactId>jaxb-visitor</artifactId>
     <name>JAXB Visitor Plugin</name>
-    <version>3.1.0-SNAPSHOT</version>
+    <version>3.1.0</version>
     <description>XJC plugin that adds the Visitor pattern to JAXB generated
         classes. Generates a simple Visitor interface as well as separate
         Traverser and sample implementations to perform depth first traversals
@@ -23,7 +22,7 @@
         <url>https://github.com/massfords/jaxb-visitor</url>
         <connection>scm:git:git://github.com/massfords/jaxb-visitor.git</connection>
         <developerConnection>scm:git:git@github.com:massfords/jaxb-visitor.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>jaxb-visitor-3.1.0</tag>
     </scm>
     <distributionManagement>
         <snapshotRepository>
