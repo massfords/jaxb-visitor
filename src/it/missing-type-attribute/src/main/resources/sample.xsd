@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="DerivedA" type="DerivedA"/>
+    <xs:element name="BaseType" type="BaseType"/>
+
+    <xs:element name="TypeList" type="TypeList"/>
+
+    <xs:element name="DerivedD" type="DerivedD" />
+
+    <xs:complexType name="TypeList">
+        <xs:sequence>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element ref="BaseType"/>
+                <xs:element ref="DerivedA"/>
+                <xs:element ref="DerivedD"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="BaseType">
+        <xs:sequence>
+            <xs:element name="localisations" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="localisations" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="AbstractBase">
+        <xs:complexContent>
+            <xs:extension base="PersistingOject">
+                <xs:sequence>
+                    <xs:element name="label" type="xs:string" minOccurs="0" />
+                    <xs:element name="internalId" type="xs:long" minOccurs="0" />
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="PersistingOject">
+        <xs:sequence>
+            <xs:element name="id" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="DerivedA">
+        <xs:complexContent>
+            <xs:extension base="BaseType">
+                <xs:sequence>
+                    <xs:element name="category" type="xs:int" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="DerivedD">
+        <xs:complexContent>
+            <xs:extension base="BaseType">
+                <xs:sequence>
+                    <xs:element name="nodeId" type="xs:string" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+</xs:schema>

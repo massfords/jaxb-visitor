@@ -2,7 +2,7 @@ package com.massfords.jaxb.codegen;
 
 import com.massfords.jaxb.codegen.creators.Utils;
 import com.sun.codemodel.JAnnotationArrayMember;
-import com.sun.codemodel.JAnnotationValue;
+import com.sun.codemodel.JGenerable;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JFieldVar;
@@ -92,7 +92,15 @@ public final class ClassDiscoverer {
                     .filter(jau -> Utils.isXmlElements(jau.getAnnotationClass()))
                     .map(jau -> (JAnnotationArrayMember) jau.getAnnotationMembers().get("value"))
                     .flatMap(value -> value.annotations().stream())
-                    .forEach(anno -> handleXmlElement(outline, directClasses, anno.getAnnotationMembers().get("type")));
+                    .forEach(anno -> {
+                        if (anno.getAnnotationMembers().get("type") != null) {
+                            handleXmlElement(outline, directClasses, anno.getAnnotationMembers().get("type"));
+                        } else if (jfv.type().isArray()) {
+                            handleXmlElement(outline, directClasses, jfv.type().elementType());
+                        } else {
+                            handleXmlElement(outline, directClasses, ((JClass) jfv.type()).getTypeParameters().get(0));
+                        }
+                    });
         }
     }
 
@@ -107,12 +115,14 @@ public final class ClassDiscoverer {
      * @param directClasses set of classes to append to
      * @param type          annotation we're analysing
      */
-    private static void handleXmlElement(Outline outline, Set<String> directClasses, JAnnotationValue type) {
+    private static void handleXmlElement(Outline outline, Set<String> directClasses, JGenerable type) {
         StringWriter sw = new StringWriter();
         JFormatter jf = new JFormatter(new PrintWriter(sw));
         type.generate(jf);
         String s = sw.toString();
-        s = s.substring(0, s.length() - ".class".length());
+        if (s.endsWith(".class")) {
+            s = s.substring(0, s.length() - ".class".length());
+        }
         if (!s.startsWith("java") && outline.getCodeModel()._getClass(s) == null && !foundWithinOutline(s, outline)) {
             directClasses.add(s);
         }
