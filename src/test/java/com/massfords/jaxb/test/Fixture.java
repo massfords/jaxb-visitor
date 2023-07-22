@@ -18,7 +18,6 @@ public final class Fixture {
     // called from the groovy scripts
     @SuppressWarnings("unused")
     public static boolean assertAll(File expectedDir, List<FileAssertion> assertionList) {
-        System.out.println("assertAll " + expectedDir + " " + assertionList );
         return assertionList.stream().allMatch(fileAssertion -> {
             String filename = fileAssertion.getExpected() + ".java";
             return Fixture.actualEqualsExpected(
