@@ -6,9 +6,10 @@ File expectedDir = new File(basedir, "expected")
 String packageAsPath = "org/example/visitor"
 File packageDir = new File(actualDir, packageAsPath)
 
-assertions = [
-        new FileAssertion("DepthFirstTraverserImpl", packageDir),
-        new FileAssertion("BinaryComparisonOpType", new File(actualDir, "net/opengis/fes/_2/")),
-]
+def assertions = [
+        "BaseVisitor",
+        "Visitor",
+].collect {name -> return new FileAssertion(name, packageDir) }
 
 return Fixture.assertAll(expectedDir, assertions);
+
